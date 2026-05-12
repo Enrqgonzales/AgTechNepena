@@ -267,6 +267,8 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
     private void obtenerNombreLocalidad(double lat, double lon) {
+        if (executorService.isShutdown()) return;
+
         executorService.execute(() -> {
             try {
                 Geocoder geocoder = new Geocoder(this, new Locale("es", "PE"));

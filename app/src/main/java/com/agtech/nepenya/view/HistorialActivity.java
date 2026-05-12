@@ -9,6 +9,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -86,6 +87,14 @@ public class HistorialActivity extends AppCompatActivity implements
         cargarRegistros();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (controller != null) {
+            controller.shutdown();
+        }
+    }
+
     private void initController() {
         AppDatabase db = AppDatabase.getInstance(this);
         RegistroRepository registroRepo = new RegistroRepository(db.registroDao());
@@ -100,12 +109,9 @@ public class HistorialActivity extends AppCompatActivity implements
         recyclerView = findViewById(R.id.recycler_view);
         tvEmpty = findViewById(R.id.tv_empty);
 
-        // Configurar spinner de meses (fijo, siempre 12 meses)
-        String[] meses = { "Todos los meses", "01 - Enero", "02 - Febrero", "03 - Marzo", "04 - Abril",
-                "05 - Mayo", "06 - Junio", "07 - Julio", "08 - Agosto", "09 - Septiembre",
-                "10 - Octubre", "11 - Noviembre", "12 - Diciembre" };
-        ArrayAdapter<String> mesAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, meses);
+        // Configurar spinner de meses usando array de strings
+        ArrayAdapter<CharSequence> mesAdapter = ArrayAdapter.createFromResource(this,
+                R.array.meses_array, android.R.layout.simple_spinner_item);
         mesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMes.setAdapter(mesAdapter);
 
@@ -212,7 +218,11 @@ public class HistorialActivity extends AppCompatActivity implements
                 } else {
                     String mesCompleto = (String) parent.getItemAtPosition(position);
                     // Extraer solo el número de mes (formato: "01 - Enero")
-                    filtroMes = mesCompleto.split(" - ")[0];
+                    if (mesCompleto != null && mesCompleto.contains(" - ")) {
+                        filtroMes = mesCompleto.split(" - ")[0];
+                    } else {
+                        filtroMes = "TODOS";
+                    }
                 }
                 cargarRegistros();
             }
@@ -234,29 +244,29 @@ public class HistorialActivity extends AppCompatActivity implements
                 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
-            public boolean onMove(RecyclerView recyclerView,
-                    RecyclerView.ViewHolder viewHolder,
-                    RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
                 Registro registro = adapter.getRegistro(position);
 
                 if (registro != null) {
                     new AlertDialog.Builder(HistorialActivity.this)
-                            .setTitle("Eliminar registro")
-                            .setMessage("¿Esta seguro de eliminar este registro?")
-                            .setPositiveButton("Eliminar",
+                            .setTitle(R.string.eliminar_registro)
+                            .setMessage(R.string.confirmar_eliminar)
+                            .setPositiveButton(R.string.eliminar,
                                     (dialog, which) -> controller.eliminarRegistro(registro.getId(),
                                             new HistorialController.EliminarCallback() {
                                                 @Override
                                                 public void onEliminado() {
                                                     adapter.eliminarRegistro(position);
                                                     Toast.makeText(HistorialActivity.this,
-                                                            "Registro eliminado", Toast.LENGTH_SHORT).show();
+                                                            R.string.registro_eliminado, Toast.LENGTH_SHORT).show();
                                                 }
 
                                                 @Override
@@ -266,7 +276,7 @@ public class HistorialActivity extends AppCompatActivity implements
                                                     adapter.notifyItemChanged(position);
                                                 }
                                             }))
-                            .setNegativeButton("Cancelar", (dialog, which) -> adapter.notifyItemChanged(position))
+                            .setNegativeButton(R.string.cancelar, (dialog, which) -> adapter.notifyItemChanged(position))
                             .setCancelable(false)
                             .show();
                 }
@@ -277,14 +287,22 @@ public class HistorialActivity extends AppCompatActivity implements
     }
 
     private void cargarAnios() {
-        controller.obtenerAniosDisponibles(anios -> {
-            java.util.List<String> opciones = new java.util.ArrayList<>();
-            opciones.add("Todos los años");
-            opciones.addAll(anios);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, opciones);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerAnio.setAdapter(adapter);
+        controller.obtenerAniosDisponibles(new HistorialController.AniosCallback() {
+            @Override
+            public void onAnios(java.util.List<String> anios) {
+                java.util.List<String> opciones = new java.util.ArrayList<>();
+                opciones.add(getString(R.string.todos_anios));
+                opciones.addAll(anios);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(HistorialActivity.this,
+                        android.R.layout.simple_spinner_item, opciones);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerAnio.setAdapter(adapter);
+            }
+
+            @Override
+            public void onError(String mensaje) {
+                Toast.makeText(HistorialActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -295,14 +313,14 @@ public class HistorialActivity extends AppCompatActivity implements
         java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
         exec.execute(() -> {
             parcelasList = parcelaRepo.obtenerTodas();
-            List<String> nombres = new ArrayList<>();
-            nombres.add("Todas las parcelas");
-            for (Parcela p : parcelasList) {
+            java.util.List<String> nombres = new java.util.ArrayList<>();
+            nombres.add(getString(R.string.todas_parcelas));
+            for (com.agtech.nepenya.model.entity.Parcela p : parcelasList) {
                 nombres.add(p.getNombre());
             }
 
             runOnUiThread(() -> {
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(HistorialActivity.this,
                         android.R.layout.simple_spinner_item, nombres);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerParcela.setAdapter(adapter);
@@ -354,7 +372,7 @@ public class HistorialActivity extends AppCompatActivity implements
         new AlertDialog.Builder(this)
                 .setTitle(registro.getTipo())
                 .setMessage(mensaje)
-                .setPositiveButton("Cerrar", null)
+                .setPositiveButton(R.string.cerrar, null)
                 .show();
     }
 

@@ -5,7 +5,11 @@ import android.app.Activity;
 import com.agtech.nepenya.model.entity.Registro;
 import com.agtech.nepenya.model.repository.RegistroRepository;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +22,7 @@ import java.util.concurrent.Executors;
  */
 public class HistorialController {
 
-    private final Activity activity;
+    private final WeakReference<Activity> activityRef;
     private final RegistroRepository registroRepository;
     private final ExecutorService executorService;
 
@@ -51,7 +55,7 @@ public class HistorialController {
      * Constructor con inyeccion de dependencias.
      */
     public HistorialController(Activity activity, RegistroRepository registroRepository) {
-        this.activity = activity;
+        this.activityRef = new WeakReference<>(activity);
         this.registroRepository = registroRepository;
         this.executorService = Executors.newSingleThreadExecutor();
     }
@@ -75,27 +79,30 @@ public class HistorialController {
             boolean tieneTipo = "GASTO".equals(filtroTipo) || "INGRESO".equals(filtroTipo);
 
             if (tieneAnio && tieneMes) {
-                registros = registroRepository.obtenerPorAnioYMes(anio, mes);
+                registros = new ArrayList<>(registroRepository.obtenerPorAnioYMes(anio, mes));
             } else if (tieneAnio) {
-                registros = registroRepository.obtenerPorAnio(anio);
+                registros = new ArrayList<>(registroRepository.obtenerPorAnio(anio));
             } else {
-                registros = registroRepository.obtenerTodos();
+                registros = new ArrayList<>(registroRepository.obtenerTodos());
             }
 
-            // Filtrar en memoria solo los casos combinados no cubiertos por el DAO
-            if (tieneParcela && tieneTipo) {
-                final int pid = parcelaId;
-                final String tipo = filtroTipo;
-                registros.removeIf(r -> r.getParcelaId() != pid || !tipo.equals(r.getTipo()));
-            } else if (tieneParcela) {
-                final int pid = parcelaId;
-                registros.removeIf(r -> r.getParcelaId() != pid);
-            } else if (tieneTipo) {
-                final String tipo = filtroTipo;
-                registros.removeIf(r -> !tipo.equals(r.getTipo()));
-            }
+            // Filtrar en memoria casos no cubiertos por el DAO o combinaciones
+            registros.removeIf(r -> {
+                boolean match = true;
+                if (tieneMes && !tieneAnio) {
+                    // Si solo hay mes, filtrar por mes (extraído de fecha yyyy-MM-dd)
+                    String mesRegistro = r.getFecha().split("-")[1];
+                    if (!mesRegistro.equals(mes)) match = false;
+                }
+                if (tieneParcela && r.getParcelaId() != parcelaId) match = false;
+                if (tieneTipo && !Objects.equals(filtroTipo, r.getTipo())) match = false;
+                return !match;
+            });
 
-            activity.runOnUiThread(() -> callback.onLista(registros));
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(() -> callback.onLista(registros));
+            }
         });
     }
 
@@ -105,7 +112,10 @@ public class HistorialController {
     public void cargarRegistrosPorFecha(String fecha, ListaCallback callback) {
         executorService.execute(() -> {
             List<Registro> registros = registroRepository.obtenerPorFecha(fecha);
-            activity.runOnUiThread(() -> callback.onLista(registros));
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(() -> callback.onLista(registros));
+            }
         });
     }
 
@@ -115,7 +125,10 @@ public class HistorialController {
     public void obtenerAniosDisponibles(AniosCallback callback) {
         executorService.execute(() -> {
             List<String> anios = registroRepository.obtenerAniosConRegistros();
-            activity.runOnUiThread(() -> callback.onAnios(anios));
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(() -> callback.onAnios(anios));
+            }
         });
     }
 
@@ -125,7 +138,10 @@ public class HistorialController {
     public void obtenerMesesDisponibles(String anio, MesesCallback callback) {
         executorService.execute(() -> {
             List<String> meses = registroRepository.obtenerMesesConRegistros(anio);
-            activity.runOnUiThread(() -> callback.onMeses(meses));
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(() -> callback.onMeses(meses));
+            }
         });
     }
 
@@ -156,7 +172,10 @@ public class HistorialController {
     public void eliminarRegistro(int id, EliminarCallback callback) {
         executorService.execute(() -> {
             registroRepository.eliminarPorId(id);
-            activity.runOnUiThread(callback::onEliminado);
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(callback::onEliminado);
+            }
         });
     }
 
@@ -181,8 +200,18 @@ public class HistorialController {
             final int totalGastos = gastos;
             final int totalIngresos = ingresos;
 
-            activity.runOnUiThread(() -> callback.onConteo(totalGastos, totalIngresos));
+            Activity activity = activityRef.get();
+            if (activity != null) {
+                activity.runOnUiThread(() -> callback.onConteo(totalGastos, totalIngresos));
+            }
         });
+    }
+
+    /**
+     * Finaliza el executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 
     /**
@@ -217,6 +246,6 @@ public class HistorialController {
      * @return String formateado
      */
     public String formatearMonto(double monto, boolean esGasto) {
-        return String.format("S/ %,.2f", monto);
+        return String.format(Locale.getDefault(), "S/ %,.2f", monto);
     }
 }

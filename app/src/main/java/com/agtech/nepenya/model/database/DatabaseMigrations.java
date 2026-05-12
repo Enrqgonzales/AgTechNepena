@@ -88,7 +88,7 @@ public class DatabaseMigrations {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             // SQLite no soporta RENAME COLUMN antes de 3.25.0 (API 30+).
-            // Se recrea la tabla con los nombres correctos.
+            // Se recrea la tabla con los nombres correctos y FOREIGN KEY.
             database.execSQL(
                     "CREATE TABLE IF NOT EXISTS inventario_new (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -100,8 +100,9 @@ public class DatabaseMigrations {
                             "fecha_ingreso TEXT, " +
                             "descripcion TEXT, " +
                             "sync_status TEXT, " +
-                            "remote_id INTEGER NOT NULL DEFAULT 0, " +
-                            "parcela_id INTEGER NOT NULL DEFAULT 0)");
+                            "remote_id INTEGER NOT NULL, " +
+                            "parcela_id INTEGER NOT NULL, " +
+                            "FOREIGN KEY(parcela_id) REFERENCES parcelas(id) ON UPDATE NO ACTION ON DELETE CASCADE)");
 
             // Copiar datos existentes
             database.execSQL(

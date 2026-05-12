@@ -40,6 +40,27 @@
     <string name="confirmar_eliminar">¿Está seguro de eliminar este registro?</string>
     <string name="eliminar">Eliminar</string>
     <string name="cancelar">Cancelar</string>
+    <string name="cerrar">Cerrar</string>
+
+    <!-- Spinners "Todos" options -->
+    <string name="todos_anios">Todos los años</string>
+    <string name="todos_meses">Todos los meses</string>
+
+    <string-array name="meses_array">
+        <item>@string/todos_meses</item>
+        <item>01 - Enero</item>
+        <item>02 - Febrero</item>
+        <item>03 - Marzo</item>
+        <item>04 - Abril</item>
+        <item>05 - Mayo</item>
+        <item>06 - Junio</item>
+        <item>07 - Julio</item>
+        <item>08 - Agosto</item>
+        <item>09 - Septiembre</item>
+        <item>10 - Octubre</item>
+        <item>11 - Noviembre</item>
+        <item>12 - Diciembre</item>
+    </string-array>
 
     <!-- Reportes -->
     <string name="reportes">Reportes</string>
