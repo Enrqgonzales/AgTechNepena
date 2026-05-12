@@ -48,7 +48,7 @@
         android:layout_weight="1"
         android:text="@string/sin_registros"
         android:gravity="center"
-        android:textSize="16sp"
+        android:textSize="?attr/textSizeBody"
         android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView

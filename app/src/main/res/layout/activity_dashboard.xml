@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_cream">
+    android:background="?android:attr/colorBackground">
 
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_cream">
+    android:background="?android:attr/colorBackground">
 
     <!-- Header -->
     <LinearLayout
@@ -23,17 +23,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/saludo_dia"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text" />
+            android:textSize="?attr/textSizeBody"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             android:id="@+id/tv_nombre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textSize="28sp"
+            android:textSize="?attr/textSizeTitle"
             android:textStyle="bold"
-            android:textColor="@color/primary_text"
+            android:textColor="?android:attr/textColorPrimary"
             android:layout_marginTop="4dp" />
 
         <TextClock
@@ -42,8 +42,8 @@
             android:layout_height="wrap_content"
             android:format12Hour="hh:mm a · EEE d MMM"
             android:format24Hour="HH:mm · EEE d MMM"
-            android:textSize="12sp"
-            android:textColor="@color/secondary_text"
+            android:textSize="?attr/textSizeLabel"
+            android:textColor="?android:attr/textColorPrimary"
             android:layout_marginTop="2dp" />
 
         <!-- Sync Status -->
@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sincronizado"
-                android:textSize="12sp"
+                android:textSize="?attr/textSizeLabel"
                 android:textColor="@color/accent_green"
                 android:textAllCaps="true"
                 android:textStyle="bold" />
@@ -81,7 +81,7 @@
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/white">
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,14 +94,14 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_weather"
-                app:tint="@color/primary_text" />
+                app:tint="?attr/colorOnSurface" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/clima"
-                android:textSize="16sp"
-                android:textColor="@color/primary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginStart="12dp" />
 
             <View
@@ -120,8 +120,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textSize="16sp"
-                    android:textColor="@color/primary_text"
+                    android:textSize="?attr/textSizeBody"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textStyle="bold" />
 
                 <TextView
@@ -129,8 +129,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textSize="11sp"
-                    android:textColor="@color/secondary_text"
+                    android:textSize="?attr/textSizeLabel"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
@@ -144,7 +144,7 @@
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/white">
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,14 +157,14 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_exchange"
-                app:tint="@color/primary_text" />
+                app:tint="?attr/colorOnSurface" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tipo_cambio"
-                android:textSize="16sp"
-                android:textColor="@color/primary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginStart="12dp" />
 
             <View
@@ -177,9 +177,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="16sp"
-                android:textColor="@color/primary_text"
-                android:textStyle="bold" />
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingVertical="4dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -190,7 +194,7 @@
         android:layout_marginHorizontal="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/white">
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -221,15 +225,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/registrar_gasto_ingreso"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary_text"
+                    android:textSize="?attr/textSizeBody"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginStart="16dp" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="@color/secondary_text" />
+                    app:tint="?attr/colorOnSurface" />
             </LinearLayout>
 
             <View
@@ -262,15 +266,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/mis_parcelas"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary_text"
+                    android:textSize="?attr/textSizeBody"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginStart="16dp" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="@color/secondary_text" />
+                    app:tint="?attr/colorOnSurface" />
             </LinearLayout>
 
             <View
@@ -303,15 +307,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/reporte_rentabilidad"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary_text"
+                    android:textSize="?attr/textSizeBody"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginStart="16dp" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="@color/secondary_text" />
+                    app:tint="?attr/colorOnSurface" />
             </LinearLayout>
 
             <View
@@ -343,16 +347,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Inventario / Almacenamiento"
-                    android:textSize="16sp"
-                    android:textColor="@color/primary_text"
+                    android:text="@string/inventario"
+                    android:textSize="?attr/textSizeBody"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginStart="16dp" />
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="@color/secondary_text" />
+                    app:tint="?attr/colorOnSurface" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -367,7 +371,7 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="?attr/colorSurface"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
@@ -378,12 +382,13 @@
     <!-- FAB Voice -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_voice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="80dp"
+        android:layout_marginBottom="88dp"
+        android:layout_marginEnd="16dp"
         android:src="@drawable/ic_mic"
-        app:backgroundTint="@color/primary_text"
+        app:backgroundTint="#1A1A1A"
         app:tint="@color/white"
         app:elevation="6dp" />
 

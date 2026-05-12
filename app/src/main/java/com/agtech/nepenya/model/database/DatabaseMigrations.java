@@ -19,31 +19,34 @@ public class DatabaseMigrations {
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            // Crear tabla inventario
+            // Crear tabla inventario con todas las columnas de la entidad
             database.execSQL(
                 "CREATE TABLE IF NOT EXISTS inventario (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "nombre TEXT, " +
                 "categoria TEXT, " +
-                "cantidad REAL NOT NULL DEFAULT 0, " +
+                "cantidad REAL NOT NULL, " +
                 "unidad TEXT, " +
-                "costo_unitario REAL NOT NULL DEFAULT 0, " +
+                "costo_unitario REAL NOT NULL, " +
                 "fecha_ingreso TEXT, " +
-                "descripcion TEXT)"
+                "descripcion TEXT, " +
+                "syncStatus TEXT, " +
+                "remoteId INTEGER NOT NULL)"
             );
 
-            // Crear tabla inventario_movimientos
+            // Crear tabla inventario_movimientos con FK
             database.execSQL(
                 "CREATE TABLE IF NOT EXISTS inventario_movimientos (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 "item_id INTEGER NOT NULL, " +
                 "tipo TEXT, " +
-                "cantidad REAL NOT NULL DEFAULT 0, " +
+                "cantidad REAL NOT NULL, " +
                 "unidad TEXT, " +
-                "costo_total REAL NOT NULL DEFAULT 0, " +
+                "costo_total REAL NOT NULL, " +
                 "fecha TEXT, " +
                 "descripcion TEXT, " +
-                "registro_id INTEGER)"
+                "registro_id INTEGER, " +
+                "FOREIGN KEY(item_id) REFERENCES inventario(id) ON UPDATE NO ACTION ON DELETE CASCADE)"
             );
 
             // Crear índices para mejor performance

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_cream">
+    android:background="?android:attr/colorBackground">
 
     <!-- Header -->
     <LinearLayout
@@ -17,16 +17,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nuevo Item de Inventario"
-            android:textSize="24sp"
+            android:textSize="?attr/textSizeTitle"
             android:textStyle="bold"
-            android:textColor="@color/primary_text" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ingrese los datos del producto"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text"
+            android:textSize="?attr/textSizeBody"
+            android:textColor="?android:attr/textColorPrimary"
             android:layout_marginTop="4dp" />
     </LinearLayout>
 
@@ -46,8 +46,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nombre del item *"
-                android:textSize="14sp"
-                android:textColor="@color/primary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="8dp" />
 
             <EditText
@@ -60,13 +60,30 @@
                 android:padding="16dp"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Parcela -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parcela *"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinner_parcela"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_inactive"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp" />
+
             <!-- Categoría -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Categoría *"
-                android:textSize="14sp"
-                android:textColor="@color/primary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="8dp" />
 
             <Spinner

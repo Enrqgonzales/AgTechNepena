@@ -1,6 +1,7 @@
 package com.agtech.nepenya.view;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -40,6 +41,7 @@ public class AccesibilidadActivity extends AppCompatActivity implements
     private int currentFontSize = 16;
     private float currentBrightness = 0.5f;
     private String currentTheme = "DIA";
+    private PrefsManager prefsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,16 +51,20 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accesibilidad);
 
+        prefsManager = new PrefsManager(this);
         initController();
         initViews();
         initListeners();
 
-        // Cargar valores actuales
+        // Read current theme synchronously and apply button state immediately
+        currentTheme = prefsManager.getThemeMode();
+        updateThemeButtons();
+
+        // Cargar valores actuales (async, will also call updateThemeButtons)
         controller.obtenerValoresActuales(this);
     }
 
     private void initController() {
-        PrefsManager prefsManager = new PrefsManager(this);
         controller = new AccesibilidadController(this, prefsManager);
     }
 
@@ -195,15 +201,15 @@ public class AccesibilidadActivity extends AppCompatActivity implements
 
     private void updateThemeButtons() {
         if ("DIA".equals(currentTheme)) {
-            btnDia.setBackgroundResource(R.drawable.bg_pill_active);
-            btnDia.setTextColor(getColor(R.color.white));
-            btnNoche.setBackgroundResource(R.drawable.bg_pill_inactive);
-            btnNoche.setTextColor(getColor(R.color.primary_text));
+            btnDia.setBackgroundColor(Color.parseColor("#2E7D32"));
+            btnDia.setTextColor(Color.WHITE);
+            btnNoche.setBackgroundColor(Color.TRANSPARENT);
+            btnNoche.setTextColor(getColor(android.R.color.darker_gray));
         } else {
-            btnDia.setBackgroundResource(R.drawable.bg_pill_inactive);
-            btnDia.setTextColor(getColor(R.color.primary_text));
-            btnNoche.setBackgroundResource(R.drawable.bg_pill_active);
-            btnNoche.setTextColor(getColor(R.color.white));
+            btnDia.setBackgroundColor(Color.TRANSPARENT);
+            btnDia.setTextColor(getColor(android.R.color.darker_gray));
+            btnNoche.setBackgroundColor(Color.parseColor("#2E7D32"));
+            btnNoche.setTextColor(Color.WHITE);
         }
     }
 

@@ -368,33 +368,49 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy) {
-        // Mostrar todas las tasas principales
-        StringBuilder texto = new StringBuilder();
+    public void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy,
+            Double cny) {
+        // Store all rates in prefs (base is always USD)
+        String ratesJson = String.format(Locale.US,
+                "{\"base\":\"USD\",\"PEN\":%.4f,\"EUR\":%.4f,\"GBP\":%.4f,\"JPY\":%.4f,\"CNY\":%.4f}",
+                pen != null ? pen : 0,
+                eur != null ? eur : 0,
+                gbp != null ? gbp : 0,
+                jpy != null ? jpy : 0,
+                cny != null ? cny : 0);
+        prefsManager.setCurrencyRates(ratesJson);
 
-        if ("USD".equals(base)) {
-            texto.append(String.format(Locale.getDefault(), "1 USD = S/ %.2f (PEN)", pen));
-            if (eur != null)
-                texto.append(String.format(Locale.getDefault(), " | €%.2f", eur));
-        } else if ("PEN".equals(base)) {
-            texto.append(String.format(Locale.getDefault(), "S/ 1 = $%.2f (USD)", usd));
-            if (eur != null)
-                texto.append(String.format(Locale.getDefault(), " | €%.2f", eur));
-        } else if ("EUR".equals(base)) {
-            texto.append(String.format(Locale.getDefault(), "€1 = S/ %.2f (PEN)", pen));
-            if (usd != null)
-                texto.append(String.format(Locale.getDefault(), " | $%.2f", usd));
+        // Display current index
+        mostrarTasaActual();
+
+        // Make widget tappable to cycle through currencies
+        tvTipoCambio.setClickable(true);
+        tvTipoCambio.setOnClickListener(v -> {
+            int next = (prefsManager.getCurrencyIndex() + 1) % 5;
+            prefsManager.setCurrencyIndex(next);
+            mostrarTasaActual();
+        });
+    }
+
+    private void mostrarTasaActual() {
+        int index = prefsManager.getCurrencyIndex();
+        String[] codes = { "PEN", "EUR", "GBP", "JPY", "CNY" };
+        String[] labels = { "S/", "\u20AC", "\u00A3", "\u00A5", "\u00A5 CNY" };
+        boolean[] noDecimal = { false, false, false, true, false };
+
+        String code = codes[index];
+        double rate = prefsManager.getCurrencyRate(code);
+        String label = labels[index];
+
+        String texto;
+        if (noDecimal[index]) {
+            texto = String.format(Locale.US, "1 USD = %s %.0f", label, rate);
+        } else {
+            texto = String.format(Locale.US, "1 USD = %s %.2f", label, rate);
         }
 
-        String resultado = texto.toString();
-        tvTipoCambio.setText(resultado);
-        prefsManager.setCambioCache(resultado);
-
-        // Guardar tasas para uso en otras partes de la app
-        String ratesJson = String.format(Locale.getDefault(),
-                "{\"base\":\"%s\",\"PEN\":%.4f,\"USD\":%.4f,\"EUR\":%.4f}",
-                base, pen != null ? pen : 0, usd != null ? usd : 0, eur != null ? eur : 0);
-        prefsManager.setCurrencyRates(ratesJson);
+        tvTipoCambio.setText(texto);
+        prefsManager.setCambioCache(texto);
     }
 
     @Override

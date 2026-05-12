@@ -2,7 +2,9 @@ package com.agtech.nepenya.controller;
 
 import android.app.Activity;
 
+import com.agtech.nepenya.model.dao.RegistroDao;
 import com.agtech.nepenya.model.entity.InventarioItem;
+import com.agtech.nepenya.model.entity.Registro;
 import com.agtech.nepenya.model.repository.InventarioRepository;
 
 import java.text.SimpleDateFormat;
@@ -23,6 +25,7 @@ public class InventarioController {
 
     private final Activity activity;
     private final InventarioRepository inventarioRepository;
+    private final RegistroDao registroDao;
     private final ExecutorService executorService;
 
     /**
@@ -42,6 +45,18 @@ public class InventarioController {
     public InventarioController(Activity activity, InventarioRepository inventarioRepository) {
         this.activity = activity;
         this.inventarioRepository = inventarioRepository;
+        this.registroDao = null;
+        this.executorService = Executors.newSingleThreadExecutor();
+    }
+
+    /**
+     * Constructor con RegistroDao para auto-crear Registro de gasto.
+     */
+    public InventarioController(Activity activity, InventarioRepository inventarioRepository,
+            RegistroDao registroDao) {
+        this.activity = activity;
+        this.inventarioRepository = inventarioRepository;
+        this.registroDao = registroDao;
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -77,6 +92,14 @@ public class InventarioController {
      */
     public void crearItem(String nombre, String categoria, double cantidad, String unidad,
             double costoUnitario, String descripcion, InventarioCallback callback) {
+        crearItem(nombre, categoria, cantidad, unidad, costoUnitario, descripcion, -1, callback);
+    }
+
+    /**
+     * Crea un nuevo item en el inventario y registra un Registro GASTO.
+     */
+    public void crearItem(String nombre, String categoria, double cantidad, String unidad,
+            double costoUnitario, String descripcion, int parcelaId, InventarioCallback callback) {
         executorService.execute(() -> {
             try {
                 String fecha = obtenerFechaActual();
@@ -87,10 +110,21 @@ public class InventarioController {
                 long itemId = inventarioRepository.guardarItem(item);
 
                 if (itemId > 0) {
-                    // Registrar movimiento de entrada
                     double costoTotal = cantidad * costoUnitario;
                     inventarioRepository.agregarStock((int) itemId, cantidad, costoTotal, fecha,
                             "Stock inicial");
+
+                    if (registroDao != null && parcelaId > 0 && costoTotal > 0) {
+                        Registro registro = new Registro();
+                        registro.setParcelaId(parcelaId);
+                        registro.setTipo("GASTO");
+                        registro.setCategoria(categoria);
+                        registro.setMonto(costoTotal);
+                        registro.setDescripcion("Inventario: " + nombre);
+                        registro.setFecha(fecha);
+                        registro.setSyncStatus("PENDING");
+                        registroDao.insertar(registro);
+                    }
 
                     activity.runOnUiThread(() -> callback.onOperacionExitosa("Item agregado al inventario"));
                 } else {

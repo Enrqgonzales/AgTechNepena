@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sin_parcelas_registro"
-            android:textSize="16sp"
+            android:textSize="?attr/textSizeBody"
             android:gravity="center"
             android:layout_marginBottom="24dp" />
 
@@ -67,14 +67,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/seleccionar_parcela"
-                android:textSize="12sp"
+                android:textSize="?attr/textSizeLabel"
                 android:textAllCaps="true"
                 android:layout_marginBottom="4dp" />
 
             <Spinner
                 android:id="@+id/spinner_parcela"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_marginBottom="16dp" />
 
             <RadioGroup
@@ -98,12 +99,21 @@
                     android:text="@string/ingreso" />
             </RadioGroup>
 
-            <LinearLayout
-                android:id="@+id/container_categorias"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_categorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp"
+                    app:singleSelection="true" />
+
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/tv_monto"

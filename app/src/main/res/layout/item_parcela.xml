@@ -37,17 +37,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="16sp"
+                android:textSize="?attr/textSizeBody"
                 android:textStyle="bold"
-                android:textColor="@color/primary_text" />
+                android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
                 android:id="@+id/tv_cultivo_parcela"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="13sp"
-                android:textColor="@color/secondary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginTop="2dp" />
 
             <TextView
@@ -55,8 +55,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="12sp"
-                android:textColor="@color/secondary_text"
+                android:textSize="?attr/textSizeLabel"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 

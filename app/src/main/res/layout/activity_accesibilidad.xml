@@ -4,118 +4,217 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_cream">
+    android:background="?android:attr/colorBackground">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:padding="24dp">
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_titulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ajustes_vista"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/primary_text"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tamano_fuente"
-        android:textColor="@color/secondary_text" />
-
-    <SeekBar
-        android:id="@+id/seekbar_fuente"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tv_preview_fuente"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/ajustes_vista"
-        android:gravity="center"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/brillo_pantalla"
-        android:textColor="@color/secondary_text" />
-
-    <SeekBar
-        android:id="@+id/seekbar_brillo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="16dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/modo_pantalla"
-        android:textColor="@color/secondary_text"
-        android:layout_marginTop="16dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginVertical="16dp">
-
-        <Button
-            android:id="@+id/btn_dia"
-            style="@style/Widget.AgTech.Button"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/modo_dia"
-            android:layout_marginEnd="8dp" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_noche"
-            style="@style/Widget.AgTech.Button.Outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/modo_noche"
-            android:layout_marginStart="8dp" />
-    </LinearLayout>
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tv_titulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ajustes_vista"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="8dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider"
-        android:layout_marginVertical="24dp" />
+            <!-- Font Size Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/switch_voz"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tamano_fuente"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- SeekBar row with A / A labels -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="A"
+                            android:textSize="12sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:layout_marginEnd="8dp" />
+
+                        <SeekBar
+                            android:id="@+id/seekbar_fuente"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="A"
+                            android:textSize="32sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:layout_marginStart="8dp" />
+                    </LinearLayout>
+
+                    <!-- Live preview -->
+                    <TextView
+                        android:id="@+id/tv_preview_fuente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="El tamaño de esta letra cambia en tiempo real"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:padding="8dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Brightness Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/brillo_pantalla"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:layout_marginBottom="12dp" />
+
+                    <SeekBar
+                        android:id="@+id/seekbar_brillo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Day / Night Mode Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/modo_pantalla"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_dia"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/modo_dia"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:paddingVertical="14dp"
+                            android:layout_marginEnd="6dp" />
+
+                        <Button
+                            android:id="@+id/btn_noche"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/modo_noche"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:paddingVertical="14dp"
+                            android:layout_marginStart="6dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Voice Assistant Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switch_voz"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asistente_voz"
+                        android:textSize="16sp"
+                        android:textColor="?android:attr/textColorPrimary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/asistente_voz"
-        android:textSize="16sp"
-        android:textColor="@color/primary_text" />
-
-</LinearLayout>
-</ScrollView>
-
-<com.google.android.material.bottomnavigation.BottomNavigationView
-    android:id="@+id/bottom_nav"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    app:menu="@menu/bottom_nav_menu"
-    app:itemIconTint="@color/bottom_nav_color"
-    app:itemTextColor="@color/bottom_nav_color"
-    app:labelVisibilityMode="labeled" />
+        android:background="?attr/colorSurface"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
+        app:labelVisibilityMode="labeled" />
 
 </LinearLayout>

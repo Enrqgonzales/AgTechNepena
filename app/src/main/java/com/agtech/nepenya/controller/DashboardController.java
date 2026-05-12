@@ -55,7 +55,7 @@ public class DashboardController {
      * Callback para estado de sincronizacion.
      */
     public interface MultiTipoCambioCallback {
-        void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy);
+        void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy, Double cny);
 
         void onTipoCambioError(String mensaje);
     }
@@ -182,9 +182,10 @@ public class DashboardController {
                     Double eurRate = rates.get("EUR");
                     Double gbpRate = rates.get("GBP");
                     Double jpyRate = rates.get("JPY");
+                    Double cnyRate = rates.get("CNY");
 
                     activity.runOnUiThread(() -> callback.onTipoCambioSuccess(baseCurrency, penRate, usdRate, eurRate,
-                            gbpRate, jpyRate));
+                            gbpRate, jpyRate, cnyRate));
                 } else {
                     activity.runOnUiThread(() -> callback.onTipoCambioError("Error al obtener tipo de cambio"));
                 }

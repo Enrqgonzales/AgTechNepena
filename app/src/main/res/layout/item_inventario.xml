@@ -31,17 +31,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nombre Item"
-                    android:textSize="16sp"
+                    android:textSize="?attr/textSizeBody"
                     android:textStyle="bold"
-                    android:textColor="@color/primary_text" />
+                    android:textColor="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:id="@+id/tv_categoria"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Categoría"
-                    android:textSize="12sp"
-                    android:textColor="@color/secondary_text"
+                    android:textSize="?attr/textSizeLabel"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginTop="2dp" />
             </LinearLayout>
 
@@ -89,8 +89,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Total: S/ 250.00"
-                android:textSize="14sp"
-                android:textColor="@color/primary_text" />
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary" />
 
             <LinearLayout
                 android:id="@+id/layout_actions"
@@ -101,18 +101,18 @@
                 <Button
                     android:id="@+id/btn_consumir"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="40dp"
                     android:text="Consumir"
-                    android:textSize="12sp"
                     android:layout_marginEnd="8dp"
                     style="@style/Widget.AgTech.Button.Outlined" />
 
                 <Button
                     android:id="@+id/btn_agregar"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="40dp"
                     android:text="+ Stock"
-                    android:textSize="12sp"
                     style="@style/Widget.AgTech.Button" />
             </LinearLayout>
         </LinearLayout>

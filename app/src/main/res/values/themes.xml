@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Attrs for responsive text sizing -->
+    <declare-styleable name="AgTechTheme">
+        <attr name="textSizeTitle" format="dimension" />
+        <attr name="textSizeBody" format="dimension" />
+        <attr name="textSizeLabel" format="dimension" />
+    </declare-styleable>
+
     <!-- Tema principal de la aplicacion -->
     <style name="Theme.AgTechNepenya" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Colores primarios -->
@@ -26,6 +33,11 @@
 
         <!-- Navigation bar -->
         <item name="android:navigationBarColor">@color/white</item>
+
+        <!-- Responsive text sizes -->
+        <item name="textSizeTitle">22sp</item>
+        <item name="textSizeBody">16sp</item>
+        <item name="textSizeLabel">12sp</item>
 
         <!-- Componentes -->
         <item name="materialButtonStyle">@style/Widget.AgTech.Button</item>

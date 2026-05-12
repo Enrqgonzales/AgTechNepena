@@ -25,9 +25,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/mis_parcelas_titulo"
-                android:textSize="22sp"
+                android:textSize="?attr/textSizeTitle"
                 android:textStyle="bold"
-                android:textColor="@color/primary_text" />
+                android:textColor="?android:attr/textColorPrimary" />
         </LinearLayout>
 
         <!-- Estado vacío -->
@@ -52,8 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sin_parcelas"
-                android:textSize="16sp"
-                android:textColor="@color/secondary_text"
+                android:textSize="?attr/textSizeBody"
+                android:textColor="?android:attr/textColorPrimary"
                 android:gravity="center" />
         </LinearLayout>
 
@@ -82,12 +82,13 @@
     <!-- FAB Agregar parcela -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_agregar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="80dp"
+        android:layout_marginBottom="88dp"
+        android:layout_marginEnd="16dp"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/primary_text"
+        app:backgroundTint="#1A1A1A"
         app:tint="@color/white"
         app:elevation="6dp" />
 

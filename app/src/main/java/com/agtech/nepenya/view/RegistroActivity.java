@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -56,7 +59,7 @@ public class RegistroActivity extends AppCompatActivity implements
     private View scrollFormulario;
     private Spinner spinnerParcela;
     private RadioGroup radioGroupTipo;
-    private LinearLayout containerCategorias;
+    private ChipGroup chipGroupCategorias;
     private TextView tvMonto;
     private EditText etDescripcion;
     private ImageButton btnVoice;
@@ -104,7 +107,7 @@ public class RegistroActivity extends AppCompatActivity implements
         scrollFormulario = findViewById(R.id.scroll_formulario);
         spinnerParcela = findViewById(R.id.spinner_parcela);
         radioGroupTipo = findViewById(R.id.radio_group_tipo);
-        containerCategorias = findViewById(R.id.container_categorias);
+        chipGroupCategorias = findViewById(R.id.chip_group_categorias);
         tvMonto = findViewById(R.id.tv_monto);
         etDescripcion = findViewById(R.id.et_descripcion);
         btnVoice = findViewById(R.id.btn_voice);
@@ -201,58 +204,29 @@ public class RegistroActivity extends AppCompatActivity implements
     }
 
     private void actualizarCategorias() {
-        containerCategorias.removeAllViews();
+        chipGroupCategorias.removeAllViews();
         String[] categorias = controller.obtenerCategorias(selectedTipo);
 
-        LinearLayout row = null;
         for (int i = 0; i < categorias.length; i++) {
-            if (i % 3 == 0) {
-                row = new LinearLayout(this);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                row.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT));
-                containerCategorias.addView(row);
-            }
-
-            Button btnCategoria = new Button(this);
-            btnCategoria.setText(categorias[i]);
-            btnCategoria.setLayoutParams(new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
-            btnCategoria.setPadding(8, 16, 8, 16);
-            btnCategoria.setTextSize(12);
+            Chip chip = new Chip(this);
+            chip.setText(categorias[i]);
+            chip.setCheckable(true);
+            chip.setChipBackgroundColorResource(R.color.chip_state_color);
+            chip.setTextColor(getResources().getColorStateList(
+                    R.color.chip_text_state_color, getTheme()));
 
             final String categoria = categorias[i];
-            btnCategoria.setOnClickListener(v -> {
-                selectedCategoria = categoria;
-                actualizarBotonesCategoria(categorias, categoria);
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    selectedCategoria = categoria;
+                }
             });
 
-            if (row != null) {
-                row.addView(btnCategoria);
-            }
-        }
+            chipGroupCategorias.addView(chip);
 
-        // Seleccionar primera categoria por defecto
-        if (categorias.length > 0) {
-            selectedCategoria = categorias[0];
-            actualizarBotonesCategoria(categorias, selectedCategoria);
-        }
-    }
-
-    private void actualizarBotonesCategoria(String[] categorias, String seleccionada) {
-        for (int i = 0; i < containerCategorias.getChildCount(); i++) {
-            LinearLayout row = (LinearLayout) containerCategorias.getChildAt(i);
-            for (int j = 0; j < row.getChildCount(); j++) {
-                Button btn = (Button) row.getChildAt(j);
-                String cat = btn.getText().toString();
-                if (cat.equals(seleccionada)) {
-                    btn.setBackgroundResource(R.drawable.bg_chip_active);
-                    btn.setTextColor(getColor(R.color.white));
-                } else {
-                    btn.setBackgroundResource(R.drawable.bg_chip_inactive);
-                    btn.setTextColor(getColor(R.color.primary_text));
-                }
+            if (i == 0) {
+                chip.setChecked(true);
+                selectedCategoria = categorias[0];
             }
         }
     }

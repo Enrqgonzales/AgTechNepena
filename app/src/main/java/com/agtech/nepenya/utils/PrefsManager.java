@@ -29,6 +29,7 @@ public class PrefsManager {
     public static final String KEY_CAMBIO_TIMESTAMP = "cambio_timestamp";
     public static final String KEY_CURRENCY_BASE = "currency_base";
     public static final String KEY_CURRENCY_RATES = "currency_rates";
+    public static final String KEY_CURRENCY_INDEX = "currency_index";
     public static final String KEY_SERVER_IP = "server_ip";
 
     // Defaults
@@ -160,6 +161,16 @@ public class PrefsManager {
 
     public long getCambioTimestamp() {
         return prefs.getLong(KEY_CAMBIO_TIMESTAMP, 0);
+    }
+
+    // Currency Index (0=PEN, 1=EUR, 2=GBP, 3=JPY, 4=CNY)
+
+    public int getCurrencyIndex() {
+        return prefs.getInt(KEY_CURRENCY_INDEX, 0);
+    }
+
+    public void setCurrencyIndex(int index) {
+        prefs.edit().putInt(KEY_CURRENCY_INDEX, index).apply();
     }
 
     // Server IP
