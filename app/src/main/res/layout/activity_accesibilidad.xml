@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_cream">
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:padding="24dp">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ajustes_vista"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tamano_fuente"
+        android:textColor="@color/secondary_text" />
+
+    <SeekBar
+        android:id="@+id/seekbar_fuente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp" />
+
+    <TextView
+        android:id="@+id/tv_preview_fuente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ajustes_vista"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/brillo_pantalla"
+        android:textColor="@color/secondary_text" />
+
+    <SeekBar
+        android:id="@+id/seekbar_brillo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/modo_pantalla"
+        android:textColor="@color/secondary_text"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="16dp">
+
+        <Button
+            android:id="@+id/btn_dia"
+            style="@style/Widget.AgTech.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/modo_dia"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btn_noche"
+            style="@style/Widget.AgTech.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/modo_noche"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_marginVertical="24dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_voz"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/asistente_voz"
+        android:textSize="16sp"
+        android:textColor="@color/primary_text" />
+
+</LinearLayout>
+</ScrollView>
+
+<com.google.android.material.bottomnavigation.BottomNavigationView
+    android:id="@+id/bottom_nav"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    app:menu="@menu/bottom_nav_menu"
+    app:itemIconTint="@color/bottom_nav_color"
+    app:itemTextColor="@color/bottom_nav_color"
+    app:labelVisibilityMode="labeled" />
+
+</LinearLayout>

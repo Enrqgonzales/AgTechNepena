@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nepeña</string>
+
+    <!-- Dashboard -->
+    <string name="saludo_dia">Buenos días,</string>
+    <string name="saludo_tarde">Buenas tardes,</string>
+    <string name="saludo_noche">Buenas noches,</string>
+    <string name="sincronizado">SINCRONIZADO</string>
+    <string name="sin_conexion">SIN CONEXIÓN</string>
+    <string name="clima">Clima</string>
+    <string name="tipo_cambio">Tipo de cambio</string>
+    <string name="registrar_gasto_ingreso">Registrar Gasto o Ingreso</string>
+    <string name="mis_parcelas">Mis Parcelas</string>
+    <string name="reporte_rentabilidad">Reporte de Rentabilidad</string>
+    <string name="valle_nepena">Valle de Nepeña</string>
+
+    <!-- Registro -->
+    <string name="nuevo_registro">Nuevo Registro</string>
+    <string name="modo_sin_conexion">Modo sin conexión - se guardará localmente</string>
+    <string name="seleccionar_parcela">Seleccionar parcela</string>
+    <string name="gasto">GASTO</string>
+    <string name="ingreso">INGRESO</string>
+    <string name="categoria">Categoría</string>
+    <string name="monto">Monto</string>
+    <string name="descripcion">Descripción</string>
+    <string name="fecha">Fecha</string>
+    <string name="guardar">GUARDAR</string>
+    <string name="guardar_registro">Guardar Registro</string>
+
+    <!-- Historial -->
+    <string name="historial">Historial</string>
+    <string name="todos">Todos</string>
+    <string name="gastos">Gastos</string>
+    <string name="ingresos">Ingresos</string>
+    <string name="todas_parcelas">Todas las parcelas</string>
+    <string name="sin_registros">No hay registros</string>
+    <string name="eliminar_registro">Eliminar registro</string>
+    <string name="confirmar_eliminar">¿Está seguro de eliminar este registro?</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Reportes -->
+    <string name="reportes">Reportes</string>
+    <string name="campana">CAMPAÑA</string>
+    <string name="rentabilidad_neta">Rentabilidad Neta</string>
+    <string name="total_gastos">Total Gastos</string>
+    <string name="total_ingresos">Total Ingresos</string>
+    <string name="categoria_tabla">CATEGORÍA</string>
+    <string name="gastos_tabla">GASTOS</string>
+    <string name="ingresos_tabla">INGRESOS</string>
+    <string name="compartir_reporte">COMPARTIR REPORTE</string>
+
+    <!-- Accesibilidad -->
+    <string name="ajustes_vista">Ajustes de Vista</string>
+    <string name="tamano_fuente">Tamaño de fuente</string>
+    <string name="brillo_pantalla">Brillo de pantalla</string>
+    <string name="modo_dia">Día</string>
+    <string name="modo_noche">Noche</string>
+    <string name="modo_pantalla">Modo de pantalla</string>
+    <string name="asistente_voz">Asistente de voz</string>
+
+    <!-- Bottom Navigation -->
+    <string name="inicio">Inicio</string>
+    <string name="registro">Registro</string>
+    <string name="ajustes">Ajustes</string>
+
+    <!-- Categorías de Gasto -->
+    <string name="cat_fertilizantes">Fertilizantes</string>
+    <string name="cat_mano_obra">Mano de Obra</string>
+    <string name="cat_combustible">Combustible</string>
+    <string name="cat_mantenimiento_riego">Mantenimiento Riego</string>
+    <string name="cat_pesticidas">Pesticidas</string>
+    <string name="cat_siembra">Siembra</string>
+    <string name="cat_cosecha">Cosecha</string>
+    <string name="cat_transporte">Transporte</string>
+
+    <!-- Categorías de Ingreso -->
+    <string name="cat_venta_lote_a">Venta Lote A</string>
+    <string name="cat_venta_lote_b">Venta Lote B</string>
+    <string name="cat_venta_lote_c">Venta Lote C</string>
+    <string name="cat_venta_cosecha">Venta Cosecha</string>
+    <string name="cat_subsidio">Subsidio</string>
+
+    <!-- Errores y mensajes -->
+    <string name="error_cargar_datos">Error al cargar datos</string>
+    <string name="error_guardar">Error al guardar</string>
+    <string name="registro_guardado">Registro guardado</string>
+    <string name="registro_eliminado">Registro eliminado</string>
+    <string name="campos_requeridos">Complete todos los campos</string>
+    <string name="monto_invalido">Ingrese un monto válido</string>
+    <string name="seleccione_parcela">Seleccione una parcela</string>
+    <string name="seleccione_categoria">Seleccione una categoría</string>
+    <string name="escuchando">Escuchando...</string>
+    <string name="voz_no_disponible">Reconocimiento de voz no disponible</string>
+
+    <!-- Bienvenida -->
+    <string name="bienvenida_titulo">Bienvenido a AgTech Nepeña</string>
+    <string name="bienvenida_subtitulo">Cuéntanos sobre ti para personalizar tu experiencia</string>
+    <string name="label_nombre">Nombre completo</string>
+    <string name="label_telefono">Teléfono</string>
+    <string name="label_distrito">Distrito donde trabaja</string>
+    <string name="btn_comenzar">COMENZAR</string>
+    <string name="error_nombre_requerido">Ingrese su nombre</string>
+    <string name="error_distrito_requerido">Seleccione su distrito</string>
+
+    <!-- Dashboard dinámico -->
+    <string name="cargando">Cargando…</string>
+    <string name="clima_fallback">Sin datos de clima</string>
+    <string name="cambio_fallback">Sin datos de cambio</string>
+    <string name="ultima_actualizacion">Últ. actualización: %s</string>
+
+    <!-- Mis Parcelas -->
+    <string name="mis_parcelas_titulo">Mis Parcelas</string>
+    <string name="agregar_parcela">Agregar parcela</string>
+    <string name="sin_parcelas">No tienes parcelas aún.\nToca + para agregar una.</string>
+    <string name="label_nombre_parcela">Nombre de la parcela</string>
+    <string name="label_cultivo">Tipo de cultivo</string>
+    <string name="label_hectareas">Hectáreas</string>
+    <string name="label_ubicacion">Ubicación / Referencia</string>
+    <string name="parcela_guardada">Parcela guardada</string>
+    <string name="parcela_eliminada">Parcela eliminada</string>
+    <string name="confirmar_eliminar_parcela">¿Eliminar esta parcela? Se eliminarán también todos sus registros.</string>
+    <string name="error_nombre_parcela">Ingrese el nombre de la parcela</string>
+    <string name="error_cultivo">Seleccione el tipo de cultivo</string>
+    <string name="error_hectareas">Ingrese las hectáreas</string>
+    <string name="sin_parcelas_registro">No tienes parcelas creadas.\nCrea una parcela primero.</string>
+    <string name="ir_a_parcelas">CREAR PARCELA</string>
+</resources>

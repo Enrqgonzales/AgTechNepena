@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.agtech.nepenya">
+
+    <!-- Permisos -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".AgTechApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AgTechNepenya"
+        android:usesCleartextTraffic="true">
+
+        <!-- Bienvenida Activity - Primer uso -->
+        <activity
+            android:name=".view.BienvenidaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AgTechNepenya" />
+
+        <!-- Dashboard Activity - Principal -->
+        <activity
+            android:name=".view.DashboardActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AgTechNepenya">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Mis Parcelas Activity -->
+        <activity
+            android:name=".view.MisParcelasActivity"
+            android:exported="false"
+            android:parentActivityName=".view.DashboardActivity" />
+
+        <!-- Registro Activity -->
+        <activity
+            android:name=".view.RegistroActivity"
+            android:exported="false"
+            android:parentActivityName=".view.DashboardActivity" />
+
+        <!-- Historial Activity -->
+        <activity
+            android:name=".view.HistorialActivity"
+            android:exported="false"
+            android:parentActivityName=".view.DashboardActivity" />
+
+        <!-- Reportes Activity -->
+        <activity
+            android:name=".view.ReportesActivity"
+            android:exported="false"
+            android:parentActivityName=".view.DashboardActivity" />
+
+        <!-- Accesibilidad Activity -->
+        <activity
+            android:name=".view.AccesibilidadActivity"
+            android:exported="false"
+            android:parentActivityName=".view.DashboardActivity" />
+
+        <!-- Worker de sincronizacion -->
+        <service
+            android:name=".sync.SyncWorker"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+    </application>
+
+</manifest>

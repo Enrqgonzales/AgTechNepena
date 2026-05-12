@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#2E7D32</color>
+    <color name="primary_dark">#1B5E20</color>
+    <color name="accent_green">#2E7D32</color>
+
+    <!-- Background Colors -->
+    <color name="background_cream">#F5F3F0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Text Colors -->
+    <color name="primary_text">#1A1A1A</color>
+    <color name="secondary_text">#888888</color>
+    <color name="hint_text">#AAAAAA</color>
+
+    <!-- Status Colors -->
+    <color name="error_red">#C62828</color>
+    <color name="accent_red">#C62828</color>
+    <color name="sync_green">#2E7D32</color>
+    <color name="sync_red">#C62828</color>
+
+    <!-- UI Colors -->
+    <color name="divider">#E0E0E0</color>
+    <color name="card_shadow">#10000000</color>
+    <color name="chip_background">#F0F0F0</color>
+    <color name="tab_selected">#2E7D32</color>
+    <color name="tab_unselected">#888888</color>
+
+    <!-- Bottom Navigation -->
+    <color name="bottom_nav_selected">#2E7D32</color>
+    <color name="bottom_nav_unselected">#888888</color>
+</resources>

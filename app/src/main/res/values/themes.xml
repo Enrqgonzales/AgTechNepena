@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema principal de la aplicacion -->
+    <style name="Theme.AgTechNepenya" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Colores primarios -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Colores secundarios -->
+        <item name="colorSecondary">@color/accent_green</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <!-- Colores de fondo -->
+        <item name="android:windowBackground">@color/background_cream</item>
+        <item name="android:colorBackground">@color/background_cream</item>
+
+        <!-- Colores de texto -->
+        <item name="android:textColorPrimary">@color/primary_text</item>
+        <item name="android:textColorSecondary">@color/secondary_text</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/background_cream</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
+        <!-- Componentes -->
+        <item name="materialButtonStyle">@style/Widget.AgTech.Button</item>
+    </style>
+
+    <!-- Estilo de botones -->
+    <style name="Widget.AgTech.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+    </style>
+
+    <!-- Estilo de boton outline -->
+    <style name="Widget.AgTech.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/primary</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="cornerRadius">28dp</item>
+    </style>
+
+    <!-- Estilo de card -->
+    <style name="Widget.AgTech.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <!-- Estilo de tabs -->
+    <style name="Widget.AgTech.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabIndicatorColor">@color/accent_green</item>
+        <item name="tabSelectedTextColor">@color/accent_green</item>
+        <item name="tabTextColor">@color/secondary_text</item>
+        <item name="tabIndicatorHeight">2dp</item>
+    </style>
+
+    <!-- Estilo de SeekBar -->
+    <style name="Widget.AgTech.SeekBar" parent="Widget.AppCompat.SeekBar">
+        <item name="android:progressTint">@color/accent_green</item>
+        <item name="android:thumbTint">@color/accent_green</item>
+    </style>
+
+    <!-- Estilo de Switch -->
+    <style name="Widget.AgTech.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/accent_green</item>
+        <item name="trackTint">@color/accent_green</item>
+    </style>
+</resources>
