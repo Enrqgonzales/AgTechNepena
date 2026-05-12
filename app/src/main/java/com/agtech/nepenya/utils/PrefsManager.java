@@ -27,10 +27,12 @@ public class PrefsManager {
     public static final String KEY_CLIMA_TIMESTAMP = "clima_timestamp";
     public static final String KEY_CAMBIO_CACHE = "cambio_cache";
     public static final String KEY_CAMBIO_TIMESTAMP = "cambio_timestamp";
+    public static final String KEY_CURRENCY_BASE = "currency_base";
+    public static final String KEY_CURRENCY_RATES = "currency_rates";
     public static final String KEY_SERVER_IP = "server_ip";
 
     // Defaults
-    private static final int DEFAULT_FONT_SIZE = 16;
+    private static final int DEFAULT_FONT_SIZE = 16; // Centro del rango 12-32
     private static final float DEFAULT_BRIGHTNESS = 0.5f;
     private static final String DEFAULT_THEME_MODE = "DIA";
     private static final boolean DEFAULT_VOICE_ENABLED = false;
@@ -168,6 +170,51 @@ public class PrefsManager {
 
     public void setServerIp(String ip) {
         prefs.edit().putString(KEY_SERVER_IP, ip).apply();
+    }
+
+    // Currency Base
+
+    public String getCurrencyBase() {
+        return prefs.getString(KEY_CURRENCY_BASE, "USD");
+    }
+
+    public void setCurrencyBase(String currency) {
+        prefs.edit().putString(KEY_CURRENCY_BASE, currency).apply();
+    }
+
+    // Currency Rates JSON
+
+    public String getCurrencyRates() {
+        return prefs.getString(KEY_CURRENCY_RATES, "");
+    }
+
+    public void setCurrencyRates(String ratesJson) {
+        prefs.edit().putString(KEY_CURRENCY_RATES, ratesJson)
+                .putLong(KEY_CAMBIO_TIMESTAMP, System.currentTimeMillis())
+                .apply();
+    }
+
+    /**
+     * Obtiene el valor de una tasa específica del JSON de tasas.
+     * Parsea el JSON almacenado y extrae el valor numérico.
+     *
+     * @param currencyCode Código de moneda (USD, EUR, PEN, etc.)
+     * @return Valor de la tasa, o 1.0 si no está disponible
+     */
+    public double getCurrencyRate(String currencyCode) {
+        String ratesJson = getCurrencyRates();
+        if (ratesJson == null || ratesJson.isEmpty()) {
+            return 1.0;
+        }
+        try {
+            org.json.JSONObject json = new org.json.JSONObject(ratesJson);
+            if (json.has(currencyCode)) {
+                return json.getDouble(currencyCode);
+            }
+            return 1.0;
+        } catch (org.json.JSONException e) {
+            return 1.0;
+        }
     }
 
     /**

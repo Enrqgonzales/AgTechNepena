@@ -3,11 +3,7 @@ package com.agtech.nepenya.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -19,9 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.agtech.nepenya.R;
 import com.agtech.nepenya.accessibility.AccessibilityPrefs;
 import com.agtech.nepenya.controller.MisParcelasController;
-import com.agtech.nepenya.model.database.AppDatabase;
 import com.agtech.nepenya.model.entity.Parcela;
-import com.agtech.nepenya.model.repository.ParcelaRepository;
 import com.agtech.nepenya.utils.PrefsManager;
 import com.agtech.nepenya.view.adapter.ParcelasAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -61,7 +55,7 @@ public class MisParcelasActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_mis_parcelas);
 
         prefsManager = new PrefsManager(this);
-        initController();
+        controller = new MisParcelasController(this);
         initViews();
     }
 
@@ -69,12 +63,6 @@ public class MisParcelasActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         cargarParcelas();
-    }
-
-    private void initController() {
-        AppDatabase db = AppDatabase.getInstance(this);
-        ParcelaRepository parcelaRepo = new ParcelaRepository(db.parcelaDao());
-        controller = new MisParcelasController(this, parcelaRepo);
     }
 
     private void initViews() {
@@ -95,19 +83,24 @@ public class MisParcelasActivity extends AppCompatActivity implements
             int id = item.getItemId();
             if (id == R.id.nav_inicio) {
                 startActivity(new Intent(this, DashboardActivity.class));
-                finish(); return true;
+                finish();
+                return true;
             } else if (id == R.id.nav_registro) {
                 startActivity(new Intent(this, RegistroActivity.class));
-                finish(); return true;
+                finish();
+                return true;
             } else if (id == R.id.nav_historial) {
                 startActivity(new Intent(this, HistorialActivity.class));
-                finish(); return true;
+                finish();
+                return true;
             } else if (id == R.id.nav_reportes) {
                 startActivity(new Intent(this, ReportesActivity.class));
-                finish(); return true;
+                finish();
+                return true;
             } else if (id == R.id.nav_ajustes) {
                 startActivity(new Intent(this, AccesibilidadActivity.class));
-                finish(); return true;
+                finish();
+                return true;
             }
             return false;
         });
@@ -119,8 +112,8 @@ public class MisParcelasActivity extends AppCompatActivity implements
 
             @Override
             public boolean onMove(@androidx.annotation.NonNull RecyclerView rv,
-                                  @androidx.annotation.NonNull RecyclerView.ViewHolder vh,
-                                  @androidx.annotation.NonNull RecyclerView.ViewHolder target) {
+                    @androidx.annotation.NonNull RecyclerView.ViewHolder vh,
+                    @androidx.annotation.NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
@@ -141,6 +134,7 @@ public class MisParcelasActivity extends AppCompatActivity implements
                                                 getString(R.string.parcela_eliminada), Toast.LENGTH_SHORT).show();
                                         actualizarEstadoVacio();
                                     }
+
                                     @Override
                                     public void onError(String mensaje) {
                                         adapter.notifyItemChanged(position);
@@ -148,7 +142,8 @@ public class MisParcelasActivity extends AppCompatActivity implements
                                     }
                                 });
                             })
-                            .setNegativeButton(getString(R.string.cancelar), (d, w) -> adapter.notifyItemChanged(position))
+                            .setNegativeButton(getString(R.string.cancelar),
+                                    (d, w) -> adapter.notifyItemChanged(position))
                             .setCancelable(false)
                             .show();
                 }
@@ -163,44 +158,21 @@ public class MisParcelasActivity extends AppCompatActivity implements
     }
 
     private void mostrarDialogoAgregarParcela() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_agregar_parcela, null);
+        int usuarioId = prefsManager.getUserId();
+        controller.mostrarDialogoAgregarParcela(R.layout.dialog_agregar_parcela, CULTIVOS, usuarioId,
+                new MisParcelasController.GuardarCallback() {
+                    @Override
+                    public void onSuccess(long id) {
+                        Toast.makeText(MisParcelasActivity.this,
+                                getString(R.string.parcela_guardada), Toast.LENGTH_SHORT).show();
+                        cargarParcelas();
+                    }
 
-        EditText etNombre = dialogView.findViewById(R.id.et_nombre_parcela);
-        Spinner spinnerCultivo = dialogView.findViewById(R.id.spinner_cultivo);
-        EditText etHectareas = dialogView.findViewById(R.id.et_hectareas);
-        EditText etUbicacion = dialogView.findViewById(R.id.et_ubicacion);
-
-        ArrayAdapter<String> cultivoAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, CULTIVOS);
-        cultivoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCultivo.setAdapter(cultivoAdapter);
-
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.agregar_parcela))
-                .setView(dialogView)
-                .setPositiveButton(getString(R.string.guardar), (dialog, which) -> {
-                    String nombre = etNombre.getText() != null ? etNombre.getText().toString() : "";
-                    String cultivo = spinnerCultivo.getSelectedItem().toString();
-                    String hectareasStr = etHectareas.getText() != null ? etHectareas.getText().toString() : "0";
-                    String ubicacion = etUbicacion.getText() != null ? etUbicacion.getText().toString() : "";
-                    int usuarioId = prefsManager.getUserId();
-
-                    controller.guardarParcela(usuarioId, nombre, cultivo, hectareasStr, ubicacion,
-                            new MisParcelasController.GuardarCallback() {
-                                @Override
-                                public void onSuccess(long id) {
-                                    Toast.makeText(MisParcelasActivity.this,
-                                            getString(R.string.parcela_guardada), Toast.LENGTH_SHORT).show();
-                                    cargarParcelas();
-                                }
-                                @Override
-                                public void onError(String mensaje) {
-                                    Toast.makeText(MisParcelasActivity.this, mensaje, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                })
-                .setNegativeButton(getString(R.string.cancelar), null)
-                .show();
+                    @Override
+                    public void onError(String mensaje) {
+                        Toast.makeText(MisParcelasActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void actualizarEstadoVacio() {

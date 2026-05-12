@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stock disponible:"
+        android:textSize="14sp"
+        android:textColor="@color/secondary_text"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
+
+        <ImageButton
+            android:id="@+id/btn_menos"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_minus"
+            android:background="@drawable/bg_icon_circle"
+            android:contentDescription="Disminuir" />
+
+        <TextView
+            android:id="@+id/tv_cantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.0"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text"
+            android:layout_marginHorizontal="24dp" />
+
+        <ImageButton
+            android:id="@+id/btn_mas"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_plus"
+            android:background="@drawable/bg_icon_circle"
+            android:contentDescription="Aumentar" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cantidad"
+        android:textSize="12sp"
+        android:textColor="@color/hint_text"
+        android:gravity="center" />
+
+</LinearLayout>

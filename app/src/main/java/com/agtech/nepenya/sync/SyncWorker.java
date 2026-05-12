@@ -7,9 +7,11 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.agtech.nepenya.model.database.AppDatabase;
+import com.agtech.nepenya.model.entity.InventarioItem;
 import com.agtech.nepenya.model.entity.Parcela;
 import com.agtech.nepenya.model.entity.Registro;
 import com.agtech.nepenya.model.entity.Usuario;
+import com.agtech.nepenya.model.repository.InventarioRepository;
 import com.agtech.nepenya.model.repository.ParcelaRepository;
 import com.agtech.nepenya.model.repository.RegistroRepository;
 import com.agtech.nepenya.model.repository.UsuarioRepository;
@@ -50,6 +52,7 @@ public class SyncWorker extends Worker {
     private final UsuarioRepository usuarioRepository;
     private final ParcelaRepository parcelaRepository;
     private final RegistroRepository registroRepository;
+    private final InventarioRepository inventarioRepository;
 
     /**
      * Obtiene la URL del servidor de forma dinámica.
@@ -83,6 +86,7 @@ public class SyncWorker extends Worker {
         this.usuarioRepository = new UsuarioRepository(db.usuarioDao());
         this.parcelaRepository = new ParcelaRepository(db.parcelaDao());
         this.registroRepository = new RegistroRepository(db.registroDao());
+        this.inventarioRepository = new InventarioRepository(db.inventarioDao());
     }
 
     @NonNull
@@ -104,6 +108,9 @@ public class SyncWorker extends Worker {
 
             // Sincronizar registros
             success &= syncRegistros();
+
+            // Sincronizar inventario
+            success &= syncInventario();
 
             return success ? Result.success() : Result.retry();
 
@@ -131,9 +138,13 @@ public class SyncWorker extends Worker {
 
             String response = postJson(getBaseUrl() + "/usuarios", jsonArray.toString());
             if (response != null) {
-                // Actualizar estado de sincronizacion
-                for (Usuario u : pendientes) {
-                    usuarioRepository.actualizarSyncStatus(u.getId(), "SYNCED", u.getId());
+                // Parsear respuesta para obtener remoteId asignado por el servidor
+                JSONArray respuestaArray = new JSONArray(response);
+                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                    JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
+                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int remoteId = itemRespuesta.optInt("remoteId", localId);
+                    usuarioRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
                 return true;
             }
@@ -164,8 +175,13 @@ public class SyncWorker extends Worker {
 
             String response = postJson(getBaseUrl() + "/parcelas", jsonArray.toString());
             if (response != null) {
-                for (Parcela p : pendientes) {
-                    parcelaRepository.actualizarSyncStatus(p.getId(), "SYNCED", p.getId());
+                // Parsear respuesta para obtener remoteId asignado por el servidor
+                JSONArray respuestaArray = new JSONArray(response);
+                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                    JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
+                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int remoteId = itemRespuesta.optInt("remoteId", localId);
+                    parcelaRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
                 return true;
             }
@@ -197,8 +213,52 @@ public class SyncWorker extends Worker {
 
             String response = postJson(getBaseUrl() + "/registros", jsonArray.toString());
             if (response != null) {
-                for (Registro r : pendientes) {
-                    registroRepository.actualizarSyncStatus(r.getId(), "SYNCED", r.getId());
+                // Parsear respuesta para obtener remoteId asignado por el servidor
+                JSONArray respuestaArray = new JSONArray(response);
+                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                    JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
+                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int remoteId = itemRespuesta.optInt("remoteId", localId);
+                    registroRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean syncInventario() {
+        List<InventarioItem> pendientes = inventarioRepository.obtenerPendientesSync();
+        if (pendientes.isEmpty()) {
+            return true;
+        }
+
+        try {
+            JSONArray jsonArray = new JSONArray();
+            for (InventarioItem item : pendientes) {
+                JSONObject json = new JSONObject();
+                json.put("idLocal", item.getId());
+                json.put("nombre", item.getNombre());
+                json.put("categoria", item.getCategoria());
+                json.put("cantidad", item.getCantidad());
+                json.put("unidad", item.getUnidad());
+                json.put("costoUnitario", item.getCostoUnitario());
+                json.put("fechaIngreso", item.getFechaIngreso());
+                json.put("descripcion", item.getDescripcion());
+                jsonArray.put(json);
+            }
+
+            String response = postJson(getBaseUrl() + "/inventario", jsonArray.toString());
+            if (response != null) {
+                // Parsear respuesta para obtener remoteId asignado por el servidor
+                JSONArray respuestaArray = new JSONArray(response);
+                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                    JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
+                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int remoteId = itemRespuesta.optInt("remoteId", localId);
+                    inventarioRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
                 return true;
             }

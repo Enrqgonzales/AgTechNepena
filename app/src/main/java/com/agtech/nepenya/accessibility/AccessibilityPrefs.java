@@ -1,8 +1,11 @@
 package com.agtech.nepenya.accessibility;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.WindowManager;
 import android.util.TypedValue;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.agtech.nepenya.utils.PrefsManager;
 
@@ -27,6 +30,9 @@ public class AccessibilityPrefs {
         // Aplicar tema
         applyTheme(activity, prefs.getThemeMode());
 
+        // Aplicar escala de fuente
+        applyFontScale(activity, prefs.getFontSize());
+
         // Aplicar brillo
         applyBrightness(activity, prefs.getBrightness());
     }
@@ -34,24 +40,34 @@ public class AccessibilityPrefs {
     /**
      * Aplica tema Dia o Noche.
      *
-     * @param activity Activity
+     * @param activity  Activity
      * @param themeMode "DIA" o "NOCHE"
      */
     public static void applyTheme(Activity activity, String themeMode) {
-        if ("NOCHE".equals(themeMode)) {
-            // En modo noche, usar tema oscuro
-            activity.getWindow().getDecorView().setSystemUiVisibility(0);
-        } else {
-            // En modo dia, usar tema claro
-            activity.getWindow().getDecorView().setSystemUiVisibility(
-                    android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        int newMode = "NOCHE".equals(themeMode)
+                ? AppCompatDelegate.MODE_NIGHT_YES
+                : AppCompatDelegate.MODE_NIGHT_NO;
+
+        if (AppCompatDelegate.getDefaultNightMode() != newMode) {
+            AppCompatDelegate.setDefaultNightMode(newMode);
+            activity.recreate();
         }
+    }
+
+    /**
+     * Obtiene el modo nocturno actual.
+     *
+     * @return true si está en modo noche
+     */
+    public static boolean isNightMode(Activity activity) {
+        return (activity.getResources().getConfiguration().uiMode &
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
     }
 
     /**
      * Aplica nivel de brillo a la ventana.
      *
-     * @param activity  Activity
+     * @param activity   Activity
      * @param brightness Nivel 0.0 - 1.0
      */
     public static void applyBrightness(Activity activity, float brightness) {
@@ -61,12 +77,19 @@ public class AccessibilityPrefs {
     }
 
     /**
-     * Convierte SP a pixeles.
+     * Aplica escala de fuente global a la Activity.
+     * La escala se calcula relativa al tamanio base de 16sp.
      *
      * @param activity Activity
-     * @param sp       Valor en SP
-     * @return Valor en pixeles
+     * @param fontSize Tamanio en SP (rango 12-32)
      */
+    public static void applyFontScale(Activity activity, int fontSize) {
+        float fontScale = fontSize / 16f;
+        Configuration config = new Configuration(activity.getResources().getConfiguration());
+        config.fontScale = fontScale;
+        activity.getResources().updateConfiguration(config, activity.getResources().getDisplayMetrics());
+    }
+
     public static float spToPx(Activity activity, float sp) {
         return TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, sp, activity.getResources().getDisplayMetrics());

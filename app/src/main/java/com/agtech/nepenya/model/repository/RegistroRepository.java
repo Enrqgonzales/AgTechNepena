@@ -217,4 +217,32 @@ public class RegistroRepository {
         Double total = registroDao.obtenerIngresosPorCategoriaYAnio(anio, categoria);
         return total != null ? total : 0.0;
     }
+
+    /**
+     * Obtiene registros por año y mes.
+     */
+    public List<Registro> obtenerPorAnioYMes(String anio, String mes) {
+        return registroDao.obtenerPorAnioYMes(anio, mes);
+    }
+
+    /**
+     * Obtiene registros por fecha exacta.
+     */
+    public List<Registro> obtenerPorFecha(String fecha) {
+        return registroDao.obtenerPorFecha(fecha);
+    }
+
+    /**
+     * Obtiene años con registros.
+     */
+    public List<String> obtenerAniosConRegistros() {
+        return registroDao.obtenerAniosConRegistros();
+    }
+
+    /**
+     * Obtiene meses con registros en un año.
+     */
+    public List<String> obtenerMesesConRegistros(String anio) {
+        return registroDao.obtenerMesesConRegistros(anio);
+    }
 }

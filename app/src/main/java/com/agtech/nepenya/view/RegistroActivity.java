@@ -363,6 +363,36 @@ public class RegistroActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 2001) { // VoiceCommandManager PERMISSION_REQUEST_CODE
+            if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido, reiniciar escucha si se presionó el FAB
+                if (voiceCommandManager != null) {
+                    voiceCommandManager.startListening(this, this::procesarComandoVoz);
+                }
+            } else {
+                Toast.makeText(this, "Permiso de audio denegado. Comandos de voz no disponibles.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    /**
+     * Procesa comandos de voz recibidos.
+     */
+    private void procesarComandoVoz(String comando) {
+        comando = comando.toLowerCase();
+        if (comando.contains("guardar") || comando.contains("salvar")) {
+            // Usar el mismo flujo de validación/guardado que el botón
+            controller.validarCampos(selectedParcelaId, selectedTipo, selectedCategoria,
+                    montoActual, selectedFecha, this);
+        } else if (comando.contains("cancelar") || comando.contains("atras")) {
+            finish();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (voiceCommandManager != null) {

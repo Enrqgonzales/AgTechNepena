@@ -24,22 +24,27 @@ public class MisParcelasController {
 
     public interface ParcelasCallback {
         void onParcelasCargadas(List<Parcela> parcelas);
+
         void onError(String mensaje);
     }
 
     public interface GuardarCallback {
         void onSuccess(long id);
+
         void onError(String mensaje);
     }
 
     public interface EliminarCallback {
         void onEliminada();
+
         void onError(String mensaje);
     }
 
-    public MisParcelasController(Activity activity, ParcelaRepository parcelaRepository) {
+    public MisParcelasController(Activity activity) {
         this.activity = activity;
-        this.parcelaRepository = parcelaRepository;
+        com.agtech.nepenya.model.database.AppDatabase db = com.agtech.nepenya.model.database.AppDatabase
+                .getInstance(activity);
+        this.parcelaRepository = new ParcelaRepository(db.parcelaDao());
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -63,7 +68,7 @@ public class MisParcelasController {
      * Guarda una nueva parcela.
      */
     public void guardarParcela(int usuarioId, String nombre, String cultivo,
-                               String hectareasStr, String ubicacion, GuardarCallback callback) {
+            String hectareasStr, String ubicacion, GuardarCallback callback) {
         executorService.execute(() -> {
             String error = null;
 
@@ -77,7 +82,8 @@ public class MisParcelasController {
             if (error == null) {
                 try {
                     hectareas = Double.parseDouble(hectareasStr.replace(",", "."));
-                    if (hectareas <= 0) error = "Ingrese un valor de hectáreas válido";
+                    if (hectareas <= 0)
+                        error = "Ingrese un valor de hectáreas válido";
                 } catch (NumberFormatException e) {
                     error = "Ingrese un valor de hectáreas válido";
                 }
@@ -116,5 +122,55 @@ public class MisParcelasController {
             parcelaRepository.eliminar(parcela);
             activity.runOnUiThread(callback::onEliminada);
         });
+    }
+
+    /**
+     * Interface para callback del diálogo de agregar parcela.
+     */
+    public interface DialogCallback {
+        void onDialogResult(String nombre, String cultivo, String hectareas, String ubicacion);
+    }
+
+    /**
+     * Muestra el diálogo para agregar una nueva parcela.
+     * El Activity solo llama a este método; el Controller maneja todo el diálogo.
+     *
+     * @param layoutResId    ID del layout del diálogo
+     *                       (R.layout.dialog_agregar_parcela)
+     * @param cultivoAdapter Array de opciones de cultivos
+     * @param usuarioId      ID del usuario actual
+     * @param callback       Callback para resultado
+     */
+    public void mostrarDialogoAgregarParcela(int layoutResId, String[] cultivoAdapter,
+            int usuarioId, GuardarCallback callback) {
+        android.view.View dialogView = activity.getLayoutInflater().inflate(layoutResId, null);
+
+        android.widget.EditText etNombre = dialogView.findViewById(
+                activity.getResources().getIdentifier("et_nombre_parcela", "id", activity.getPackageName()));
+        android.widget.Spinner spinnerCultivo = dialogView.findViewById(
+                activity.getResources().getIdentifier("spinner_cultivo", "id", activity.getPackageName()));
+        android.widget.EditText etHectareas = dialogView.findViewById(
+                activity.getResources().getIdentifier("et_hectareas", "id", activity.getPackageName()));
+        android.widget.EditText etUbicacion = dialogView.findViewById(
+                activity.getResources().getIdentifier("et_ubicacion", "id", activity.getPackageName()));
+
+        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(activity,
+                android.R.layout.simple_spinner_item, cultivoAdapter);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCultivo.setAdapter(adapter);
+
+        new androidx.appcompat.app.AlertDialog.Builder(activity)
+                .setTitle("Agregar Parcela")
+                .setView(dialogView)
+                .setPositiveButton("Guardar", (dialog, which) -> {
+                    String nombre = etNombre.getText() != null ? etNombre.getText().toString() : "";
+                    String cultivo = spinnerCultivo.getSelectedItem().toString();
+                    String hectareasStr = etHectareas.getText() != null ? etHectareas.getText().toString() : "0";
+                    String ubicacion = etUbicacion.getText() != null ? etUbicacion.getText().toString() : "";
+
+                    guardarParcela(usuarioId, nombre, cultivo, hectareasStr, ubicacion, callback);
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

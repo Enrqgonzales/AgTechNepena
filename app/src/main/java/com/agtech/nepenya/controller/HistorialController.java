@@ -27,6 +27,7 @@ public class HistorialController {
      */
     public interface ListaCallback {
         void onLista(List<Registro> registros);
+
         void onError(String mensaje);
     }
 
@@ -35,6 +36,7 @@ public class HistorialController {
      */
     public interface EliminarCallback {
         void onEliminado();
+
         void onError(String mensaje);
     }
 
@@ -59,34 +61,87 @@ public class HistorialController {
      *
      * @param filtroTipo Tipo de filtro: "TODOS", "GASTO", "INGRESO"
      * @param parcelaId  ID de parcela (0 para todas)
+     * @param anio       Año ("TODOS" para todos)
+     * @param mes        Mes ("TODOS" para todos)
      * @param callback   Callback con lista de registros
      */
-    public void cargarRegistros(String filtroTipo, int parcelaId, ListaCallback callback) {
+    public void cargarRegistros(String filtroTipo, int parcelaId, String anio, String mes, ListaCallback callback) {
         executorService.execute(() -> {
             List<Registro> registros;
 
-            if (parcelaId > 0) {
-                // Filtrar por parcela
-                if ("GASTO".equals(filtroTipo)) {
-                    registros = registroRepository.obtenerPorParcelaYTipo(parcelaId, "GASTO");
-                } else if ("INGRESO".equals(filtroTipo)) {
-                    registros = registroRepository.obtenerPorParcelaYTipo(parcelaId, "INGRESO");
-                } else {
-                    registros = registroRepository.obtenerPorParcela(parcelaId);
-                }
+            // Primero filtrar por fecha
+            if (!"TODOS".equals(anio) && !"TODOS".equals(mes)) {
+                // Filtrar por año y mes
+                registros = registroRepository.obtenerPorAnioYMes(anio, mes);
+            } else if (!"TODOS".equals(anio)) {
+                // Filtrar solo por año
+                registros = registroRepository.obtenerPorAnio(anio);
             } else {
-                // Sin filtro de parcela
-                if ("GASTO".equals(filtroTipo)) {
-                    registros = registroRepository.obtenerPorTipo("GASTO");
-                } else if ("INGRESO".equals(filtroTipo)) {
-                    registros = registroRepository.obtenerPorTipo("INGRESO");
-                } else {
-                    registros = registroRepository.obtenerTodos();
-                }
+                // Sin filtro de fecha
+                registros = registroRepository.obtenerTodos();
+            }
+
+            // Aplicar filtros adicionales en memoria
+            if (parcelaId > 0) {
+                registros.removeIf(r -> r.getParcelaId() != parcelaId);
+            }
+
+            if ("GASTO".equals(filtroTipo)) {
+                registros.removeIf(r -> !"GASTO".equals(r.getTipo()));
+            } else if ("INGRESO".equals(filtroTipo)) {
+                registros.removeIf(r -> !"INGRESO".equals(r.getTipo()));
             }
 
             activity.runOnUiThread(() -> callback.onLista(registros));
         });
+    }
+
+    /**
+     * Carga registros de una fecha específica.
+     */
+    public void cargarRegistrosPorFecha(String fecha, ListaCallback callback) {
+        executorService.execute(() -> {
+            List<Registro> registros = registroRepository.obtenerPorFecha(fecha);
+            activity.runOnUiThread(() -> callback.onLista(registros));
+        });
+    }
+
+    /**
+     * Obtiene lista de años con registros.
+     */
+    public void obtenerAniosDisponibles(AniosCallback callback) {
+        executorService.execute(() -> {
+            List<String> anios = registroRepository.obtenerAniosConRegistros();
+            activity.runOnUiThread(() -> callback.onAnios(anios));
+        });
+    }
+
+    /**
+     * Obtiene lista de meses con registros en un año.
+     */
+    public void obtenerMesesDisponibles(String anio, MesesCallback callback) {
+        executorService.execute(() -> {
+            List<String> meses = registroRepository.obtenerMesesConRegistros(anio);
+            activity.runOnUiThread(() -> callback.onMeses(meses));
+        });
+    }
+
+    /**
+     * Callback para lista de años.
+     */
+    public interface AniosCallback {
+        void onAnios(List<String> anios);
+
+        void onError(String mensaje);
+    }
+
+    /**
+     * Callback para lista de meses.
+     */
+    public interface MesesCallback {
+        void onMeses(List<String> meses);
+
+        void onError(String mensaje);
     }
 
     /**
@@ -114,8 +169,10 @@ public class HistorialController {
             int ingresos = 0;
 
             for (Registro r : todos) {
-                if (r.esGasto()) gastos++;
-                else if (r.esIngreso()) ingresos++;
+                if (r.esGasto())
+                    gastos++;
+                else if (r.esIngreso())
+                    ingresos++;
             }
 
             final int totalGastos = gastos;
@@ -132,13 +189,14 @@ public class HistorialController {
      * @return Fecha formateada
      */
     public String formatearFechaVisual(String fecha) {
-        if (fecha == null) return "";
+        if (fecha == null)
+            return "";
 
         try {
             String[] partes = fecha.split("-");
             if (partes.length == 3) {
-                String[] meses = {"", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+                String[] meses = { "", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
                 int mes = Integer.parseInt(partes[1]);
                 return partes[2] + " " + meses[mes];
             }
@@ -151,7 +209,7 @@ public class HistorialController {
     /**
      * Formatea monto para visualizacion.
      *
-     * @param monto Monto
+     * @param monto   Monto
      * @param esGasto true si es gasto
      * @return String formateado
      */

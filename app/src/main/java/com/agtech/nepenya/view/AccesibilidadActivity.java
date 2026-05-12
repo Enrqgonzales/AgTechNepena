@@ -98,12 +98,12 @@ public class AccesibilidadActivity extends AppCompatActivity implements
     }
 
     private void initListeners() {
-        // SeekBar de fuente (14sp - 28sp)
-        seekBarFuente.setMax(14); // 28 - 14 = 14
+        // SeekBar de fuente (12sp - 32sp, pasos de 2sp)
+        seekBarFuente.setMax(10); // (32 - 12) / 2 = 10 pasos
         seekBarFuente.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                currentFontSize = 14 + progress;
+                currentFontSize = 12 + (progress * 2); // 12, 14, 16... hasta 32
                 tvPreviewFuente.setTextSize(currentFontSize);
             }
 
@@ -113,7 +113,18 @@ public class AccesibilidadActivity extends AppCompatActivity implements
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                controller.guardarFuente(currentFontSize, AccesibilidadActivity.this);
+                controller.guardarFuente(currentFontSize, new AccesibilidadController.AccesibilidadCallback() {
+                    @Override
+                    public void onGuardadoExitoso() {
+                        AccessibilityPrefs.applyFontScale(AccesibilidadActivity.this, currentFontSize);
+                        recreate();
+                    }
+
+                    @Override
+                    public void onError(String mensaje) {
+                        Toast.makeText(AccesibilidadActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
 
@@ -204,8 +215,9 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         currentBrightness = brightness;
         currentTheme = themeMode;
 
-        // Aplicar valores a la UI
-        seekBarFuente.setProgress(fontSize - 14);
+        // Aplicar valores a la UI (convertir tamaño a progreso: (size - 12) / 2)
+        int fontProgress = Math.max(0, Math.min(10, (fontSize - 12) / 2));
+        seekBarFuente.setProgress(fontProgress);
         tvPreviewFuente.setTextSize(fontSize);
         seekBarBrillo.setProgress((int) (brightness * 100));
         switchVoz.setChecked(voiceEnabled);

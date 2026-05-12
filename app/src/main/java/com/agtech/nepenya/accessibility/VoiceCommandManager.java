@@ -1,12 +1,17 @@
 package com.agtech.nepenya.accessibility;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -31,6 +36,8 @@ public class VoiceCommandManager implements RecognitionListener {
     public VoiceCommandManager() {
     }
 
+    private static final int PERMISSION_REQUEST_CODE = 2001;
+
     /**
      * Inicia el reconocimiento de voz.
      *
@@ -40,6 +47,15 @@ public class VoiceCommandManager implements RecognitionListener {
     public void startListening(Activity activity, Consumer<String> onResult) {
         this.activity = activity;
         this.onResultCallback = onResult;
+
+        // Verificar permiso de audio
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[] { Manifest.permission.RECORD_AUDIO }, PERMISSION_REQUEST_CODE);
+            Toast.makeText(activity, "Se requiere permiso de audio para comandos de voz", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Verificar disponibilidad
         if (!SpeechRecognizer.isRecognitionAvailable(activity)) {
@@ -55,7 +71,7 @@ public class VoiceCommandManager implements RecognitionListener {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, new Locale("es", "PE").toString());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.forLanguageTag("es-PE").toString());
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 

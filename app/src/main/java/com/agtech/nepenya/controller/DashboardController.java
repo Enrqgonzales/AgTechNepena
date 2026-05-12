@@ -47,14 +47,16 @@ public class DashboardController {
      */
     public interface ClimaCallback {
         void onClimaSuccess(double temperatura, int weatherCode, String descripcion);
+
         void onClimaError(String mensaje);
     }
 
     /**
-     * Callback para resultado de tipo de cambio.
+     * Callback para estado de sincronizacion.
      */
-    public interface TipoCambioCallback {
-        void onTipoCambioSuccess(double tipoCambio);
+    public interface MultiTipoCambioCallback {
+        void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy);
+
         void onTipoCambioError(String mensaje);
     }
 
@@ -73,16 +75,15 @@ public class DashboardController {
         Call<OpenMeteoResponse> getCurrentWeather(
                 @Query("latitude") double latitude,
                 @Query("longitude") double longitude,
-                @Query("current_weather") boolean currentWeather
-        );
+                @Query("current_weather") boolean currentWeather);
     }
 
     /**
      * Interfaz Retrofit para ExchangeRate API.
      */
     private interface ExchangeRateService {
-        @GET("v4/latest/USD")
-        Call<ExchangeRateResponse> getLatestRates();
+        @GET("v4/latest/{base}")
+        Call<ExchangeRateResponse> getLatestRates(@retrofit2.http.Path("base") String baseCurrency);
     }
 
     /**
@@ -108,9 +109,9 @@ public class DashboardController {
      * Constructor con inyeccion de dependencias.
      */
     public DashboardController(Activity activity,
-                               UsuarioRepository usuarioRepository,
-                               ParcelaRepository parcelaRepository,
-                               RegistroRepository registroRepository) {
+            UsuarioRepository usuarioRepository,
+            ParcelaRepository parcelaRepository,
+            RegistroRepository registroRepository) {
         this.activity = activity;
         this.usuarioRepository = usuarioRepository;
         this.parcelaRepository = parcelaRepository;
@@ -145,52 +146,53 @@ public class DashboardController {
                 if (response.isSuccessful() && response.body() != null) {
                     CurrentWeather weather = response.body().current_weather;
                     String descripcion = interpretarWeatherCode(weather.weathercode);
-                    activity.runOnUiThread(() ->
-                            callback.onClimaSuccess(weather.temperature, weather.weathercode, descripcion));
+                    activity.runOnUiThread(
+                            () -> callback.onClimaSuccess(weather.temperature, weather.weathercode, descripcion));
                 } else {
-                    activity.runOnUiThread(() ->
-                            callback.onClimaError("Error al obtener clima"));
+                    activity.runOnUiThread(() -> callback.onClimaError("Error al obtener clima"));
                 }
             }
 
             @Override
             public void onFailure(Call<OpenMeteoResponse> call, Throwable t) {
-                activity.runOnUiThread(() ->
-                        callback.onClimaError("Sin conexion al servicio de clima"));
+                activity.runOnUiThread(() -> callback.onClimaError("Sin conexion al servicio de clima"));
             }
         });
     }
 
     /**
-     * Obtiene tipo de cambio USD a PEN.
+     * Obtiene tipos de cambio desde una moneda base.
      *
-     * @param callback Callback para resultado
+     * @param baseCurrency Moneda base (USD, EUR, PEN, etc.)
+     * @param callback     Callback para resultado
      */
-    public void fetchTipoCambio(TipoCambioCallback callback) {
+    public void fetchTipoCambio(String baseCurrency, MultiTipoCambioCallback callback) {
         ExchangeRateService service = retrofitExchangeRate.create(ExchangeRateService.class);
-        Call<ExchangeRateResponse> call = service.getLatestRates();
+        Call<ExchangeRateResponse> call = service.getLatestRates(baseCurrency);
 
         call.enqueue(new Callback<ExchangeRateResponse>() {
             @Override
             public void onResponse(Call<ExchangeRateResponse> call, Response<ExchangeRateResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Double penRate = response.body().rates.get("PEN");
-                    if (penRate != null) {
-                        activity.runOnUiThread(() -> callback.onTipoCambioSuccess(penRate));
-                    } else {
-                        activity.runOnUiThread(() ->
-                                callback.onTipoCambioError("Tipo de cambio no disponible"));
-                    }
+                    java.util.Map<String, Double> rates = response.body().rates;
+
+                    // Extraer tasas principales
+                    Double penRate = rates.get("PEN");
+                    Double usdRate = rates.get("USD");
+                    Double eurRate = rates.get("EUR");
+                    Double gbpRate = rates.get("GBP");
+                    Double jpyRate = rates.get("JPY");
+
+                    activity.runOnUiThread(() -> callback.onTipoCambioSuccess(baseCurrency, penRate, usdRate, eurRate,
+                            gbpRate, jpyRate));
                 } else {
-                    activity.runOnUiThread(() ->
-                            callback.onTipoCambioError("Error al obtener tipo de cambio"));
+                    activity.runOnUiThread(() -> callback.onTipoCambioError("Error al obtener tipo de cambio"));
                 }
             }
 
             @Override
             public void onFailure(Call<ExchangeRateResponse> call, Throwable t) {
-                activity.runOnUiThread(() ->
-                        callback.onTipoCambioError("Sin conexion al servicio"));
+                activity.runOnUiThread(() -> callback.onTipoCambioError("Sin conexion al servicio"));
             }
         });
     }
@@ -220,14 +222,22 @@ public class DashboardController {
      * @return Descripcion en español
      */
     private String interpretarWeatherCode(int code) {
-        if (code == 0) return "Despejado";
-        if (code >= 1 && code <= 3) return "Parcialmente nublado";
-        if (code >= 45 && code <= 48) return "Niebla";
-        if (code >= 51 && code <= 55) return "Llovizna";
-        if (code >= 61 && code <= 65) return "Lluvia";
-        if (code >= 71 && code <= 77) return "Nieve";
-        if (code >= 80 && code <= 82) return "Lluvias fuertes";
-        if (code >= 95 && code <= 99) return "Tormenta";
+        if (code == 0)
+            return "Despejado";
+        if (code >= 1 && code <= 3)
+            return "Parcialmente nublado";
+        if (code >= 45 && code <= 48)
+            return "Niebla";
+        if (code >= 51 && code <= 55)
+            return "Llovizna";
+        if (code >= 61 && code <= 65)
+            return "Lluvia";
+        if (code >= 71 && code <= 77)
+            return "Nieve";
+        if (code >= 80 && code <= 82)
+            return "Lluvias fuertes";
+        if (code >= 95 && code <= 99)
+            return "Tormenta";
         return "Soleado";
     }
 }

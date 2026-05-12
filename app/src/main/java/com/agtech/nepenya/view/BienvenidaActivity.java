@@ -10,14 +10,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.agtech.nepenya.R;
-import com.agtech.nepenya.model.database.AppDatabase;
-import com.agtech.nepenya.model.entity.Usuario;
-import com.agtech.nepenya.model.repository.UsuarioRepository;
-import com.agtech.nepenya.utils.PrefsManager;
+import com.agtech.nepenya.controller.BienvenidaController;
 import com.google.android.material.textfield.TextInputEditText;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Activity de Bienvenida mostrada la primera vez que se abre la app.
@@ -26,14 +20,15 @@ import java.util.concurrent.Executors;
  * @author AgTech Nepeña Team
  * @version 1.0
  */
-public class BienvenidaActivity extends AppCompatActivity {
+public class BienvenidaActivity extends AppCompatActivity implements
+        BienvenidaController.BienvenidaCallback {
 
     private TextInputEditText etNombre;
     private TextInputEditText etTelefono;
     private Spinner spinnerDistrito;
     private Button btnComenzar;
 
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private BienvenidaController controller;
 
     private static final String[] DISTRITOS = {
             "Seleccione su distrito",
@@ -62,6 +57,8 @@ public class BienvenidaActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDistrito.setAdapter(adapter);
 
+        controller = new BienvenidaController(this);
+
         btnComenzar.setOnClickListener(v -> guardarUsuario());
     }
 
@@ -71,43 +68,38 @@ public class BienvenidaActivity extends AppCompatActivity {
         int distritoPos = spinnerDistrito.getSelectedItemPosition();
         String distrito = DISTRITOS[distritoPos];
 
-        if (nombre.isEmpty()) {
-            Toast.makeText(this, getString(R.string.error_nombre_requerido), Toast.LENGTH_SHORT).show();
-            etNombre.requestFocus();
-            return;
-        }
-
-        if (distritoPos == 0) {
-            Toast.makeText(this, getString(R.string.error_distrito_requerido), Toast.LENGTH_SHORT).show();
+        String error = controller.validarDatos(nombre, distritoPos);
+        if (error != null) {
+            Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            if (nombre.isEmpty()) {
+                etNombre.requestFocus();
+            }
             return;
         }
 
         btnComenzar.setEnabled(false);
+        controller.crearUsuario(nombre, telefono, distrito, this);
+    }
 
-        executorService.execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            UsuarioRepository usuarioRepo = new UsuarioRepository(db.usuarioDao());
+    @Override
+    public void onUsuarioCreado(int userId) {
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
 
-            Usuario usuario = new Usuario(nombre, telefono);
-            long userId = usuarioRepo.insertar(usuario);
-
-            PrefsManager prefs = new PrefsManager(this);
-            prefs.setUserId((int) userId);
-            prefs.setUserName(nombre);
-            prefs.setDistrito(distrito);
-
-            runOnUiThread(() -> {
-                Intent intent = new Intent(this, DashboardActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
-        });
+    @Override
+    public void onError(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+        btnComenzar.setEnabled(true);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        executorService.shutdown();
+        if (controller != null) {
+            controller.destroy();
+        }
     }
 }

@@ -6,9 +6,12 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import com.agtech.nepenya.model.dao.InventarioDao;
 import com.agtech.nepenya.model.dao.ParcelaDao;
 import com.agtech.nepenya.model.dao.RegistroDao;
 import com.agtech.nepenya.model.dao.UsuarioDao;
+import com.agtech.nepenya.model.entity.InventarioItem;
+import com.agtech.nepenya.model.entity.InventarioMovimiento;
 import com.agtech.nepenya.model.entity.Parcela;
 import com.agtech.nepenya.model.entity.Registro;
 import com.agtech.nepenya.model.entity.Usuario;
@@ -20,7 +23,8 @@ import com.agtech.nepenya.model.entity.Usuario;
  * @author AgTech Nepeña Team
  * @version 1.0
  */
-@Database(entities = {Usuario.class, Parcela.class, Registro.class}, version = 1, exportSchema = false)
+@Database(entities = { Usuario.class, Parcela.class, Registro.class, InventarioItem.class,
+        InventarioMovimiento.class }, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DATABASE_NAME = "agtech_nepenya_db";
@@ -37,10 +41,10 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(
-                                    context.getApplicationContext(),
-                                    AppDatabase.class,
-                                    DATABASE_NAME)
-                            .fallbackToDestructiveMigration()
+                            context.getApplicationContext(),
+                            AppDatabase.class,
+                            DATABASE_NAME)
+                            .addMigrations(DatabaseMigrations.getAllMigrations())
                             .build();
                 }
             }
@@ -62,4 +66,9 @@ public abstract class AppDatabase extends RoomDatabase {
      * @return DAO para operaciones de Registro
      */
     public abstract RegistroDao registroDao();
+
+    /**
+     * @return DAO para operaciones de Inventario
+     */
+    public abstract InventarioDao inventarioDao();
 }

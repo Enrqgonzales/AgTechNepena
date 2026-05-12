@@ -50,12 +50,16 @@ public class HistorialActivity extends AppCompatActivity implements
     // UI Elements
     private TabLayout tabLayout;
     private Spinner spinnerParcela;
+    private Spinner spinnerAnio;
+    private Spinner spinnerMes;
     private RecyclerView recyclerView;
     private TextView tvEmpty;
 
     private List<Parcela> parcelasList;
     private String filtroTipo = "TODOS";
     private int filtroParcelaId = 0;
+    private String filtroAnio = "TODOS";
+    private String filtroMes = "TODOS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +94,26 @@ public class HistorialActivity extends AppCompatActivity implements
     private void initViews() {
         tabLayout = findViewById(R.id.tab_layout);
         spinnerParcela = findViewById(R.id.spinner_parcela);
+        spinnerAnio = findViewById(R.id.spinner_anio);
+        spinnerMes = findViewById(R.id.spinner_mes);
         recyclerView = findViewById(R.id.recycler_view);
         tvEmpty = findViewById(R.id.tv_empty);
+
+        // Configurar spinners de fecha con opciones "Todos"
+        String[] anios = { "Todos los años", "2024", "2025", "2026", "2027", "2028" };
+        String[] meses = { "Todos los meses", "01 - Enero", "02 - Febrero", "03 - Marzo", "04 - Abril",
+                "05 - Mayo", "06 - Junio", "07 - Julio", "08 - Agosto", "09 - Septiembre",
+                "10 - Octubre", "11 - Noviembre", "12 - Diciembre" };
+
+        ArrayAdapter<String> anioAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, anios);
+        anioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAnio.setAdapter(anioAdapter);
+
+        ArrayAdapter<String> mesAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, meses);
+        mesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMes.setAdapter(mesAdapter);
 
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.todos)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.gastos)));
@@ -159,6 +181,42 @@ public class HistorialActivity extends AppCompatActivity implements
                     } else if (position - 1 < parcelasList.size()) {
                         filtroParcelaId = parcelasList.get(position - 1).getId();
                     }
+                }
+                cargarRegistros();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // Spinner año
+        spinnerAnio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    filtroAnio = "TODOS";
+                } else {
+                    filtroAnio = (String) parent.getItemAtPosition(position);
+                }
+                cargarRegistros();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        // Spinner mes
+        spinnerMes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    filtroMes = "TODOS";
+                } else {
+                    String mesCompleto = (String) parent.getItemAtPosition(position);
+                    // Extraer solo el número de mes (formato: "01 - Enero")
+                    filtroMes = mesCompleto.split(" - ")[0];
                 }
                 cargarRegistros();
             }
@@ -244,7 +302,7 @@ public class HistorialActivity extends AppCompatActivity implements
     }
 
     private void cargarRegistros() {
-        controller.cargarRegistros(filtroTipo, filtroParcelaId, this);
+        controller.cargarRegistros(filtroTipo, filtroParcelaId, filtroAnio, filtroMes, this);
     }
 
     // Callbacks del Controller

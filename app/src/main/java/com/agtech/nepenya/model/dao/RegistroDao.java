@@ -128,7 +128,7 @@ public interface RegistroDao {
     /**
      * Obtiene suma de gastos por categoria en un año.
      *
-     * @param anio     Anio en formato yyyy
+     * @param anio      Anio en formato yyyy
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
@@ -138,7 +138,7 @@ public interface RegistroDao {
     /**
      * Obtiene suma de ingresos por categoria en un año.
      *
-     * @param anio     Anio en formato yyyy
+     * @param anio      Anio en formato yyyy
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
@@ -178,4 +178,50 @@ public interface RegistroDao {
      */
     @Query("SELECT DISTINCT categoria FROM registros WHERE tipo = 'INGRESO' ORDER BY categoria")
     List<String> obtenerCategoriasIngreso();
+
+    /**
+     * Obtiene registros por año y mes.
+     *
+     * @param anio Anio en formato yyyy
+     * @param mes  Mes en formato MM
+     * @return Lista de registros del mes
+     */
+    @Query("SELECT * FROM registros WHERE strftime('%Y', fecha) = :anio AND strftime('%m', fecha) = :mes ORDER BY fecha DESC")
+    List<Registro> obtenerPorAnioYMes(String anio, String mes);
+
+    /**
+     * Obtiene registros por fecha exacta.
+     *
+     * @param fecha Fecha en formato yyyy-MM-dd
+     * @return Lista de registros de esa fecha
+     */
+    @Query("SELECT * FROM registros WHERE fecha = :fecha ORDER BY id DESC")
+    List<Registro> obtenerPorFecha(String fecha);
+
+    /**
+     * Obtiene registros por rango de fechas.
+     *
+     * @param fechaInicio Fecha inicio en formato yyyy-MM-dd
+     * @param fechaFin    Fecha fin en formato yyyy-MM-dd
+     * @return Lista de registros en el rango
+     */
+    @Query("SELECT * FROM registros WHERE fecha BETWEEN :fechaInicio AND :fechaFin ORDER BY fecha DESC")
+    List<Registro> obtenerPorRangoFechas(String fechaInicio, String fechaFin);
+
+    /**
+     * Obtiene años distintos con registros.
+     *
+     * @return Lista de años
+     */
+    @Query("SELECT DISTINCT strftime('%Y', fecha) FROM registros ORDER BY strftime('%Y', fecha) DESC")
+    List<String> obtenerAniosConRegistros();
+
+    /**
+     * Obtiene meses distintos con registros en un año.
+     *
+     * @param anio Año en formato yyyy
+     * @return Lista de meses (01-12)
+     */
+    @Query("SELECT DISTINCT strftime('%m', fecha) FROM registros WHERE strftime('%Y', fecha) = :anio ORDER BY strftime('%m', fecha)")
+    List<String> obtenerMesesConRegistros(String anio);
 }

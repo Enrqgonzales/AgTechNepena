@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,7 +50,7 @@ import java.util.concurrent.Executors;
  */
 public class DashboardActivity extends AppCompatActivity implements
         DashboardController.ClimaCallback,
-        DashboardController.TipoCambioCallback,
+        DashboardController.MultiTipoCambioCallback,
         DashboardController.SyncCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
@@ -73,6 +74,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private LinearLayout cardRegistrar;
     private LinearLayout cardParcelas;
     private LinearLayout cardReportes;
+    private LinearLayout cardInventario;
     private FloatingActionButton fabVoice;
     private BottomNavigationView bottomNav;
 
@@ -98,7 +100,8 @@ public class DashboardActivity extends AppCompatActivity implements
         initLocation();
         initVoiceCommand();
 
-        controller.fetchTipoCambio(this);
+        String baseCurrency = prefsManager.getCurrencyBase();
+        controller.fetchTipoCambio(baseCurrency, this);
         controller.checkSyncStatus(this);
         mostrarCacheInicial();
     }
@@ -131,6 +134,7 @@ public class DashboardActivity extends AppCompatActivity implements
         cardRegistrar = findViewById(R.id.card_registrar);
         cardParcelas = findViewById(R.id.card_parcelas);
         cardReportes = findViewById(R.id.card_reportes);
+        cardInventario = findViewById(R.id.card_inventario);
         fabVoice = findViewById(R.id.fab_voice);
         bottomNav = findViewById(R.id.bottom_nav);
 
@@ -179,6 +183,8 @@ public class DashboardActivity extends AppCompatActivity implements
         cardParcelas.setOnClickListener(v -> startActivity(new Intent(this, MisParcelasActivity.class)));
 
         cardReportes.setOnClickListener(v -> startActivity(new Intent(this, ReportesActivity.class)));
+
+        cardInventario.setOnClickListener(v -> startActivity(new Intent(this, InventarioActivity.class)));
 
         fabVoice.setOnClickListener(v -> {
             if (voiceCommandManager != null) {
@@ -307,6 +313,8 @@ public class DashboardActivity extends AppCompatActivity implements
             startActivity(new Intent(this, MisParcelasActivity.class));
         } else if (comando.contains("ajuste")) {
             startActivity(new Intent(this, AccesibilidadActivity.class));
+        } else if (comando.contains("inventario") || comando.contains("almacen")) {
+            startActivity(new Intent(this, InventarioActivity.class));
         }
     }
 
@@ -331,6 +339,16 @@ public class DashboardActivity extends AppCompatActivity implements
                     tvLocalidad.setVisibility(View.VISIBLE);
                 }
             }
+        } else if (requestCode == 2001) { // VoiceCommandManager PERMISSION_REQUEST_CODE
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido, reiniciar escucha si se presionó el FAB
+                if (voiceCommandManager != null) {
+                    voiceCommandManager.startListening(this, this::procesarComandoVoz);
+                }
+            } else {
+                Toast.makeText(this, "Permiso de audio denegado. Comandos de voz no disponibles.",
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -350,10 +368,33 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onTipoCambioSuccess(double tipoCambio) {
-        String texto = String.format(Locale.getDefault(), "1 USD = S/ %.2f", tipoCambio);
-        tvTipoCambio.setText(texto);
-        prefsManager.setCambioCache(texto);
+    public void onTipoCambioSuccess(String base, Double pen, Double usd, Double eur, Double gbp, Double jpy) {
+        // Mostrar todas las tasas principales
+        StringBuilder texto = new StringBuilder();
+
+        if ("USD".equals(base)) {
+            texto.append(String.format(Locale.getDefault(), "1 USD = S/ %.2f (PEN)", pen));
+            if (eur != null)
+                texto.append(String.format(Locale.getDefault(), " | €%.2f", eur));
+        } else if ("PEN".equals(base)) {
+            texto.append(String.format(Locale.getDefault(), "S/ 1 = $%.2f (USD)", usd));
+            if (eur != null)
+                texto.append(String.format(Locale.getDefault(), " | €%.2f", eur));
+        } else if ("EUR".equals(base)) {
+            texto.append(String.format(Locale.getDefault(), "€1 = S/ %.2f (PEN)", pen));
+            if (usd != null)
+                texto.append(String.format(Locale.getDefault(), " | $%.2f", usd));
+        }
+
+        String resultado = texto.toString();
+        tvTipoCambio.setText(resultado);
+        prefsManager.setCambioCache(resultado);
+
+        // Guardar tasas para uso en otras partes de la app
+        String ratesJson = String.format(Locale.getDefault(),
+                "{\"base\":\"%s\",\"PEN\":%.4f,\"USD\":%.4f,\"EUR\":%.4f}",
+                base, pen != null ? pen : 0, usd != null ? usd : 0, eur != null ? eur : 0);
+        prefsManager.setCurrencyRates(ratesJson);
     }
 
     @Override

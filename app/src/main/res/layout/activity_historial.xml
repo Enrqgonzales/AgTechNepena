@@ -12,6 +12,29 @@
         app:tabGravity="fill"
         app:tabMode="fixed" />
 
+    <!-- Filtros de fecha (Año y Mes) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp">
+
+        <Spinner
+            android:id="@+id/spinner_anio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp" />
+
+        <Spinner
+            android:id="@+id/spinner_mes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
     <Spinner
         android:id="@+id/spinner_parcela"
         android:layout_width="match_parent"
