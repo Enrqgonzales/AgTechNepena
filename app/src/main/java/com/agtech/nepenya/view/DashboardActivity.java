@@ -80,8 +80,8 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
 
         prefsManager = new PrefsManager(this);
 

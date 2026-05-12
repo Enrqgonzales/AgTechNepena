@@ -40,6 +40,18 @@ public interface InventarioDao {
     @Query("SELECT * FROM inventario WHERE categoria = :categoria ORDER BY nombre ASC")
     List<InventarioItem> obtenerPorCategoria(String categoria);
 
+    @Query("SELECT * FROM inventario WHERE parcela_id = :parcelaId ORDER BY nombre ASC")
+    List<InventarioItem> obtenerPorParcela(int parcelaId);
+
+    @Query("SELECT * FROM inventario WHERE parcela_id = :parcelaId AND categoria = :categoria ORDER BY nombre ASC")
+    List<InventarioItem> obtenerPorParcelaYCategoria(int parcelaId, String categoria);
+
+    @Query("SELECT * FROM inventario WHERE parcela_id = :parcelaId AND nombre = :nombre AND categoria = :categoria LIMIT 1")
+    InventarioItem obtenerPorParcelaYNombreCategoria(int parcelaId, String nombre, String categoria);
+
+    @Query("SELECT * FROM inventario WHERE parcela_id = :parcelaId AND categoria = :categoria AND unidad = :unidad LIMIT 1")
+    InventarioItem obtenerPorParcelaCategoriaUnidad(int parcelaId, String categoria, String unidad);
+
     @Query("SELECT * FROM inventario WHERE cantidad > 0 ORDER BY nombre ASC")
     List<InventarioItem> obtenerItemsConStock();
 
@@ -66,7 +78,7 @@ public interface InventarioDao {
     // Estadísticas
 
     @Query("SELECT SUM(cantidad * costo_unitario) FROM inventario")
-    double obtenerValorTotalInventario();
+    Double obtenerValorTotalInventario();
 
     @Query("SELECT SUM(cantidad) FROM inventario WHERE categoria = :categoria")
     double obtenerCantidadTotalPorCategoria(String categoria);
@@ -79,9 +91,9 @@ public interface InventarioDao {
 
     // Sincronización
 
-    @Query("SELECT * FROM inventario WHERE syncStatus = 'PENDING' OR syncStatus IS NULL")
+    @Query("SELECT * FROM inventario WHERE sync_status = 'PENDING' OR sync_status IS NULL")
     List<InventarioItem> obtenerPendientesSync();
 
-    @Query("UPDATE inventario SET syncStatus = :syncStatus, remoteId = :remoteId WHERE id = :id")
+    @Query("UPDATE inventario SET sync_status = :syncStatus, remote_id = :remoteId WHERE id = :id")
     void actualizarSyncStatus(int id, String syncStatus, int remoteId);
 }

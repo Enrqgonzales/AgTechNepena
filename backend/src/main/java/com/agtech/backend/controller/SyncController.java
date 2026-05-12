@@ -1,8 +1,5 @@
 package com.agtech.backend.controller;
 
-import com.agtech.backend.model.Parcela;
-import com.agtech.backend.model.Registro;
-import com.agtech.backend.model.Usuario;
 import com.agtech.backend.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +10,7 @@ import java.util.Map;
 
 /**
  * REST Controller para sincronizacion de datos.
- * Recibe datos desde la app movil.
+ * Recibe datos desde la app movil y devuelve idLocal + remoteId asignado.
  *
  * @author AgTech Nepeña Team
  * @version 1.0
@@ -29,8 +26,8 @@ public class SyncController {
     @PostMapping("/usuarios")
     public ResponseEntity<?> syncUsuarios(@RequestBody List<Map<String, Object>> usuarios) {
         try {
-            syncService.syncUsuarios(usuarios);
-            return ResponseEntity.ok().body("{\"status\":\"success\"}");
+            List<Map<String, Object>> resultado = syncService.syncUsuarios(usuarios);
+            return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
         }
@@ -39,8 +36,8 @@ public class SyncController {
     @PostMapping("/parcelas")
     public ResponseEntity<?> syncParcelas(@RequestBody List<Map<String, Object>> parcelas) {
         try {
-            syncService.syncParcelas(parcelas);
-            return ResponseEntity.ok().body("{\"status\":\"success\"}");
+            List<Map<String, Object>> resultado = syncService.syncParcelas(parcelas);
+            return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
         }
@@ -49,8 +46,18 @@ public class SyncController {
     @PostMapping("/registros")
     public ResponseEntity<?> syncRegistros(@RequestBody List<Map<String, Object>> registros) {
         try {
-            syncService.syncRegistros(registros);
-            return ResponseEntity.ok().body("{\"status\":\"success\"}");
+            List<Map<String, Object>> resultado = syncService.syncRegistros(registros);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/inventario")
+    public ResponseEntity<?> syncInventario(@RequestBody List<Map<String, Object>> items) {
+        try {
+            List<Map<String, Object>> resultado = syncService.syncInventario(items);
+            return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
         }

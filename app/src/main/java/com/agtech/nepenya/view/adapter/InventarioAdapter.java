@@ -29,8 +29,8 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.Vi
 
     public interface OnInventarioClickListener {
         void onItemClick(InventarioItem item);
+
         void onConsumirClick(InventarioItem item);
-        void onAgregarClick(InventarioItem item);
     }
 
     public InventarioAdapter(List<InventarioItem> items, OnInventarioClickListener listener) {
@@ -49,14 +49,14 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InventarioItem item = items.get(position);
-        
+
         holder.tvNombre.setText(item.getNombre());
         holder.tvCategoria.setText(item.getCategoria());
-        holder.tvStock.setText(String.format(Locale.getDefault(), "%.2f %s", 
+        holder.tvStock.setText(String.format(Locale.getDefault(), "%.2f %s",
                 item.getCantidad(), item.getUnidad()));
-        holder.tvCosto.setText(String.format(Locale.getDefault(), "S/ %.2f/u", 
+        holder.tvCosto.setText(String.format(Locale.getDefault(), "S/ %.2f/u",
                 item.getCostoUnitario()));
-        holder.tvValor.setText(String.format(Locale.getDefault(), "Total: S/ %.2f", 
+        holder.tvValor.setText(String.format(Locale.getDefault(), "Total: S/ %.2f",
                 item.getCostoTotal()));
 
         // Color según stock
@@ -69,17 +69,14 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.Vi
         }
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onItemClick(item);
+            if (listener != null)
+                listener.onItemClick(item);
         });
 
         holder.btnConsumir.setOnClickListener(v -> {
             if (listener != null && item.getCantidad() > 0) {
                 listener.onConsumirClick(item);
             }
-        });
-
-        holder.btnAgregar.setOnClickListener(v -> {
-            if (listener != null) listener.onAgregarClick(item);
         });
     }
 
@@ -99,7 +96,7 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.Vi
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombre, tvCategoria, tvStock, tvCosto, tvValor;
-        Button btnConsumir, btnAgregar;
+        Button btnConsumir;
         LinearLayout layoutActions;
 
         ViewHolder(View itemView) {
@@ -110,7 +107,6 @@ public class InventarioAdapter extends RecyclerView.Adapter<InventarioAdapter.Vi
             tvCosto = itemView.findViewById(R.id.tv_costo);
             tvValor = itemView.findViewById(R.id.tv_valor);
             btnConsumir = itemView.findViewById(R.id.btn_consumir);
-            btnAgregar = itemView.findViewById(R.id.btn_agregar);
             layoutActions = itemView.findViewById(R.id.layout_actions);
         }
     }

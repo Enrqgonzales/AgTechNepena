@@ -28,12 +28,14 @@ import com.agtech.nepenya.accessibility.VoiceCommandManager;
 import com.agtech.nepenya.controller.RegistroController;
 import com.agtech.nepenya.model.database.AppDatabase;
 import com.agtech.nepenya.model.entity.Parcela;
+import com.agtech.nepenya.model.repository.InventarioRepository;
 import com.agtech.nepenya.model.repository.ParcelaRepository;
 import com.agtech.nepenya.model.repository.RegistroRepository;
 import com.agtech.nepenya.utils.NetworkUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -72,10 +74,21 @@ public class RegistroActivity extends AppCompatActivity implements
     private String selectedCategoria = "";
     private double montoActual = 0.0;
 
+    // New UI elements for physical inputs
+    private LinearLayout layoutCantidadSection;
+    private EditText etCantidad;
+    private Spinner spinnerUnidad;
+    private EditText etCostoUnitario;
+    private TextView tvMontoCalculado;
+
+    // Physical input categories (show quantity/unit/costo fields)
+    private static final List<String> CATEGORIAS_FISICAS = Arrays.asList(
+            "Fertilizantes", "Pesticidas", "Combustible", "Siembra", "Riego", "Transporte");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_registro);
 
         initController();
@@ -97,7 +110,8 @@ public class RegistroActivity extends AppCompatActivity implements
         AppDatabase db = AppDatabase.getInstance(this);
         ParcelaRepository parcelaRepo = new ParcelaRepository(db.parcelaDao());
         RegistroRepository registroRepo = new RegistroRepository(db.registroDao());
-        controller = new RegistroController(this, parcelaRepo, registroRepo);
+        InventarioRepository inventarioRepo = new InventarioRepository(db.inventarioDao());
+        controller = new RegistroController(this, parcelaRepo, registroRepo, inventarioRepo);
         voiceCommandManager = new VoiceCommandManager();
     }
 
@@ -113,6 +127,15 @@ public class RegistroActivity extends AppCompatActivity implements
         btnVoice = findViewById(R.id.btn_voice);
         btnGuardar = findViewById(R.id.btn_guardar);
         tvFecha = findViewById(R.id.tv_fecha);
+
+        // Initialize new quantity fields
+        layoutCantidadSection = findViewById(R.id.layout_cantidad_section);
+        etCantidad = findViewById(R.id.et_cantidad);
+        spinnerUnidad = findViewById(R.id.spinner_unidad);
+        etCostoUnitario = findViewById(R.id.et_costo_unitario);
+        tvMontoCalculado = findViewById(R.id.tv_monto_calculado);
+
+        initUnidadesSpinner();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setSelectedItemId(R.id.nav_registro);
@@ -173,6 +196,7 @@ public class RegistroActivity extends AppCompatActivity implements
                 selectedTipo = "INGRESO";
             }
             actualizarCategorias();
+            actualizarCantidadSection();
         });
 
         // Boton de voz para descripcion
@@ -193,6 +217,107 @@ public class RegistroActivity extends AppCompatActivity implements
 
         // Monto (click para editar)
         tvMonto.setOnClickListener(v -> mostrarDialogMonto());
+
+        // TextWatchers for auto-calculating monto from cantidad * costo_unitario
+        etCantidad.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                calcularMonto();
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+            }
+        });
+
+        etCostoUnitario.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                calcularMonto();
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+            }
+        });
+    }
+
+    private void initUnidadesSpinner() {
+        List<String> unidades = new ArrayList<>();
+        unidades.add("kg");
+        unidades.add("litros");
+        unidades.add("sacos");
+        unidades.add("paquetes");
+        unidades.add("galones");
+        unidades.add("unidades");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, unidades);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerUnidad.setAdapter(adapter);
+    }
+
+    private void actualizarCantidadSection() {
+        if ("INGRESO".equals(selectedTipo)) {
+            // INGRESO: hide quantity section entirely
+            layoutCantidadSection.setVisibility(View.GONE);
+            tvMonto.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        // GASTO: check if physical input category
+        boolean esFisica = CATEGORIAS_FISICAS.contains(selectedCategoria);
+        if (esFisica) {
+            layoutCantidadSection.setVisibility(View.VISIBLE);
+            tvMonto.setVisibility(View.GONE); // Use calculated monto instead
+        } else {
+            layoutCantidadSection.setVisibility(View.GONE);
+            tvMonto.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void calcularMonto() {
+        try {
+            double cantidad = Double.parseDouble(etCantidad.getText().toString());
+            double costoUnitario = Double.parseDouble(etCostoUnitario.getText().toString());
+            montoActual = cantidad * costoUnitario;
+            tvMontoCalculado.setText(String.format(Locale.getDefault(), "S/ %.2f", montoActual));
+        } catch (NumberFormatException e) {
+            montoActual = 0;
+            tvMontoCalculado.setText("S/ 0.00");
+        }
+    }
+
+    public double getCantidad() {
+        try {
+            return Double.parseDouble(etCantidad.getText().toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public String getUnidad() {
+        return spinnerUnidad.getSelectedItem() != null ? spinnerUnidad.getSelectedItem().toString() : "unidades";
+    }
+
+    public double getCostoUnitario() {
+        try {
+            return Double.parseDouble(etCostoUnitario.getText().toString());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    public boolean isCategoriaFisica() {
+        return CATEGORIAS_FISICAS.contains(selectedCategoria);
     }
 
     private void checkConexion() {
@@ -219,6 +344,7 @@ public class RegistroActivity extends AppCompatActivity implements
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     selectedCategoria = categoria;
+                    actualizarCantidadSection();
                 }
             });
 
@@ -229,6 +355,7 @@ public class RegistroActivity extends AppCompatActivity implements
                 selectedCategoria = categorias[0];
             }
         }
+        actualizarCantidadSection();
     }
 
     private void mostrarDatePicker() {
@@ -321,8 +448,13 @@ public class RegistroActivity extends AppCompatActivity implements
 
     @Override
     public void onValido() {
+        Double cantidad = isCategoriaFisica() ? getCantidad() : null;
+        String unidad = isCategoriaFisica() ? getUnidad() : null;
+        Double costoUnitario = isCategoriaFisica() ? getCostoUnitario() : null;
+
         controller.guardarRegistro(selectedParcelaId, selectedTipo, selectedCategoria,
-                montoActual, selectedFecha, etDescripcion.getText().toString(), this);
+                montoActual, selectedFecha, etDescripcion.getText().toString(),
+                cantidad, unidad, costoUnitario, this);
     }
 
     @Override

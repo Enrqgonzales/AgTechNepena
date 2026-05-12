@@ -2,10 +2,16 @@ package com.agtech.nepenya.controller;
 
 import android.app.Activity;
 
+import com.agtech.nepenya.model.entity.InventarioItem;
 import com.agtech.nepenya.model.entity.Parcela;
 import com.agtech.nepenya.model.entity.Registro;
+import com.agtech.nepenya.model.repository.InventarioRepository;
 import com.agtech.nepenya.model.repository.ParcelaRepository;
 import com.agtech.nepenya.model.repository.RegistroRepository;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,6 +32,7 @@ public class RegistroController {
     private final Activity activity;
     private final ParcelaRepository parcelaRepository;
     private final RegistroRepository registroRepository;
+    private final InventarioRepository inventarioRepository;
     private final ExecutorService executorService;
 
     /**
@@ -33,6 +40,7 @@ public class RegistroController {
      */
     public interface ParcelasCallback {
         void onParcelasCargadas(List<Parcela> parcelas);
+
         void onError(String mensaje);
     }
 
@@ -41,6 +49,7 @@ public class RegistroController {
      */
     public interface GuardarCallback {
         void onSuccess();
+
         void onError(String mensaje);
     }
 
@@ -49,6 +58,7 @@ public class RegistroController {
      */
     public interface ValidacionCallback {
         void onValido();
+
         void onInvalido(String mensajeError);
     }
 
@@ -57,6 +67,10 @@ public class RegistroController {
             "Fertilizantes", "Mano de Obra", "Combustible", "Mantenimiento Riego",
             "Pesticidas", "Siembra", "Cosecha", "Transporte", "Otros"
     };
+
+    // Physical input categories (trigger inventory sync)
+    private static final Set<String> CATEGORIAS_FISICAS = new HashSet<>(Arrays.asList(
+            "Fertilizantes", "Pesticidas", "Combustible", "Siembra", "Riego", "Transporte"));
 
     public static final String[] CATEGORIAS_INGRESO = {
             "Venta Lote A", "Venta Lote B", "Venta Lote C",
@@ -67,11 +81,13 @@ public class RegistroController {
      * Constructor con inyeccion de dependencias.
      */
     public RegistroController(Activity activity,
-                              ParcelaRepository parcelaRepository,
-                              RegistroRepository registroRepository) {
+            ParcelaRepository parcelaRepository,
+            RegistroRepository registroRepository,
+            InventarioRepository inventarioRepository) {
         this.activity = activity;
         this.parcelaRepository = parcelaRepository;
         this.registroRepository = registroRepository;
+        this.inventarioRepository = inventarioRepository;
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -104,7 +120,7 @@ public class RegistroController {
      * @param callback  Callback de validacion
      */
     public void validarCampos(int parcelaId, String tipo, String categoria,
-                              double monto, String fecha, ValidacionCallback callback) {
+            double monto, String fecha, ValidacionCallback callback) {
         executorService.execute(() -> {
             String error = null;
 
@@ -143,9 +159,11 @@ public class RegistroController {
      * @param callback    Callback de resultado
      */
     public void guardarRegistro(int parcelaId, String tipo, String categoria,
-                                double monto, String fecha, String descripcion,
-                                GuardarCallback callback) {
+            double monto, String fecha, String descripcion,
+            Double cantidad, String unidad, Double costoUnitario,
+            GuardarCallback callback) {
         executorService.execute(() -> {
+            // 1. Create and save Registro
             Registro registro = new Registro();
             registro.setParcelaId(parcelaId);
             registro.setTipo(tipo);
@@ -157,8 +175,40 @@ public class RegistroController {
 
             registroRepository.insertar(registro);
 
+            // 2. Sync with Inventario if physical input category
+            if ("GASTO".equals(tipo) && CATEGORIAS_FISICAS.contains(categoria)
+                    && cantidad != null && cantidad > 0 && unidad != null && costoUnitario != null) {
+                sincronizarInventario(parcelaId, categoria, cantidad, unidad, costoUnitario, fecha);
+            }
+
             activity.runOnUiThread(callback::onSuccess);
         });
+    }
+
+    /**
+     * Synchronizes inventory by adding quantity to existing item or creating new
+     * one.
+     */
+    private void sincronizarInventario(int parcelaId, String categoria, double cantidad,
+            String unidad, double costoUnitario, String fecha) {
+        // Try to find existing item with same parcela + categoria + unidad
+        InventarioItem existingItem = inventarioRepository.obtenerPorParcelaCategoriaUnidad(
+                parcelaId, categoria, unidad);
+
+        if (existingItem != null) {
+            // Add quantity to existing item
+            existingItem.agregar(cantidad);
+            inventarioRepository.guardarItem(existingItem);
+        } else {
+            // Create new inventory item
+            String nombreItem = categoria; // Use category as name
+            InventarioItem newItem = new InventarioItem(nombreItem, categoria, cantidad, unidad,
+                    costoUnitario, fecha);
+            newItem.setParcelaId(parcelaId);
+            newItem.setDescripcion("Ingreso desde registro de gasto");
+            newItem.setSyncStatus("PENDING");
+            inventarioRepository.guardarItem(newItem);
+        }
     }
 
     /**

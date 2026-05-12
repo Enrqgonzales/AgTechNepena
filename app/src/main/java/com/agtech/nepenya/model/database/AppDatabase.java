@@ -24,7 +24,7 @@ import com.agtech.nepenya.model.entity.Usuario;
  * @version 1.0
  */
 @Database(entities = { Usuario.class, Parcela.class, Registro.class, InventarioItem.class,
-        InventarioMovimiento.class }, version = 2, exportSchema = false)
+        InventarioMovimiento.class }, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DATABASE_NAME = "agtech_nepenya_db";

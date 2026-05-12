@@ -49,3 +49,7 @@ target/
 # Spring Boot
 *.log
 spring-shell.log
+
+# Environment variables (credenciales sensibles)
+.env
+backend/.env

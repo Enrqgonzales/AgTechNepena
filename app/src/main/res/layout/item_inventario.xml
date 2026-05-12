@@ -104,16 +104,7 @@
                     android:layout_height="wrap_content"
                     android:minHeight="40dp"
                     android:text="Consumir"
-                    android:layout_marginEnd="8dp"
                     style="@style/Widget.AgTech.Button.Outlined" />
-
-                <Button
-                    android:id="@+id/btn_agregar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:minHeight="40dp"
-                    android:text="+ Stock"
-                    style="@style/Widget.AgTech.Button" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

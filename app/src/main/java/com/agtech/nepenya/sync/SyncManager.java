@@ -30,11 +30,11 @@ public class SyncManager {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
-        PeriodicWorkRequest syncWorkRequest =
-                new PeriodicWorkRequest.Builder(SyncWorker.class, SYNC_INTERVAL_MINUTES, TimeUnit.MINUTES)
-                        .setConstraints(constraints)
-                        .addTag(SYNC_WORK_TAG)
-                        .build();
+        PeriodicWorkRequest syncWorkRequest = new PeriodicWorkRequest.Builder(SyncWorker.class, SYNC_INTERVAL_MINUTES,
+                TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .addTag(SYNC_WORK_TAG)
+                .build();
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 SYNC_WORK_TAG,
@@ -57,10 +57,15 @@ public class SyncManager {
      * @param context Contexto de la aplicacion
      */
     public static void syncNow(Context context) {
-        androidx.work.OneTimeWorkRequest syncWorkRequest =
-                new androidx.work.OneTimeWorkRequest.Builder(SyncWorker.class)
-                        .addTag(SYNC_WORK_TAG + "_immediate")
-                        .build();
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        androidx.work.OneTimeWorkRequest syncWorkRequest = new androidx.work.OneTimeWorkRequest.Builder(
+                SyncWorker.class)
+                .setConstraints(constraints)
+                .addTag(SYNC_WORK_TAG + "_immediate")
+                .build();
 
         WorkManager.getInstance(context).enqueue(syncWorkRequest);
     }

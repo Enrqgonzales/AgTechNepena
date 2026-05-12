@@ -27,6 +27,11 @@
         <!-- Navigation bar -->
         <item name="android:navigationBarColor">@color/white</item>
 
+        <!-- Responsive text sizes -->
+        <item name="textSizeTitle">22sp</item>
+        <item name="textSizeBody">16sp</item>
+        <item name="textSizeLabel">12sp</item>
+
         <!-- Componentes -->
         <item name="materialButtonStyle">@style/Widget.AgTech.Button</item>
     </style>

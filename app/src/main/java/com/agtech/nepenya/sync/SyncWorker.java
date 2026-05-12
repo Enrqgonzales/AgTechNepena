@@ -112,7 +112,11 @@ public class SyncWorker extends Worker {
             // Sincronizar inventario
             success &= syncInventario();
 
-            return success ? Result.success() : Result.retry();
+            if (success) {
+                new PrefsManager(context).setLastSync(System.currentTimeMillis());
+                return Result.success();
+            }
+            return Result.retry();
 
         } catch (Exception e) {
             e.printStackTrace();

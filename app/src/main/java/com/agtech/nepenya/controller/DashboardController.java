@@ -2,6 +2,7 @@ package com.agtech.nepenya.controller;
 
 import android.app.Activity;
 
+import com.agtech.nepenya.model.repository.InventarioRepository;
 import com.agtech.nepenya.model.repository.RegistroRepository;
 import com.agtech.nepenya.model.repository.UsuarioRepository;
 import com.agtech.nepenya.model.repository.ParcelaRepository;
@@ -37,6 +38,7 @@ public class DashboardController {
     private final UsuarioRepository usuarioRepository;
     private final ParcelaRepository parcelaRepository;
     private final RegistroRepository registroRepository;
+    private final InventarioRepository inventarioRepository;
     private final ExecutorService executorService;
 
     private final Retrofit retrofitOpenMeteo;
@@ -116,6 +118,8 @@ public class DashboardController {
         this.usuarioRepository = usuarioRepository;
         this.parcelaRepository = parcelaRepository;
         this.registroRepository = registroRepository;
+        this.inventarioRepository = new InventarioRepository(
+                com.agtech.nepenya.model.database.AppDatabase.getInstance(activity).inventarioDao());
         this.executorService = Executors.newSingleThreadExecutor();
 
         this.retrofitOpenMeteo = new Retrofit.Builder()
@@ -208,8 +212,10 @@ public class DashboardController {
             int usuariosPendientes = usuarioRepository.contarPendientes();
             int parcelasPendientes = parcelaRepository.contarPendientes();
             int registrosPendientes = registroRepository.contarPendientes();
+            int inventarioPendientes = inventarioRepository.obtenerPendientesSync().size();
 
-            int totalPendientes = usuariosPendientes + parcelasPendientes + registrosPendientes;
+            int totalPendientes = usuariosPendientes + parcelasPendientes
+                    + registrosPendientes + inventarioPendientes;
             String estado = totalPendientes > 0 ? "PENDING" : "SYNCED";
 
             activity.runOnUiThread(() -> callback.onSyncStatus(estado));

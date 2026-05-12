@@ -69,27 +69,30 @@ public class HistorialController {
         executorService.execute(() -> {
             List<Registro> registros;
 
-            // Primero filtrar por fecha
-            if (!"TODOS".equals(anio) && !"TODOS".equals(mes)) {
-                // Filtrar por año y mes
+            boolean tieneAnio = !"TODOS".equals(anio);
+            boolean tieneMes = !"TODOS".equals(mes);
+            boolean tieneParcela = parcelaId > 0;
+            boolean tieneTipo = "GASTO".equals(filtroTipo) || "INGRESO".equals(filtroTipo);
+
+            if (tieneAnio && tieneMes) {
                 registros = registroRepository.obtenerPorAnioYMes(anio, mes);
-            } else if (!"TODOS".equals(anio)) {
-                // Filtrar solo por año
+            } else if (tieneAnio) {
                 registros = registroRepository.obtenerPorAnio(anio);
             } else {
-                // Sin filtro de fecha
                 registros = registroRepository.obtenerTodos();
             }
 
-            // Aplicar filtros adicionales en memoria
-            if (parcelaId > 0) {
-                registros.removeIf(r -> r.getParcelaId() != parcelaId);
-            }
-
-            if ("GASTO".equals(filtroTipo)) {
-                registros.removeIf(r -> !"GASTO".equals(r.getTipo()));
-            } else if ("INGRESO".equals(filtroTipo)) {
-                registros.removeIf(r -> !"INGRESO".equals(r.getTipo()));
+            // Filtrar en memoria solo los casos combinados no cubiertos por el DAO
+            if (tieneParcela && tieneTipo) {
+                final int pid = parcelaId;
+                final String tipo = filtroTipo;
+                registros.removeIf(r -> r.getParcelaId() != pid || !tipo.equals(r.getTipo()));
+            } else if (tieneParcela) {
+                final int pid = parcelaId;
+                registros.removeIf(r -> r.getParcelaId() != pid);
+            } else if (tieneTipo) {
+                final String tipo = filtroTipo;
+                registros.removeIf(r -> !tipo.equals(r.getTipo()));
             }
 
             activity.runOnUiThread(() -> callback.onLista(registros));

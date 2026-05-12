@@ -48,6 +48,22 @@ public class InventarioRepository {
         return inventarioDao.obtenerPorCategoria(categoria);
     }
 
+    public List<InventarioItem> obtenerPorParcela(int parcelaId) {
+        return inventarioDao.obtenerPorParcela(parcelaId);
+    }
+
+    public List<InventarioItem> obtenerPorParcelaYCategoria(int parcelaId, String categoria) {
+        return inventarioDao.obtenerPorParcelaYCategoria(parcelaId, categoria);
+    }
+
+    public InventarioItem obtenerPorParcelaYNombreCategoria(int parcelaId, String nombre, String categoria) {
+        return inventarioDao.obtenerPorParcelaYNombreCategoria(parcelaId, nombre, categoria);
+    }
+
+    public InventarioItem obtenerPorParcelaCategoriaUnidad(int parcelaId, String categoria, String unidad) {
+        return inventarioDao.obtenerPorParcelaCategoriaUnidad(parcelaId, categoria, unidad);
+    }
+
     public List<InventarioItem> obtenerConStock() {
         return inventarioDao.obtenerItemsConStock();
     }
@@ -117,7 +133,8 @@ public class InventarioRepository {
     // Estadísticas
 
     public double obtenerValorTotal() {
-        return inventarioDao.obtenerValorTotalInventario();
+        Double total = inventarioDao.obtenerValorTotalInventario();
+        return total != null ? total : 0.0;
     }
 
     public int contarItems() {

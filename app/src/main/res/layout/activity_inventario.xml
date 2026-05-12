@@ -157,7 +157,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="No hay items en el inventario&#10;Toca + para agregar"
+                android:text="No hay items en el inventario&#10;Agrega insumos desde Registro"
                 android:textSize="?attr/textSizeBody"
                 android:textColor="?android:attr/textColorPrimary"
                 android:gravity="center"
@@ -177,17 +177,5 @@
             app:labelVisibilityMode="labeled" />
 
     </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="88dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_edit"
-        app:backgroundTint="#1A1A1A"
-        app:tint="@color/white"
-        app:elevation="6dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

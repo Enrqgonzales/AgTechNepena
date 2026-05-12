@@ -50,8 +50,8 @@ public class MisParcelasActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_mis_parcelas);
 
         prefsManager = new PrefsManager(this);

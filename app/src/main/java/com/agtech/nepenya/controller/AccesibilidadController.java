@@ -27,6 +27,7 @@ public class AccesibilidadController {
      */
     public interface AccesibilidadCallback {
         void onGuardadoExitoso();
+
         void onError(String mensaje);
     }
 
@@ -58,8 +59,7 @@ public class AccesibilidadController {
             String themeMode = prefsManager.getThemeMode();
             boolean voiceEnabled = prefsManager.isVoiceEnabled();
 
-            activity.runOnUiThread(() ->
-                    callback.onValores(fontSize, brightness, themeMode, voiceEnabled));
+            activity.runOnUiThread(() -> callback.onValores(fontSize, brightness, themeMode, voiceEnabled));
         });
     }
 
@@ -136,5 +136,12 @@ public class AccesibilidadController {
      */
     public void aplicarTodasLasPreferencias() {
         AccessibilityPrefs.applyAll(activity);
+    }
+
+    /**
+     * Libera el ExecutorService. Llamar desde onDestroy() de la Activity.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

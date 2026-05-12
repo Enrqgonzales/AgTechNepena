@@ -63,8 +63,8 @@ public class HistorialActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_historial);
 
         initController();
@@ -72,8 +72,9 @@ public class HistorialActivity extends AppCompatActivity implements
         initListeners();
         initRecyclerView();
 
-        // Cargar parcelas para spinner
+        // Cargar parcelas y años para spinners
         cargarParcelas();
+        cargarAnios();
 
         // Cargar registros
         cargarRegistros();
@@ -99,21 +100,16 @@ public class HistorialActivity extends AppCompatActivity implements
         recyclerView = findViewById(R.id.recycler_view);
         tvEmpty = findViewById(R.id.tv_empty);
 
-        // Configurar spinners de fecha con opciones "Todos"
-        String[] anios = { "Todos los años", "2024", "2025", "2026", "2027", "2028" };
+        // Configurar spinner de meses (fijo, siempre 12 meses)
         String[] meses = { "Todos los meses", "01 - Enero", "02 - Febrero", "03 - Marzo", "04 - Abril",
                 "05 - Mayo", "06 - Junio", "07 - Julio", "08 - Agosto", "09 - Septiembre",
                 "10 - Octubre", "11 - Noviembre", "12 - Diciembre" };
-
-        ArrayAdapter<String> anioAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, anios);
-        anioAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerAnio.setAdapter(anioAdapter);
-
         ArrayAdapter<String> mesAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, meses);
         mesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMes.setAdapter(mesAdapter);
+
+        // Spinner de años: se carga dinámicamente desde la BD en cargarAnios()
 
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.todos)));
         tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.gastos)));
@@ -280,11 +276,24 @@ public class HistorialActivity extends AppCompatActivity implements
         new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
     }
 
+    private void cargarAnios() {
+        controller.obtenerAniosDisponibles(anios -> {
+            java.util.List<String> opciones = new java.util.ArrayList<>();
+            opciones.add("Todos los años");
+            opciones.addAll(anios);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_spinner_item, opciones);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerAnio.setAdapter(adapter);
+        });
+    }
+
     private void cargarParcelas() {
         AppDatabase db = AppDatabase.getInstance(this);
         ParcelaRepository parcelaRepo = new ParcelaRepository(db.parcelaDao());
 
-        new Thread(() -> {
+        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
             parcelasList = parcelaRepo.obtenerTodas();
             List<String> nombres = new ArrayList<>();
             nombres.add("Todas las parcelas");
@@ -298,7 +307,8 @@ public class HistorialActivity extends AppCompatActivity implements
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerParcela.setAdapter(adapter);
             });
-        }).start();
+            exec.shutdown();
+        });
     }
 
     private void cargarRegistros() {

@@ -22,7 +22,6 @@ import com.agtech.nepenya.model.entity.InventarioItem;
 import com.agtech.nepenya.model.repository.InventarioRepository;
 import com.agtech.nepenya.view.adapter.InventarioAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,15 +46,14 @@ public class InventarioActivity extends AppCompatActivity implements
     private TextView tvEmpty;
     private TextView tvTotalValor;
     private TextView tvTotalItems;
-    private FloatingActionButton fabAdd;
     private LinearLayout layoutResumen;
 
     private String filtroCategoria = "TODAS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_inventario);
 
         initController();
@@ -85,7 +83,6 @@ public class InventarioActivity extends AppCompatActivity implements
         tvEmpty = findViewById(R.id.tv_empty);
         tvTotalValor = findViewById(R.id.tv_total_valor);
         tvTotalItems = findViewById(R.id.tv_total_items);
-        fabAdd = findViewById(R.id.fab_add);
         layoutResumen = findViewById(R.id.layout_resumen);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
@@ -117,12 +114,10 @@ public class InventarioActivity extends AppCompatActivity implements
     }
 
     private void initListeners() {
-        fabAdd.setOnClickListener(v -> mostrarDialogAgregarItem());
-
         spinnerCategoria.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] categorias = { "TODAS", "PESTICIDA", "FERTILIZANTE", "SEMILLA", "OTRO" };
+                String[] categorias = { "TODAS", "Pesticidas", "Fertilizantes", "Semillas", "Otros" };
                 filtroCategoria = categorias[position];
                 cargarInventario();
             }
@@ -157,11 +152,6 @@ public class InventarioActivity extends AppCompatActivity implements
         controller.cargarInventario(filtroCategoria, this);
     }
 
-    private void mostrarDialogAgregarItem() {
-        Intent intent = new Intent(this, InventarioFormActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onInventarioCargado(List<InventarioItem> items, double valorTotal, int totalItems) {
         adapter.actualizarLista(items);
@@ -189,17 +179,17 @@ public class InventarioActivity extends AppCompatActivity implements
 
     @Override
     public void onItemClick(InventarioItem item) {
-        controller.mostrarDialogOpciones(this, item, this);
+        // Directly show consume dialog - no more options menu
+        if (item.getCantidad() > 0) {
+            controller.mostrarDialogConsumir(this, item, this);
+        } else {
+            Toast.makeText(this, "Sin stock disponible", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public void onConsumirClick(InventarioItem item) {
         controller.mostrarDialogConsumir(this, item, this);
-    }
-
-    @Override
-    public void onAgregarClick(InventarioItem item) {
-        controller.mostrarDialogAgregar(this, item, this);
     }
 
     @Override

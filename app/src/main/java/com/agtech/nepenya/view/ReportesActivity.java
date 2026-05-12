@@ -59,8 +59,8 @@ public class ReportesActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AccessibilityPrefs.applyAll(this);
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_reportes);
 
         initController();
@@ -257,11 +257,13 @@ public class ReportesActivity extends AppCompatActivity implements
 
         // Guardar registros para exportacion
         String anioStr = String.valueOf(anioActual);
-        new Thread(() -> {
+        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
+        exec.execute(() -> {
             AppDatabase db = AppDatabase.getInstance(this);
             RegistroRepository repo = new RegistroRepository(db.registroDao());
             registrosActuales = repo.obtenerPorAnio(anioStr);
-        }).start();
+            exec.shutdown();
+        });
     }
 
     @Override

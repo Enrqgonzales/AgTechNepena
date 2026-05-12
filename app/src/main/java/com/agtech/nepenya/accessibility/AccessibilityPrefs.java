@@ -39,6 +39,8 @@ public class AccessibilityPrefs {
 
     /**
      * Aplica tema Dia o Noche.
+     * Solo actualiza el modo global sin recrear la Activity.
+     * Llamar activity.recreate() manualmente si se necesita aplicar en caliente.
      *
      * @param activity  Activity
      * @param themeMode "DIA" o "NOCHE"
@@ -48,10 +50,7 @@ public class AccessibilityPrefs {
                 ? AppCompatDelegate.MODE_NIGHT_YES
                 : AppCompatDelegate.MODE_NIGHT_NO;
 
-        if (AppCompatDelegate.getDefaultNightMode() != newMode) {
-            AppCompatDelegate.setDefaultNightMode(newMode);
-            activity.recreate();
-        }
+        AppCompatDelegate.setDefaultNightMode(newMode);
     }
 
     /**

@@ -45,10 +45,8 @@ public class AccesibilidadActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Aplicar preferencias antes de setContentView
-        AccessibilityPrefs.applyAll(this);
-
         super.onCreate(savedInstanceState);
+        AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_accesibilidad);
 
         prefsManager = new PrefsManager(this);
@@ -239,5 +237,13 @@ public class AccesibilidadActivity extends AppCompatActivity implements
     @Override
     public void onError(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (controller != null) {
+            controller.shutdown();
+        }
     }
 }

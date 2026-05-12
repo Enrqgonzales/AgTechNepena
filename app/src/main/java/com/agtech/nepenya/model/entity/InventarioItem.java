@@ -2,6 +2,8 @@ package com.agtech.nepenya.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 /**
@@ -11,7 +13,8 @@ import androidx.room.PrimaryKey;
  * @author AgTech Nepeña Team
  * @version 1.0
  */
-@Entity(tableName = "inventario")
+@Entity(tableName = "inventario", foreignKeys = @ForeignKey(entity = Parcela.class, parentColumns = "id", childColumns = "parcela_id", onDelete = ForeignKey.CASCADE), indices = {
+        @Index("parcela_id") })
 public class InventarioItem {
 
     @PrimaryKey(autoGenerate = true)
@@ -38,11 +41,14 @@ public class InventarioItem {
     @ColumnInfo(name = "descripcion")
     private String descripcion;
 
-    @ColumnInfo(name = "syncStatus")
+    @ColumnInfo(name = "sync_status")
     private String syncStatus = "PENDING";
 
-    @ColumnInfo(name = "remoteId")
+    @ColumnInfo(name = "remote_id")
     private int remoteId;
+
+    @ColumnInfo(name = "parcela_id")
+    private int parcelaId;
 
     /**
      * Constructor vacio requerido por Room.
@@ -143,6 +149,14 @@ public class InventarioItem {
 
     public void setRemoteId(int remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public int getParcelaId() {
+        return parcelaId;
+    }
+
+    public void setParcelaId(int parcelaId) {
+        this.parcelaId = parcelaId;
     }
 
     /**
