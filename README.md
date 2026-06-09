@@ -1,15 +1,30 @@
-Aquí tienes una versión más estructurada, legible y pensada para que otro desarrollador entienda rápidamente el valor y la configuración del proyecto. Se eliminaron las redundancias al final y se le dio un tono más natural.AgTech Nepeña 🥑🥭Aplicación móvil offline-first diseñada para optimizar la gestión agrícola de productores de palta y mango en el Valle de Nepeña, Áncash. Permite registrar datos en campo sin conexión a internet y sincroniza automáticamente con el servidor al detectar red.✨ Características PrincipalesOffline-first: Registro y consulta de datos garantizados mediante base de datos local (SQLite/Room).Sincronización Inteligente: WorkManager actualiza datos en segundo plano cada 15 minutos cuando hay conexión.Accesibilidad e Inclusión: Soporte para comandos de voz, alto contraste, ajuste de fuente y brillo.Servicios Externos: Datos climáticos en tiempo real (Open-Meteo API) y tipo de cambio (ExchangeRate-API).🛠 Arquitectura y Stack TecnológicoApp Android: Java, Patrón MVC, DAO, Room 2.6.x (SDK min 26, target 34).Backend API: Spring Boot 3.x, Java 17+, Maven.Base de Datos: PostgreSQL 14+.Red y Background: Retrofit 2, WorkManager.📂 Estructura del RepositorioPlaintextAgTechNepeña/
-├── app/          # App Android (Código Java y vistas XML)
-└── backend/      # API REST en Spring Boot
-🚀 Instalación y Despliegue1. Base de DatosCrea la base de datos en PostgreSQL:SQLCREATE DATABASE agtech_db;
-Actualiza tus credenciales en backend/src/main/resources/application.properties:Propertiesspring.datasource.url=jdbc:postgresql://localhost:5432/agtech_db
-spring.datasource.username=TU_USUARIO
-spring.datasource.password=TU_PASSWORD
-2. BackendEjecuta la API desde la terminal:Bashcd backend
-mvn clean install
-mvn spring-boot:run
-3. App AndroidConfigura la IP local de tu máquina en la variable BASE_URL dentro de SyncWorker.java para que el emulador o dispositivo físico alcance el backend:Java// Ejemplo: "http://192.168.1.X:8080/api/sync"
-private static final String BASE_URL = "http://TU_IP_LOCAL:8080/api/sync";
-Compila el APK:Bashcd app
-./gradlew assembleDebug
-📡 API Endpoints (Sync)EndpointMétodoDescripción/api/sync/usuariosPOSTSincronización bidireccional de usuarios/api/sync/parcelasPOSTActualización de sectores y cultivos/api/sync/registrosPOSTSubida de actividades agrícolas offline🔒 Permisos Requeridos (Android)INTERNET: Comunicación con backend y APIs de terceros.ACCESS_FINE_LOCATION: Geolocalización para clima por parcela.RECORD_AUDIO: Interfaz de comandos de voz.FOREGROUND_SERVICE: Garantizar ciclos de sincronización estables.Licencia: MIT License - AgTech Nepeña Team
+# AgTech Nepeña 🥑 Mango y Palta
+
+Aplicación móvil **offline-first** diseñada para optimizar la gestión agrícola de productores de palta y mango en el Valle de Nepeña, Áncash, Perú. Permite registrar datos en campo sin conexión a internet y sincroniza automáticamente con el servidor central al detectar red.
+
+---
+
+## 🚀 Características Principales
+
+* **Offline-First:** Registro y consulta de datos garantizados mediante base de datos local (SQLite/Room).
+* **Sincronización Automática:** Uso de `WorkManager` para sincronizar datos en segundo plano cada 15 minutos cuando hay conexión a internet.
+* **Accesibilidad:** Soporte para comandos de voz, alto contraste, ajuste de tamaño de fuente y brillo de pantalla.
+* **Integraciones Externas:** Datos climáticos en tiempo real vía Open-Meteo API y tipo de cambio mediante ExchangeRate-API.
+
+---
+
+## 🛠️ Arquitectura y Stack Tecnológico
+
+* **Android App:** Java, Patrón MVC, DAO, Room 2.6.x (minSdk 26, targetSdk 34).
+* **Backend REST API:** Spring Boot 3.x, Java 17+, Maven.
+* **Base de Datos:** PostgreSQL 14+.
+* **Red y Background:** Retrofit 2, WorkManager.
+
+---
+
+## 📂 Estructura del Proyecto
+
+```text
+AgTechNepeña/
+├── app/          # Código fuente de la aplicación Android (Java y XML)
+└── backend/      # Código fuente de la API REST (Spring Boot)
