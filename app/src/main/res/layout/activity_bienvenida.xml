@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_cream"
+    android:background="?android:attr/colorBackground"
     android:fillViewport="true">
 
     <LinearLayout
@@ -19,7 +19,7 @@
             android:src="@drawable/ic_leaf"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="24dp"
-            app:tint="@color/primary_text" />
+            app:tint="?attr/colorPrimary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -112,8 +112,8 @@
             android:text="COMENZAR"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="@color/primary_text"
-            android:textColor="@color/white" />
+            android:backgroundTint="@color/md3_primary"
+            android:textColor="@color/md3_on_primary" />
 
     </LinearLayout>
 </ScrollView>

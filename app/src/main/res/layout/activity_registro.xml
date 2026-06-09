@@ -13,12 +13,12 @@
         android:visibility="gone"
         android:orientation="horizontal"
         android:padding="10dp"
-        android:background="@color/accent_green">
+        android:background="@color/md3_primary_container">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/modo_sin_conexion"
-            android:textColor="@color/white"
+            android:textColor="@color/md3_on_primary_container"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -46,8 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/ir_a_parcelas"
-            android:backgroundTint="@color/primary_text"
-            android:textColor="@color/white" />
+            android:backgroundTint="@color/md3_primary"
+            android:textColor="@color/md3_on_primary" />
     </LinearLayout>
 
     <!-- Formulario de registro -->
@@ -254,8 +254,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/guardar"
-                    android:backgroundTint="@color/primary_text"
-                    android:textColor="@color/white" />
+                    android:backgroundTint="@color/md3_primary"
+                    android:textColor="@color/md3_on_primary" />
 
                 <ImageButton
                     android:id="@+id/btn_voice"
@@ -274,7 +274,7 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="?attr/colorSurfaceContainer"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"

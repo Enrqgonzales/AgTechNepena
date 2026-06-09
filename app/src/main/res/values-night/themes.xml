@@ -1,84 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema oscuro de la aplicacion -->
-    <style name="Theme.AgTechNepenya" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Colores primarios -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/black</item>
+    <!-- Night theme overrides — only statusBarColor behavior differs -->
+    <style name="Theme.AgTechNepenya" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- All color tokens auto-resolve from values-night/colors.xml -->
 
-        <!-- Colores secundarios -->
-        <item name="colorSecondary">@color/accent_green</item>
-        <item name="colorSecondaryVariant">@color/primary_dark</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <!-- Primary -->
+        <item name="colorPrimary">@color/md3_primary</item>
+        <item name="colorOnPrimary">@color/md3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/md3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md3_on_primary_container</item>
 
-        <!-- Colores de fondo -->
-        <item name="android:windowBackground">@color/background_cream</item>
-        <item name="android:colorBackground">@color/background_cream</item>
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/md3_secondary</item>
+        <item name="colorOnSecondary">@color/md3_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/md3_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/md3_on_secondary_container</item>
 
-        <!-- Colores de texto -->
-        <item name="android:textColorPrimary">@color/primary_text</item>
-        <item name="android:textColorSecondary">@color/secondary_text</item>
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/md3_tertiary</item>
+        <item name="colorOnTertiary">@color/md3_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/md3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/md3_on_tertiary_container</item>
 
-        <!-- Status bar -->
-        <item name="android:statusBarColor">@color/background_cream</item>
+        <!-- Error -->
+        <item name="colorError">@color/md3_error</item>
+        <item name="colorOnError">@color/md3_on_error</item>
+        <item name="colorErrorContainer">@color/md3_error_container</item>
+        <item name="colorOnErrorContainer">@color/md3_on_error_container</item>
+
+        <!-- Surface & Background -->
+        <item name="android:colorBackground">@color/md3_background</item>
+        <item name="colorOnBackground">@color/md3_on_background</item>
+        <item name="colorSurface">@color/md3_surface</item>
+        <item name="colorOnSurface">@color/md3_on_surface</item>
+        <item name="colorSurfaceVariant">@color/md3_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/md3_on_surface_variant</item>
+        <item name="colorSurfaceContainerLowest">@color/md3_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/md3_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/md3_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/md3_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/md3_surface_container_highest</item>
+
+        <!-- Outline -->
+        <item name="colorOutline">@color/md3_outline</item>
+        <item name="colorOutlineVariant">@color/md3_outline_variant</item>
+
+        <!-- Background compat -->
+        <item name="android:windowBackground">@color/md3_background</item>
+
+        <!-- Status bar — dark icons OFF for night -->
+        <item name="android:statusBarColor">@color/md3_background</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <!-- Navigation bar -->
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/md3_surface_container</item>
 
         <!-- Responsive text sizes -->
         <item name="textSizeTitle">22sp</item>
         <item name="textSizeBody">16sp</item>
         <item name="textSizeLabel">12sp</item>
 
-        <!-- Componentes -->
+        <!-- Component Styles -->
         <item name="materialButtonStyle">@style/Widget.AgTech.Button</item>
+        <item name="bottomNavigationStyle">@style/Widget.AgTech.BottomNav</item>
+        <item name="materialCardViewStyle">@style/Widget.AgTech.Card</item>
+        <item name="tabStyle">@style/Widget.AgTech.TabLayout</item>
     </style>
 
-    <!-- Estilo de botones -->
-    <style name="Widget.AgTech.Button" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/primary</item>
-        <item name="android:textColor">@color/black</item>
+    <!-- Component Styles (night inherits from day values/themes.xml) -->
+    <style name="Widget.AgTech.Button" parent="Widget.Material3.Button">
         <item name="cornerRadius">28dp</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
     </style>
 
-    <!-- Estilo de boton outline -->
-    <style name="Widget.AgTech.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="strokeColor">@color/primary</item>
-        <item name="android:textColor">@color/primary_text</item>
+    <style name="Widget.AgTech.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="cornerRadius">28dp</item>
     </style>
 
-    <!-- Estilo de card -->
-    <style name="Widget.AgTech.Card" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">@color/white</item>
+    <style name="Widget.AgTech.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainerLow</item>
         <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">2dp</item>
+        <item name="cardElevation">0dp</item>
         <item name="contentPadding">16dp</item>
     </style>
 
-    <!-- Estilo de tabs -->
-    <style name="Widget.AgTech.TabLayout" parent="Widget.MaterialComponents.TabLayout">
-        <item name="tabIndicatorColor">@color/accent_green</item>
-        <item name="tabSelectedTextColor">@color/accent_green</item>
-        <item name="tabTextColor">@color/secondary_text</item>
-        <item name="tabIndicatorHeight">2dp</item>
+    <style name="Widget.AgTech.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">?attr/colorSurfaceContainer</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.AgTech.BottomNav.ActiveIndicator</item>
     </style>
 
-    <!-- Estilo de SeekBar -->
+    <style name="Widget.AgTech.BottomNav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/md3_secondary_container</item>
+    </style>
+
+    <style name="Widget.AgTech.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="tabIndicatorColor">?attr/colorPrimary</item>
+        <item name="tabSelectedTextColor">?attr/colorPrimary</item>
+        <item name="tabTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabIndicatorFullWidth">false</item>
+    </style>
+
     <style name="Widget.AgTech.SeekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:progressTint">@color/accent_green</item>
-        <item name="android:thumbTint">@color/accent_green</item>
+        <item name="android:progressTint">?attr/colorPrimary</item>
+        <item name="android:thumbTint">?attr/colorPrimary</item>
     </style>
 
-    <!-- Estilo de Switch -->
-    <style name="Widget.AgTech.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/accent_green</item>
-        <item name="trackTint">@color/accent_green</item>
+    <style name="Widget.AgTech.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
     </style>
 </resources>

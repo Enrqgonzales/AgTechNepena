@@ -1,34 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="primary">#4CAF50</color>
-    <color name="primary_dark">#2E7D32</color>
-    <color name="accent_green">#4CAF50</color>
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- Material Design 3 — Paleta "Valle Verde" Dark  -->
+    <!-- ═══════════════════════════════════════════════ -->
 
-    <!-- Background Colors -->
-    <color name="background_cream">#121212</color>
-    <color name="white">#1E1E1E</color>
-    <color name="black">#FFFFFF</color>
+    <!-- Primary -->
+    <color name="md3_primary">#88D986</color>
+    <color name="md3_on_primary">#00390E</color>
+    <color name="md3_primary_container">#03531C</color>
+    <color name="md3_on_primary_container">#A3F5A0</color>
 
-    <!-- Text Colors -->
-    <color name="primary_text">#FFFFFF</color>
-    <color name="secondary_text">#B0B0B0</color>
-    <color name="hint_text">#808080</color>
+    <!-- Secondary -->
+    <color name="md3_secondary">#B7CCB8</color>
+    <color name="md3_on_secondary">#233426</color>
+    <color name="md3_secondary_container">#394B3B</color>
+    <color name="md3_on_secondary_container">#D3E8D3</color>
 
-    <!-- Status Colors -->
-    <color name="error_red">#EF5350</color>
-    <color name="accent_red">#EF5350</color>
-    <color name="sync_green">#4CAF50</color>
-    <color name="sync_red">#EF5350</color>
+    <!-- Tertiary -->
+    <color name="md3_tertiary">#A1D0BE</color>
+    <color name="md3_on_tertiary">#07372A</color>
+    <color name="md3_tertiary_container">#234E40</color>
+    <color name="md3_on_tertiary_container">#BCECDA</color>
 
-    <!-- UI Colors -->
-    <color name="divider">#333333</color>
+    <!-- Error -->
+    <color name="md3_error">#FFB4AB</color>
+    <color name="md3_on_error">#690005</color>
+    <color name="md3_error_container">#93000A</color>
+    <color name="md3_on_error_container">#FFDAD6</color>
+
+    <!-- Surface & Background -->
+    <color name="md3_background">#121410</color>
+    <color name="md3_on_background">#E2E3DA</color>
+    <color name="md3_surface">#121410</color>
+    <color name="md3_on_surface">#E2E3DA</color>
+    <color name="md3_surface_variant">#424940</color>
+    <color name="md3_on_surface_variant">#C2C9BD</color>
+
+    <!-- Surface Containers (Elevation Tonal) -->
+    <color name="md3_surface_container_lowest">#0D0F0C</color>
+    <color name="md3_surface_container_low">#1A1C19</color>
+    <color name="md3_surface_container">#1E201D</color>
+    <color name="md3_surface_container_high">#292B27</color>
+    <color name="md3_surface_container_highest">#343532</color>
+
+    <!-- Outline -->
+    <color name="md3_outline">#8C9388</color>
+    <color name="md3_outline_variant">#424940</color>
+
+    <!-- Inverse -->
+    <color name="md3_inverse_surface">#E2E3DA</color>
+    <color name="md3_inverse_on_surface">#2F312D</color>
+    <color name="md3_inverse_primary">#1B6D2F</color>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- Legacy Aliases (backward compat)   -->
+    <!-- ═══════════════════════════════════ -->
+    <color name="primary">@color/md3_primary</color>
+    <color name="primary_dark">#03531C</color>
+    <color name="accent_green">@color/md3_primary</color>
+    <color name="background_cream">@color/md3_background</color>
+    <color name="white">@color/md3_surface_container</color>
+    <color name="black">@color/md3_on_surface</color>
+    <color name="primary_text">@color/md3_on_surface</color>
+    <color name="secondary_text">@color/md3_on_surface_variant</color>
+    <color name="hint_text">@color/md3_outline</color>
+    <color name="error_red">@color/md3_error</color>
+    <color name="accent_red">@color/md3_error</color>
+    <color name="sync_green">@color/md3_primary</color>
+    <color name="sync_red">@color/md3_error</color>
+    <color name="divider">@color/md3_outline_variant</color>
     <color name="card_shadow">#40000000</color>
-    <color name="chip_background">#2A2A2A</color>
-    <color name="tab_selected">#4CAF50</color>
-    <color name="tab_unselected">#B0B0B0</color>
-
-    <!-- Bottom Navigation -->
-    <color name="bottom_nav_selected">#4CAF50</color>
-    <color name="bottom_nav_unselected">#888888</color>
+    <color name="chip_background">@color/md3_surface_variant</color>
+    <color name="tab_selected">@color/md3_primary</color>
+    <color name="tab_unselected">@color/md3_on_surface_variant</color>
+    <color name="bottom_nav_selected">@color/md3_primary</color>
+    <color name="bottom_nav_unselected">@color/md3_on_surface_variant</color>
 </resources>

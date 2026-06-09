@@ -58,7 +58,7 @@ public class RegistroActivity extends AppCompatActivity implements
     // UI Elements
     private LinearLayout offlineBanner;
     private LinearLayout layoutSinParcelas;
-    private View scrollFormulario;
+    private android.widget.ScrollView scrollFormulario;
     private Spinner spinnerParcela;
     private RadioGroup radioGroupTipo;
     private ChipGroup chipGroupCategorias;
@@ -443,11 +443,14 @@ public class RegistroActivity extends AppCompatActivity implements
 
     @Override
     public void onError(String mensaje) {
-        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
+        com.google.android.material.snackbar.Snackbar.make(findViewById(android.R.id.content), mensaje, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void onValido() {
+        btnGuardar.setEnabled(false);
+        btnGuardar.setText("Guardando...");
+        
         Double cantidad = isCategoriaFisica() ? getCantidad() : null;
         String unidad = isCategoriaFisica() ? getUnidad() : null;
         Double costoUnitario = isCategoriaFisica() ? getCostoUnitario() : null;
@@ -459,13 +462,25 @@ public class RegistroActivity extends AppCompatActivity implements
 
     @Override
     public void onInvalido(String mensajeError) {
-        Toast.makeText(this, mensajeError, Toast.LENGTH_SHORT).show();
+        com.google.android.material.snackbar.Snackbar.make(findViewById(android.R.id.content), mensajeError, com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show();
     }
 
     @Override
     public void onSuccess() {
-        Toast.makeText(this, "Registro guardado", Toast.LENGTH_SHORT).show();
-        finish();
+        com.google.android.material.snackbar.Snackbar.make(findViewById(android.R.id.content), "Registro guardado exitosamente", com.google.android.material.snackbar.Snackbar.LENGTH_LONG).show();
+        
+        // Reset state
+        btnGuardar.setEnabled(true);
+        btnGuardar.setText(R.string.guardar_registro);
+        etDescripcion.setText("");
+        etCantidad.setText("");
+        etCostoUnitario.setText("");
+        montoActual = 0.0;
+        tvMonto.setText("S/ 0.00");
+        tvMontoCalculado.setText("S/ 0.00");
+        
+        // Ensure scroll to top to see the Snackbar and empty fields
+        scrollFormulario.smoothScrollTo(0, 0);
     }
 
     @Override

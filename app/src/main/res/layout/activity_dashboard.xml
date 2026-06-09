@@ -81,7 +81,7 @@
         android:layout_marginBottom="8dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,7 +94,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_weather"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -144,7 +144,7 @@
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -157,7 +157,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_exchange"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -194,7 +194,7 @@
         android:layout_marginHorizontal="16dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="?attr/colorSurface">
+        app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -233,7 +233,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
-                    app:tint="?attr/colorOnSurface" />
+                    app:tint="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
 
             <View
@@ -371,7 +371,7 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="?attr/colorSurfaceContainer"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
@@ -388,8 +388,8 @@
         android:layout_marginBottom="88dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_mic"
-        app:backgroundTint="@color/accent_green"
-        app:tint="@color/white"
+        app:backgroundTint="?attr/colorPrimaryContainer"
+        app:tint="?attr/colorOnPrimaryContainer"
         app:elevation="6dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

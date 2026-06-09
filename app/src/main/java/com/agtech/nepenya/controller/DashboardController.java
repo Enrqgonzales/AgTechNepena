@@ -209,6 +209,8 @@ public class DashboardController {
      */
     public void checkSyncStatus(SyncCallback callback) {
         executorService.execute(() -> {
+            boolean isOnline = NetworkUtils.isConnected(activity);
+
             int usuariosPendientes = usuarioRepository.contarPendientes();
             int parcelasPendientes = parcelaRepository.contarPendientes();
             int registrosPendientes = registroRepository.contarPendientes();
@@ -216,7 +218,15 @@ public class DashboardController {
 
             int totalPendientes = usuariosPendientes + parcelasPendientes
                     + registrosPendientes + inventarioPendientes;
-            String estado = totalPendientes > 0 ? "PENDING" : "SYNCED";
+            
+            String estado;
+            if (!isOnline) {
+                estado = "OFFLINE";
+            } else if (totalPendientes > 0) {
+                estado = "SYNCING";
+            } else {
+                estado = "ONLINE";
+            }
 
             activity.runOnUiThread(() -> callback.onSyncStatus(estado));
         });

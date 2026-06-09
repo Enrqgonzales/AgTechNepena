@@ -101,7 +101,9 @@ public class VoiceCommandManager implements RecognitionListener {
 
     @Override
     public void onReadyForSpeech(Bundle params) {
-        Toast.makeText(activity, "Escuchando...", Toast.LENGTH_SHORT).show();
+        if (activity != null) {
+            com.google.android.material.snackbar.Snackbar.make(activity.findViewById(android.R.id.content), "Escuchando...", com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -156,7 +158,7 @@ public class VoiceCommandManager implements RecognitionListener {
         }
 
         if (activity != null) {
-            Toast.makeText(activity, mensaje, Toast.LENGTH_SHORT).show();
+            com.google.android.material.snackbar.Snackbar.make(activity.findViewById(android.R.id.content), mensaje, com.google.android.material.snackbar.Snackbar.LENGTH_SHORT).show();
         }
     }
 

@@ -423,12 +423,18 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     public void onSyncStatus(String estado) {
-        if ("SYNCED".equals(estado)) {
+        if ("ONLINE".equals(estado)) {
             dotSyncStatus.setBackgroundResource(R.drawable.dot_green);
             tvSyncStatus.setText(getString(R.string.sincronizado));
+            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green));
+        } else if ("SYNCING".equals(estado)) {
+            dotSyncStatus.setBackgroundResource(R.drawable.dot_green);
+            tvSyncStatus.setText("SINCRONIZANDO...");
+            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green));
         } else {
             dotSyncStatus.setBackgroundResource(R.drawable.dot_red);
             tvSyncStatus.setText(getString(R.string.sin_conexion));
+            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_red));
         }
     }
 
