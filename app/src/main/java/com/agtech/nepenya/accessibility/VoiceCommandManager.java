@@ -1,3 +1,4 @@
+// Usado solo para dictado de campos de formulario en RegistroActivity, NO confundir con VoiceCommandHelper del Dashboard.
 package com.agtech.nepenya.accessibility;
 
 import android.Manifest;

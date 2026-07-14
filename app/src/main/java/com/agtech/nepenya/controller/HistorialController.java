@@ -63,13 +63,14 @@ public class HistorialController {
     /**
      * Carga registros con filtros aplicados.
      *
+     * @param userId     ID del usuario
      * @param filtroTipo Tipo de filtro: "TODOS", "GASTO", "INGRESO"
      * @param parcelaId  ID de parcela (0 para todas)
      * @param anio       Año ("TODOS" para todos)
      * @param mes        Mes ("TODOS" para todos)
      * @param callback   Callback con lista de registros
      */
-    public void cargarRegistros(String filtroTipo, int parcelaId, String anio, String mes, ListaCallback callback) {
+    public void cargarRegistros(int userId, String filtroTipo, int parcelaId, String anio, String mes, ListaCallback callback) {
         executorService.execute(() -> {
             List<Registro> registros;
 
@@ -79,11 +80,11 @@ public class HistorialController {
             boolean tieneTipo = "GASTO".equals(filtroTipo) || "INGRESO".equals(filtroTipo);
 
             if (tieneAnio && tieneMes) {
-                registros = new ArrayList<>(registroRepository.obtenerPorAnioYMes(anio, mes));
+                registros = new ArrayList<>(registroRepository.obtenerPorAnioYMes(userId, anio, mes));
             } else if (tieneAnio) {
-                registros = new ArrayList<>(registroRepository.obtenerPorAnio(anio));
+                registros = new ArrayList<>(registroRepository.obtenerPorAnio(userId, anio));
             } else {
-                registros = new ArrayList<>(registroRepository.obtenerTodos());
+                registros = new ArrayList<>(registroRepository.obtenerTodos(userId));
             }
 
             // Filtrar en memoria casos no cubiertos por el DAO o combinaciones
@@ -109,9 +110,9 @@ public class HistorialController {
     /**
      * Carga registros de una fecha específica.
      */
-    public void cargarRegistrosPorFecha(String fecha, ListaCallback callback) {
+    public void cargarRegistrosPorFecha(int userId, String fecha, ListaCallback callback) {
         executorService.execute(() -> {
-            List<Registro> registros = registroRepository.obtenerPorFecha(fecha);
+            List<Registro> registros = registroRepository.obtenerPorFecha(userId, fecha);
             Activity activity = activityRef.get();
             if (activity != null) {
                 activity.runOnUiThread(() -> callback.onLista(registros));
@@ -122,9 +123,9 @@ public class HistorialController {
     /**
      * Obtiene lista de años con registros.
      */
-    public void obtenerAniosDisponibles(AniosCallback callback) {
+    public void obtenerAniosDisponibles(int userId, AniosCallback callback) {
         executorService.execute(() -> {
-            List<String> anios = registroRepository.obtenerAniosConRegistros();
+            List<String> anios = registroRepository.obtenerAniosConRegistros(userId);
             Activity activity = activityRef.get();
             if (activity != null) {
                 activity.runOnUiThread(() -> callback.onAnios(anios));
@@ -135,9 +136,9 @@ public class HistorialController {
     /**
      * Obtiene lista de meses con registros en un año.
      */
-    public void obtenerMesesDisponibles(String anio, MesesCallback callback) {
+    public void obtenerMesesDisponibles(int userId, String anio, MesesCallback callback) {
         executorService.execute(() -> {
-            List<String> meses = registroRepository.obtenerMesesConRegistros(anio);
+            List<String> meses = registroRepository.obtenerMesesConRegistros(userId, anio);
             Activity activity = activityRef.get();
             if (activity != null) {
                 activity.runOnUiThread(() -> callback.onMeses(meses));
@@ -182,11 +183,12 @@ public class HistorialController {
     /**
      * Obtiene conteo de registros.
      *
+     * @param userId   ID del usuario
      * @param callback Callback con conteos
      */
-    public void obtenerConteos(ConteoCallback callback) {
+    public void obtenerConteos(int userId, ConteoCallback callback) {
         executorService.execute(() -> {
-            List<Registro> todos = registroRepository.obtenerTodos();
+            List<Registro> todos = registroRepository.obtenerTodos(userId);
             int gastos = 0;
             int ingresos = 0;
 

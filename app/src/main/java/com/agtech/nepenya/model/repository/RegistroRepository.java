@@ -70,8 +70,8 @@ public class RegistroRepository {
      *
      * @return Lista de registros
      */
-    public List<Registro> obtenerTodos() {
-        return registroDao.obtenerTodos();
+    public List<Registro> obtenerTodos(int userId) {
+        return registroDao.obtenerTodos(userId);
     }
 
     /**
@@ -90,8 +90,8 @@ public class RegistroRepository {
      * @param tipo Tipo de registro (GASTO/INGRESO)
      * @return Lista de registros
      */
-    public List<Registro> obtenerPorTipo(String tipo) {
-        return registroDao.obtenerPorTipo(tipo);
+    public List<Registro> obtenerPorTipo(int userId, String tipo) {
+        return registroDao.obtenerPorTipo(userId, tipo);
     }
 
     /**
@@ -150,10 +150,10 @@ public class RegistroRepository {
      * @param anio Anio en formato yyyy
      * @return Lista de registros
      */
-    public List<Registro> obtenerPorAnio(String anio) {
+    public List<Registro> obtenerPorAnio(int userId, String anio) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        return registroDao.obtenerPorAnio(inicio, fin);
+        return registroDao.obtenerPorAnio(userId, inicio, fin);
     }
 
     /**
@@ -162,10 +162,10 @@ public class RegistroRepository {
      * @param anio Anio en formato yyyy
      * @return Total de gastos
      */
-    public double obtenerTotalGastosPorAnio(String anio) {
+    public double obtenerTotalGastosPorAnio(int userId, String anio) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        Double total = registroDao.obtenerTotalGastosPorAnio(inicio, fin);
+        Double total = registroDao.obtenerTotalGastosPorAnio(userId, inicio, fin);
         return total != null ? total : 0.0;
     }
 
@@ -175,10 +175,10 @@ public class RegistroRepository {
      * @param anio Anio en formato yyyy
      * @return Total de ingresos
      */
-    public double obtenerTotalIngresosPorAnio(String anio) {
+    public double obtenerTotalIngresosPorAnio(int userId, String anio) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        Double total = registroDao.obtenerTotalIngresosPorAnio(inicio, fin);
+        Double total = registroDao.obtenerTotalIngresosPorAnio(userId, inicio, fin);
         return total != null ? total : 0.0;
     }
 
@@ -187,8 +187,8 @@ public class RegistroRepository {
      *
      * @return Lista de categorias
      */
-    public List<String> obtenerCategoriasGasto() {
-        return registroDao.obtenerCategoriasGasto();
+    public List<String> obtenerCategoriasGasto(int userId) {
+        return registroDao.obtenerCategoriasGasto(userId);
     }
 
     /**
@@ -196,8 +196,8 @@ public class RegistroRepository {
      *
      * @return Lista de categorias
      */
-    public List<String> obtenerCategoriasIngreso() {
-        return registroDao.obtenerCategoriasIngreso();
+    public List<String> obtenerCategoriasIngreso(int userId) {
+        return registroDao.obtenerCategoriasIngreso(userId);
     }
 
     /**
@@ -207,10 +207,10 @@ public class RegistroRepository {
      * @param categoria Categoria
      * @return Suma de gastos
      */
-    public double obtenerGastosPorCategoriaYAnio(String anio, String categoria) {
+    public double obtenerGastosPorCategoriaYAnio(int userId, String anio, String categoria) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        Double total = registroDao.obtenerGastosPorCategoriaYAnio(inicio, fin, categoria);
+        Double total = registroDao.obtenerGastosPorCategoriaYAnio(userId, inicio, fin, categoria);
         return total != null ? total : 0.0;
     }
 
@@ -221,42 +221,42 @@ public class RegistroRepository {
      * @param categoria Categoria
      * @return Suma de ingresos
      */
-    public double obtenerIngresosPorCategoriaYAnio(String anio, String categoria) {
+    public double obtenerIngresosPorCategoriaYAnio(int userId, String anio, String categoria) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        Double total = registroDao.obtenerIngresosPorCategoriaYAnio(inicio, fin, categoria);
+        Double total = registroDao.obtenerIngresosPorCategoriaYAnio(userId, inicio, fin, categoria);
         return total != null ? total : 0.0;
     }
 
     /**
      * Obtiene registros por año y mes.
      */
-    public List<Registro> obtenerPorAnioYMes(String anio, String mes) {
+    public List<Registro> obtenerPorAnioYMes(int userId, String anio, String mes) {
         String inicio = anio + "-" + mes + "-01";
         String fin = anio + "-" + mes + "-31";
-        return registroDao.obtenerPorAnioYMes(inicio, fin);
+        return registroDao.obtenerPorAnioYMes(userId, inicio, fin);
     }
 
     /**
      * Obtiene registros por fecha exacta.
      */
-    public List<Registro> obtenerPorFecha(String fecha) {
-        return registroDao.obtenerPorFecha(fecha);
+    public List<Registro> obtenerPorFecha(int userId, String fecha) {
+        return registroDao.obtenerPorFecha(userId, fecha);
     }
 
     /**
      * Obtiene años con registros.
      */
-    public List<String> obtenerAniosConRegistros() {
-        return registroDao.obtenerAniosConRegistros();
+    public List<String> obtenerAniosConRegistros(int userId) {
+        return registroDao.obtenerAniosConRegistros(userId);
     }
 
     /**
      * Obtiene meses con registros en un año.
      */
-    public List<String> obtenerMesesConRegistros(String anio) {
+    public List<String> obtenerMesesConRegistros(int userId, String anio) {
         String inicio = anio + "-01-01";
         String fin = anio + "-12-31";
-        return registroDao.obtenerMesesConRegistros(inicio, fin);
+        return registroDao.obtenerMesesConRegistros(userId, inicio, fin);
     }
 }

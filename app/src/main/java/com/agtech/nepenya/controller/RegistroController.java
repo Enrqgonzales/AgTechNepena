@@ -96,9 +96,9 @@ public class RegistroController {
      *
      * @param callback Callback con lista de parcelas
      */
-    public void cargarParcelas(ParcelasCallback callback) {
+    public void cargarParcelas(int userId, ParcelasCallback callback) {
         executorService.execute(() -> {
-            List<Parcela> parcelas = parcelaRepository.obtenerTodas();
+            List<Parcela> parcelas = parcelaRepository.obtenerTodas(userId);
             activity.runOnUiThread(() -> {
                 if (parcelas != null) {
                     callback.onParcelasCargadas(parcelas);
@@ -251,5 +251,12 @@ public class RegistroController {
      */
     public String obtenerAnioActual() {
         return String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * Finaliza el executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

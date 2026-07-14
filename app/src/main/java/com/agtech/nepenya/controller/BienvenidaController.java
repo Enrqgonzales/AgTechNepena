@@ -175,12 +175,10 @@ public class BienvenidaController {
                     prefsManager.setUserName(usuario.getNombre());
                     prefsManager.setDistrito(distrito);
 
-                    descargarDatosNube(firebaseUid, (int) id, new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onUsuarioRecuperado(usuario, distrito);
-                        }
-                    });
+                    descargarDatosNube(firebaseUid, (int) id,
+                        () -> callback.onUsuarioRecuperado(usuario, distrito),
+                        () -> callback.onError("Error al descargar datos de la nube. Intente nuevamente.")
+                    );
                 } else {
                     callback.onError("No encontrado en nube");
                 }
@@ -192,8 +190,9 @@ public class BienvenidaController {
         });
     }
 
-    private void descargarDatosNube(String firebaseUid, int localUserId, Runnable callback) {
+    private void descargarDatosNube(String firebaseUid, int localUserId, Runnable onSuccess, Runnable onError) {
         HttpURLConnection conn = null;
+        boolean success = false;
         try {
             String serverIp = prefsManager.getServerIp();
             String urlString;
@@ -226,146 +225,157 @@ public class BienvenidaController {
                 Map<Integer, Integer> registroMap = new HashMap<>();
                 Map<Integer, Integer> itemMap = new HashMap<>();
 
-                // 1. Descargar Parcelas
-                if (data.has("parcelas")) {
-                    JSONArray array = data.getJSONArray("parcelas");
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
-                        int remoteId = obj.getInt("remoteId");
-                        
-                        Parcela p = new Parcela();
-                        p.setNombre(obj.getString("nombre"));
-                        p.setCultivo(obj.getString("cultivo"));
-                        p.setHectareas(obj.getDouble("hectareas"));
-                        p.setUbicacion(obj.optString("ubicacion", ""));
-                        p.setEstado(obj.optString("estado", "DISPONIBLE"));
-                        p.setUuid(obj.getString("uuid"));
-                        p.setRemoteId(remoteId);
-                        p.setSyncStatus("SYNCED");
-                        
-                        // Buscar si existe local
-                        Parcela existing = db.parcelaDao().obtenerPorRemoteId(remoteId);
-                        if (existing != null) {
-                            p.setId(existing.getId());
-                        }
-                        p.setUsuarioId(localUserId);
-                        
-                        long localId = db.parcelaDao().insertar(p);
-                        parcelaMap.put(remoteId, (int) localId);
-                    }
-                }
-
-                // 2. Descargar Registros
-                if (data.has("registros")) {
-                    JSONArray array = data.getJSONArray("registros");
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
-                        int remoteId = obj.getInt("remoteId");
-                        int parcelaRemoteId = obj.getInt("parcelaRemoteId");
-                        
-                        Integer localParcelaId = parcelaMap.get(parcelaRemoteId);
-                        if (localParcelaId == null) continue;
-                        
-                        Registro r = new Registro();
-                        r.setTipo(obj.getString("tipo"));
-                        r.setCategoria(obj.getString("categoria"));
-                        r.setMonto(obj.getDouble("monto"));
-                        r.setDescripcion(obj.optString("descripcion", ""));
-                        r.setFecha(obj.getString("fecha"));
-                        r.setUuid(obj.getString("uuid"));
-                        r.setRemoteId(remoteId);
-                        r.setSyncStatus("SYNCED");
-                        r.setParcelaId(localParcelaId);
-                        
-                        Registro existing = db.registroDao().obtenerPorRemoteId(remoteId);
-                        if (existing != null) {
-                            r.setId(existing.getId());
-                        }
-                        
-                        long localId = db.registroDao().insertar(r);
-                        registroMap.put(remoteId, (int) localId);
-                    }
-                }
-
-                // 2. Descargar Inventario Items
-                if (data.has("inventario")) {
-                    JSONArray array = data.getJSONArray("inventario");
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
-                        int remoteId = obj.getInt("remoteId");
-                        int parcelaRemoteId = obj.getInt("parcelaRemoteId");
-                        
-                        Integer localParcelaId = parcelaMap.get(parcelaRemoteId);
-                        if (localParcelaId == null) continue;
-                        
-                        InventarioItem item = new InventarioItem();
-                        item.setNombre(obj.getString("nombre"));
-                        item.setCategoria(obj.getString("categoria"));
-                        item.setCantidad(obj.getDouble("cantidad"));
-                        item.setUnidad(obj.getString("unidad"));
-                        item.setCostoUnitario(obj.getDouble("costoUnitario"));
-                        item.setFechaIngreso(obj.optString("fechaIngreso", ""));
-                        item.setDescripcion(obj.optString("descripcion", ""));
-                        item.setUuid(obj.getString("uuid"));
-                        item.setRemoteId(remoteId);
-                        item.setSyncStatus("SYNCED");
-                        item.setParcelaId(localParcelaId);
-                        
-                        InventarioItem existing = db.inventarioDao().obtenerPorRemoteId(remoteId);
-                        if (existing != null) {
-                            item.setId(existing.getId());
-                        }
-                        
-                        long localId = db.inventarioDao().insertarItem(item);
-                        itemMap.put(remoteId, (int) localId);
-                    }
-                }
-
-                // 3. Descargar Movimientos
-                if (data.has("movimientos")) {
-                    JSONArray array = data.getJSONArray("movimientos");
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
-                        int remoteId = obj.getInt("remoteId");
-                        int itemRemoteId = obj.getInt("itemRemoteId");
-                        
-                        Integer localItemId = itemMap.get(itemRemoteId);
-                        if (localItemId == null) continue;
-                        
-                        InventarioMovimiento m = new InventarioMovimiento();
-                        m.setItemId(localItemId);
-                        m.setTipo(obj.getString("tipo"));
-                        m.setCantidad(obj.getDouble("cantidad"));
-                        m.setUnidad(obj.getString("unidad"));
-                        m.setCostoTotal(obj.getDouble("costoTotal"));
-                        m.setFecha(obj.getString("fecha"));
-                        m.setDescripcion(obj.optString("descripcion", ""));
-                        m.setUuid(obj.getString("uuid"));
-                        m.setRemoteId(remoteId);
-                        m.setSyncStatus("SYNCED");
-                        
-                        if (obj.has("registroRemoteId") && !obj.isNull("registroRemoteId")) {
-                            int regRemoteId = obj.getInt("registroRemoteId");
-                            Integer localRegId = registroMap.get(regRemoteId);
-                            if (localRegId != null) {
-                                m.setRegistroId(localRegId);
+                db.runInTransaction(() -> {
+                    try {
+                        // 1. Descargar Parcelas
+                        if (data.has("parcelas")) {
+                            JSONArray array = data.getJSONArray("parcelas");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject obj = array.getJSONObject(i);
+                                int remoteId = obj.getInt("remoteId");
+                                
+                                Parcela p = new Parcela();
+                                p.setNombre(obj.getString("nombre"));
+                                p.setCultivo(obj.getString("cultivo"));
+                                p.setHectareas(obj.getDouble("hectareas"));
+                                p.setUbicacion(obj.optString("ubicacion", ""));
+                                p.setEstado(obj.optString("estado", "DISPONIBLE"));
+                                p.setUuid(obj.getString("uuid"));
+                                p.setRemoteId(remoteId);
+                                p.setSyncStatus("SYNCED");
+                                
+                                // Buscar si existe local
+                                Parcela existing = db.parcelaDao().obtenerPorRemoteId(remoteId);
+                                if (existing != null) {
+                                    p.setId(existing.getId());
+                                }
+                                p.setUsuarioId(localUserId);
+                                
+                                long localId = db.parcelaDao().insertar(p);
+                                parcelaMap.put(remoteId, (int) localId);
                             }
                         }
-                        
-                        InventarioMovimiento existing = db.inventarioMovimientoDao().obtenerPorRemoteId(remoteId);
-                        if (existing != null) {
-                            m.setId(existing.getId());
+
+                        // 2. Descargar Registros
+                        if (data.has("registros")) {
+                            JSONArray array = data.getJSONArray("registros");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject obj = array.getJSONObject(i);
+                                int remoteId = obj.getInt("remoteId");
+                                int parcelaRemoteId = obj.getInt("parcelaRemoteId");
+                                
+                                Integer localParcelaId = parcelaMap.get(parcelaRemoteId);
+                                if (localParcelaId == null) continue;
+                                
+                                Registro r = new Registro();
+                                r.setTipo(obj.getString("tipo"));
+                                r.setCategoria(obj.getString("categoria"));
+                                r.setMonto(obj.getDouble("monto"));
+                                r.setDescripcion(obj.optString("descripcion", ""));
+                                r.setFecha(obj.getString("fecha"));
+                                r.setUuid(obj.getString("uuid"));
+                                r.setRemoteId(remoteId);
+                                r.setSyncStatus("SYNCED");
+                                r.setParcelaId(localParcelaId);
+                                
+                                Registro existing = db.registroDao().obtenerPorRemoteId(remoteId);
+                                if (existing != null) {
+                                    r.setId(existing.getId());
+                                }
+                                
+                                long localId = db.registroDao().insertar(r);
+                                registroMap.put(remoteId, (int) localId);
+                            }
                         }
-                        
-                        db.inventarioMovimientoDao().insertar(m);
+
+                        // 3. Descargar Inventario Items
+                        if (data.has("inventario")) {
+                            JSONArray array = data.getJSONArray("inventario");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject obj = array.getJSONObject(i);
+                                int remoteId = obj.getInt("remoteId");
+                                int parcelaRemoteId = obj.getInt("parcelaRemoteId");
+                                
+                                Integer localParcelaId = parcelaMap.get(parcelaRemoteId);
+                                if (localParcelaId == null) continue;
+                                
+                                InventarioItem item = new InventarioItem();
+                                item.setNombre(obj.getString("nombre"));
+                                item.setCategoria(obj.getString("categoria"));
+                                item.setCantidad(obj.getDouble("cantidad"));
+                                item.setUnidad(obj.getString("unidad"));
+                                item.setCostoUnitario(obj.getDouble("costoUnitario"));
+                                item.setFechaIngreso(obj.optString("fechaIngreso", ""));
+                                item.setDescripcion(obj.optString("descripcion", ""));
+                                item.setUuid(obj.getString("uuid"));
+                                item.setRemoteId(remoteId);
+                                item.setSyncStatus("SYNCED");
+                                item.setParcelaId(localParcelaId);
+                                
+                                InventarioItem existing = db.inventarioDao().obtenerPorRemoteId(remoteId);
+                                if (existing != null) {
+                                    item.setId(existing.getId());
+                                }
+                                
+                                long localId = db.inventarioDao().insertarItem(item);
+                                itemMap.put(remoteId, (int) localId);
+                            }
+                        }
+
+                        // 4. Descargar Movimientos
+                        if (data.has("movimientos")) {
+                            JSONArray array = data.getJSONArray("movimientos");
+                            for (int i = 0; i < array.length(); i++) {
+                                JSONObject obj = array.getJSONObject(i);
+                                int remoteId = obj.getInt("remoteId");
+                                int itemRemoteId = obj.getInt("itemRemoteId");
+                                
+                                Integer localItemId = itemMap.get(itemRemoteId);
+                                if (localItemId == null) continue;
+                                
+                                InventarioMovimiento m = new InventarioMovimiento();
+                                m.setItemId(localItemId);
+                                m.setTipo(obj.getString("tipo"));
+                                m.setCantidad(obj.getDouble("cantidad"));
+                                m.setUnidad(obj.getString("unidad"));
+                                m.setCostoTotal(obj.getDouble("costoTotal"));
+                                m.setFecha(obj.getString("fecha"));
+                                m.setDescripcion(obj.optString("descripcion", ""));
+                                m.setUuid(obj.getString("uuid"));
+                                m.setRemoteId(remoteId);
+                                m.setSyncStatus("SYNCED");
+                                
+                                if (obj.has("registroRemoteId") && !obj.isNull("registroRemoteId")) {
+                                    int regRemoteId = obj.getInt("registroRemoteId");
+                                    Integer localRegId = registroMap.get(regRemoteId);
+                                    if (localRegId != null) {
+                                        m.setRegistroId(localRegId);
+                                    }
+                                }
+                                
+                                InventarioMovimiento existing = db.inventarioMovimientoDao().obtenerPorRemoteId(remoteId);
+                                if (existing != null) {
+                                    m.setId(existing.getId());
+                                }
+                                
+                                db.inventarioMovimientoDao().insertar(m);
+                            }
+                        }
+                    } catch (org.json.JSONException e) {
+                        throw new RuntimeException(e);
                     }
-                }
+                });
+                success = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (conn != null) conn.disconnect();
-            callback.run();
+            if (success) {
+                onSuccess.run();
+            } else {
+                onError.run();
+            }
         }
     }
 

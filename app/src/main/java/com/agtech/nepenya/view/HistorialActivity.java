@@ -79,8 +79,7 @@ public class HistorialActivity extends AppCompatActivity implements
         cargarParcelas();
         cargarAnios();
 
-        // Cargar registros
-        cargarRegistros();
+        // Los registros se cargan en onResume() que se ejecuta después de onCreate()
     }
 
     @Override
@@ -291,32 +290,37 @@ public class HistorialActivity extends AppCompatActivity implements
     }
 
     private void cargarAnios() {
-        controller.obtenerAniosDisponibles(new HistorialController.AniosCallback() {
-            @Override
-            public void onAnios(java.util.List<String> anios) {
-                java.util.List<String> opciones = new java.util.ArrayList<>();
-                opciones.add(getString(R.string.todos_anios));
-                opciones.addAll(anios);
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(HistorialActivity.this,
-                        android.R.layout.simple_spinner_item, opciones);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerAnio.setAdapter(adapter);
-            }
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            controller.obtenerAniosDisponibles(userId, new HistorialController.AniosCallback() {
+                @Override
+                public void onAnios(java.util.List<String> anios) {
+                    java.util.List<String> opciones = new java.util.ArrayList<>();
+                    opciones.add(getString(R.string.todos_anios));
+                    opciones.addAll(anios);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(HistorialActivity.this,
+                            android.R.layout.simple_spinner_item, opciones);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerAnio.setAdapter(adapter);
+                }
 
-            @Override
-            public void onError(String mensaje) {
-                Toast.makeText(HistorialActivity.this, mensaje, Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onError(String mensaje) {
+                    Toast.makeText(HistorialActivity.this, mensaje, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void cargarParcelas() {
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId == -1) return;
         AppDatabase db = AppDatabase.getInstance(this);
         ParcelaRepository parcelaRepo = new ParcelaRepository(db.parcelaDao());
 
         java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
         exec.execute(() -> {
-            parcelasList = parcelaRepo.obtenerTodas();
+            parcelasList = parcelaRepo.obtenerTodas(userId);
             java.util.List<String> nombres = new java.util.ArrayList<>();
             nombres.add(getString(R.string.todas_parcelas));
             for (com.agtech.nepenya.model.entity.Parcela p : parcelasList) {
@@ -334,7 +338,10 @@ public class HistorialActivity extends AppCompatActivity implements
     }
 
     private void cargarRegistros() {
-        controller.cargarRegistros(filtroTipo, filtroParcelaId, filtroAnio, filtroMes, this);
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            controller.cargarRegistros(userId, filtroTipo, filtroParcelaId, filtroAnio, filtroMes, this);
+        }
     }
 
     // Callbacks del Controller

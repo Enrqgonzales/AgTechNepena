@@ -395,7 +395,7 @@ public class SyncWorker extends Worker {
     private String postJson(String urlString, String jsonBody) {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL(urlString);
+            URL url = java.net.URI.create(urlString).toURL();
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

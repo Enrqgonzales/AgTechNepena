@@ -132,9 +132,12 @@ public class ReportesActivity extends AppCompatActivity implements
     }
 
     private void cargarReporte() {
-        String textoCampania = getString(R.string.campana) + " " + anioActual;
-        tvCampania.setText(textoCampania);
-        controller.cargarReporte(anioActual, this);
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            String textoCampania = getString(R.string.campana) + " " + anioActual;
+            tvCampania.setText(textoCampania);
+            controller.cargarReporte(userId, anioActual, this);
+        }
     }
 
     private void compartirReporte() {
@@ -257,13 +260,16 @@ public class ReportesActivity extends AppCompatActivity implements
 
         // Guardar registros para exportacion
         String anioStr = String.valueOf(anioActual);
-        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
-        exec.execute(() -> {
-            AppDatabase db = AppDatabase.getInstance(this);
-            RegistroRepository repo = new RegistroRepository(db.registroDao());
-            registrosActuales = repo.obtenerPorAnio(anioStr);
-            exec.shutdown();
-        });
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
+            exec.execute(() -> {
+                AppDatabase db = AppDatabase.getInstance(this);
+                RegistroRepository repo = new RegistroRepository(db.registroDao());
+                registrosActuales = repo.obtenerPorAnio(userId, anioStr);
+                exec.shutdown();
+            });
+        }
     }
 
     @Override
@@ -288,6 +294,14 @@ public class ReportesActivity extends AppCompatActivity implements
         } catch (Exception e) {
             Toast.makeText(this, "Error al exportar: " + e.getMessage(),
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (controller != null) {
+            controller.shutdown();
         }
     }
 }

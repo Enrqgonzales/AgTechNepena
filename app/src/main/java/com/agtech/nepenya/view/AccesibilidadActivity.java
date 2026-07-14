@@ -349,26 +349,33 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         // Firebase Auth Sign Out
         FirebaseAuth.getInstance().signOut();
 
-        // Google Sign Out
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
-        googleSignInClient.signOut().addOnCompleteListener(task -> {
-            // Limpiar datos de sesión (NO borrar Room)
-            prefsManager.setUserId(-1);
-            prefsManager.setUserName("");
-            prefsManager.setFirebaseUid(null);
-            prefsManager.setAdminPin(null);
-            prefsManager.setDistrito("");
-            prefsManager.setLastSync(0);
+        // Google Sign Out (wrapped in try-catch to avoid crash if config is invalid)
+        try {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+            googleSignInClient.signOut().addOnCompleteListener(task -> limpiarYRedirigir());
+        } catch (Exception e) {
+            e.printStackTrace();
+            limpiarYRedirigir();
+        }
+    }
 
-            // Redirigir a Bienvenida
-            Intent intent = new Intent(this, BienvenidaActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        });
+    private void limpiarYRedirigir() {
+        // Limpiar datos de sesión (NO borrar Room)
+        prefsManager.setUserId(-1);
+        prefsManager.setUserName("");
+        prefsManager.setFirebaseUid(null);
+        prefsManager.setAdminPin(null);
+        prefsManager.setDistrito("");
+        prefsManager.setLastSync(0);
+
+        // Redirigir a Bienvenida
+        Intent intent = new Intent(this, BienvenidaActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

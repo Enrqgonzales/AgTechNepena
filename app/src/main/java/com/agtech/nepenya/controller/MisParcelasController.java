@@ -173,4 +173,11 @@ public class MisParcelasController {
                 .setNegativeButton("Cancelar", null)
                 .show();
     }
+
+    /**
+     * Finaliza el executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
+    }
 }

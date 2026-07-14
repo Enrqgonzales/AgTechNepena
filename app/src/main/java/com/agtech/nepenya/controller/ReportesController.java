@@ -94,22 +94,22 @@ public class ReportesController {
      * @param anio     Año a consultar
      * @param callback Callback con datos del reporte
      */
-    public void cargarReporte(int anio, ReporteCallback callback) {
+    public void cargarReporte(int userId, int anio, ReporteCallback callback) {
         executorService.execute(() -> {
             String anioStr = String.valueOf(anio);
 
-            double totalGastos = registroRepository.obtenerTotalGastosPorAnio(anioStr);
-            double totalIngresos = registroRepository.obtenerTotalIngresosPorAnio(anioStr);
+            double totalGastos = registroRepository.obtenerTotalGastosPorAnio(userId, anioStr);
+            double totalIngresos = registroRepository.obtenerTotalIngresosPorAnio(userId, anioStr);
 
             // Obtener categorias
-            List<String> catGastos = registroRepository.obtenerCategoriasGasto();
-            List<String> catIngresos = registroRepository.obtenerCategoriasIngreso();
+            List<String> catGastos = registroRepository.obtenerCategoriasGasto(userId);
+            List<String> catIngresos = registroRepository.obtenerCategoriasIngreso(userId);
 
             List<CategoriaItem> items = new ArrayList<>();
 
             // Procesar categorias de gastos
             for (String cat : catGastos) {
-                double gasto = registroRepository.obtenerGastosPorCategoriaYAnio(anioStr, cat);
+                double gasto = registroRepository.obtenerGastosPorCategoriaYAnio(userId, anioStr, cat);
                 if (gasto > 0) {
                     items.add(new CategoriaItem(cat, gasto, 0));
                 }
@@ -117,7 +117,7 @@ public class ReportesController {
 
             // Procesar categorias de ingresos
             for (String cat : catIngresos) {
-                double ingreso = registroRepository.obtenerIngresosPorCategoriaYAnio(anioStr, cat);
+                double ingreso = registroRepository.obtenerIngresosPorCategoriaYAnio(userId, anioStr, cat);
                 if (ingreso > 0) {
                     // Buscar si ya existe categoria
                     boolean encontrado = false;
@@ -233,5 +233,12 @@ public class ReportesController {
             return "\"" + valor.replace("\"", "\"\"") + "\"";
         }
         return valor;
+    }
+
+    /**
+     * Finaliza el executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

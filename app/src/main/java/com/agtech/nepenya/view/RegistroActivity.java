@@ -108,7 +108,10 @@ public class RegistroActivity extends AppCompatActivity implements
         }
 
         // Cargar parcelas
-        controller.cargarParcelas(this);
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            controller.cargarParcelas(userId, this);
+        }
 
         // Verificar estado de conexion
         checkConexion();
@@ -530,6 +533,9 @@ public class RegistroActivity extends AppCompatActivity implements
         super.onDestroy();
         if (voiceCommandManager != null) {
             voiceCommandManager.destroy();
+        }
+        if (controller != null) {
+            controller.shutdown();
         }
     }
 }

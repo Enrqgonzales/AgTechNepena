@@ -1,3 +1,4 @@
+// Usado solo para comandos de navegación por voz en el Dashboard, NO confundir con VoiceCommandManager (dictado de formularios).
 package com.agtech.nepenya.accessibility;
 
 import android.content.Context;

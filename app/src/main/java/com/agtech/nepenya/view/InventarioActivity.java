@@ -149,7 +149,10 @@ public class InventarioActivity extends AppCompatActivity implements
     }
 
     private void cargarInventario() {
-        controller.cargarInventario(filtroCategoria, this);
+        int userId = new com.agtech.nepenya.utils.PrefsManager(this).getUserId();
+        if (userId != -1) {
+            controller.cargarInventario(userId, filtroCategoria, this);
+        }
     }
 
     @Override
@@ -196,5 +199,13 @@ public class InventarioActivity extends AppCompatActivity implements
     public void onOperacionExitosa(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
         cargarInventario();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (controller != null) {
+            controller.shutdown();
+        }
     }
 }

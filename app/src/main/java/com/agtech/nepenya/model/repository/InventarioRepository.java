@@ -41,12 +41,12 @@ public class InventarioRepository {
         return inventarioDao.obtenerItemPorId(id);
     }
 
-    public List<InventarioItem> obtenerTodos() {
-        return inventarioDao.obtenerTodosItems();
+    public List<InventarioItem> obtenerTodos(int userId) {
+        return inventarioDao.obtenerTodosItems(userId);
     }
 
-    public List<InventarioItem> obtenerPorCategoria(String categoria) {
-        return inventarioDao.obtenerPorCategoria(categoria);
+    public List<InventarioItem> obtenerPorCategoria(int userId, String categoria) {
+        return inventarioDao.obtenerPorCategoria(userId, categoria);
     }
 
     public List<InventarioItem> obtenerPorParcela(int parcelaId) {
@@ -134,18 +134,18 @@ public class InventarioRepository {
 
     // Estadísticas
 
-    public double obtenerValorTotal() {
-        Double total = inventarioDao.obtenerValorTotalInventario();
+    public double obtenerValorTotal(int userId) {
+        Double total = inventarioDao.obtenerValorTotalInventario(userId);
         return total != null ? total : 0.0;
-    }
-
-    public int contarItems() {
-        return inventarioDao.contarItems();
-    }
-
-    public int contarItemsConStock() {
-        return inventarioDao.contarItemsConStock();
-    }
+     }
+ 
+     public int contarItems() {
+         return inventarioDao.contarItems();
+     }
+ 
+     public int contarItemsConStock(int userId) {
+         return inventarioDao.contarItemsConStock(userId);
+     }
 
     // Métodos de sincronización
 

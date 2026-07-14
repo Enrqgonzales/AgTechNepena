@@ -35,11 +35,11 @@ public interface InventarioDao {
     @Query("SELECT * FROM inventario WHERE id = :id")
     InventarioItem obtenerItemPorId(int id);
 
-    @Query("SELECT * FROM inventario ORDER BY nombre ASC")
-    List<InventarioItem> obtenerTodosItems();
+    @Query("SELECT i.* FROM inventario i INNER JOIN parcelas p ON i.parcela_id = p.id WHERE p.usuario_id = :userId ORDER BY i.nombre ASC")
+    List<InventarioItem> obtenerTodosItems(int userId);
 
-    @Query("SELECT * FROM inventario WHERE categoria = :categoria ORDER BY nombre ASC")
-    List<InventarioItem> obtenerPorCategoria(String categoria);
+    @Query("SELECT i.* FROM inventario i INNER JOIN parcelas p ON i.parcela_id = p.id WHERE p.usuario_id = :userId AND i.categoria = :categoria ORDER BY i.nombre ASC")
+    List<InventarioItem> obtenerPorCategoria(int userId, String categoria);
 
     @Query("SELECT * FROM inventario WHERE parcela_id = :parcelaId ORDER BY nombre ASC")
     List<InventarioItem> obtenerPorParcela(int parcelaId);
@@ -78,8 +78,8 @@ public interface InventarioDao {
 
     // Estadísticas
 
-    @Query("SELECT SUM(cantidad * costo_unitario) FROM inventario")
-    Double obtenerValorTotalInventario();
+    @Query("SELECT SUM(i.cantidad * i.costo_unitario) FROM inventario i INNER JOIN parcelas p ON i.parcela_id = p.id WHERE p.usuario_id = :userId")
+    Double obtenerValorTotalInventario(int userId);
 
     @Query("SELECT SUM(cantidad) FROM inventario WHERE categoria = :categoria")
     double obtenerCantidadTotalPorCategoria(String categoria);
@@ -87,8 +87,8 @@ public interface InventarioDao {
     @Query("SELECT COUNT(*) FROM inventario")
     int contarItems();
 
-    @Query("SELECT COUNT(*) FROM inventario WHERE cantidad > 0")
-    int contarItemsConStock();
+    @Query("SELECT COUNT(*) FROM inventario i INNER JOIN parcelas p ON i.parcela_id = p.id WHERE p.usuario_id = :userId AND i.cantidad > 0")
+    int contarItemsConStock(int userId);
 
     // Sincronización
 

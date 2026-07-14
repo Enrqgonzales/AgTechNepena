@@ -51,8 +51,8 @@ public interface RegistroDao {
      *
      * @return Lista de registros
      */
-    @Query("SELECT * FROM registros ORDER BY fecha DESC, id DESC")
-    List<Registro> obtenerTodos();
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId ORDER BY r.fecha DESC, r.id DESC")
+    List<Registro> obtenerTodos(int userId);
 
     /**
      * Obtiene registros por parcela.
@@ -69,8 +69,8 @@ public interface RegistroDao {
      * @param tipo Tipo de registro
      * @return Lista de registros filtrados
      */
-    @Query("SELECT * FROM registros WHERE tipo = :tipo ORDER BY fecha DESC")
-    List<Registro> obtenerPorTipo(String tipo);
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.tipo = :tipo ORDER BY r.fecha DESC")
+    List<Registro> obtenerPorTipo(int userId, String tipo);
 
     /**
      * Obtiene registros por parcela y tipo.
@@ -126,8 +126,8 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Lista de registros del año
      */
-    @Query("SELECT * FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY fecha DESC")
-    List<Registro> obtenerPorAnio(String inicio, String fin);
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :inicio AND :fin ORDER BY r.fecha DESC")
+    List<Registro> obtenerPorAnio(int userId, String inicio, String fin);
 
     /**
      * Obtiene suma de gastos por categoria en un año.
@@ -136,8 +136,8 @@ public interface RegistroDao {
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'GASTO' AND categoria = :categoria")
-    Double obtenerGastosPorCategoriaYAnio(String inicio, String fin, String categoria);
+    @Query("SELECT SUM(r.monto) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :inicio AND :fin AND r.tipo = 'GASTO' AND r.categoria = :categoria")
+    Double obtenerGastosPorCategoriaYAnio(int userId, String inicio, String fin, String categoria);
 
     /**
      * Obtiene suma de ingresos por categoria en un año.
@@ -146,8 +146,8 @@ public interface RegistroDao {
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'INGRESO' AND categoria = :categoria")
-    Double obtenerIngresosPorCategoriaYAnio(String inicio, String fin, String categoria);
+    @Query("SELECT SUM(r.monto) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :inicio AND :fin AND r.tipo = 'INGRESO' AND r.categoria = :categoria")
+    Double obtenerIngresosPorCategoriaYAnio(int userId, String inicio, String fin, String categoria);
 
     /**
      * Obtiene total de gastos en un año.
@@ -155,8 +155,8 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Total de gastos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'GASTO'")
-    Double obtenerTotalGastosPorAnio(String inicio, String fin);
+    @Query("SELECT SUM(r.monto) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.tipo = 'GASTO' AND r.fecha BETWEEN :inicio AND :fin")
+    Double obtenerTotalGastosPorAnio(int userId, String inicio, String fin);
 
     /**
      * Obtiene total de ingresos en un año.
@@ -164,24 +164,24 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Total de ingresos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'INGRESO'")
-    Double obtenerTotalIngresosPorAnio(String inicio, String fin);
+    @Query("SELECT SUM(r.monto) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.tipo = 'INGRESO' AND r.fecha BETWEEN :inicio AND :fin")
+    Double obtenerTotalIngresosPorAnio(int userId, String inicio, String fin);
 
     /**
      * Obtiene categorias de gastos distintas.
      *
      * @return Lista de categorias
      */
-    @Query("SELECT DISTINCT categoria FROM registros WHERE tipo = 'GASTO' ORDER BY categoria")
-    List<String> obtenerCategoriasGasto();
+    @Query("SELECT DISTINCT r.categoria FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.tipo = 'GASTO' ORDER BY r.categoria")
+    List<String> obtenerCategoriasGasto(int userId);
 
     /**
      * Obtiene categorias de ingresos distintas.
      *
      * @return Lista de categorias
      */
-    @Query("SELECT DISTINCT categoria FROM registros WHERE tipo = 'INGRESO' ORDER BY categoria")
-    List<String> obtenerCategoriasIngreso();
+    @Query("SELECT DISTINCT r.categoria FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.tipo = 'INGRESO' ORDER BY r.categoria")
+    List<String> obtenerCategoriasIngreso(int userId);
 
     /**
      * Obtiene registros por año y mes.
@@ -190,8 +190,8 @@ public interface RegistroDao {
      * @param mes  Mes en formato MM
      * @return Lista de registros del mes
      */
-    @Query("SELECT * FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY fecha DESC")
-    List<Registro> obtenerPorAnioYMes(String inicio, String fin);
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :inicio AND :fin ORDER BY r.fecha DESC")
+    List<Registro> obtenerPorAnioYMes(int userId, String inicio, String fin);
 
     /**
      * Obtiene registros por fecha exacta.
@@ -199,8 +199,8 @@ public interface RegistroDao {
      * @param fecha Fecha en formato yyyy-MM-dd
      * @return Lista de registros de esa fecha
      */
-    @Query("SELECT * FROM registros WHERE fecha = :fecha ORDER BY id DESC")
-    List<Registro> obtenerPorFecha(String fecha);
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha = :fecha ORDER BY r.id DESC")
+    List<Registro> obtenerPorFecha(int userId, String fecha);
 
     /**
      * Obtiene registros por rango de fechas.
@@ -209,16 +209,16 @@ public interface RegistroDao {
      * @param fechaFin    Fecha fin en formato yyyy-MM-dd
      * @return Lista de registros en el rango
      */
-    @Query("SELECT * FROM registros WHERE fecha BETWEEN :fechaInicio AND :fechaFin ORDER BY fecha DESC")
-    List<Registro> obtenerPorRangoFechas(String fechaInicio, String fechaFin);
+    @Query("SELECT r.* FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :fechaInicio AND :fechaFin ORDER BY r.fecha DESC")
+    List<Registro> obtenerPorRangoFechas(int userId, String fechaInicio, String fechaFin);
 
     /**
      * Obtiene años distintos con registros.
      *
      * @return Lista de años
      */
-    @Query("SELECT DISTINCT strftime('%Y', fecha) FROM registros ORDER BY strftime('%Y', fecha) DESC")
-    List<String> obtenerAniosConRegistros();
+    @Query("SELECT DISTINCT strftime('%Y', r.fecha) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId ORDER BY strftime('%Y', r.fecha) DESC")
+    List<String> obtenerAniosConRegistros(int userId);
 
     /**
      * Obtiene meses distintos con registros en un año.
@@ -226,8 +226,8 @@ public interface RegistroDao {
      * @param anio Año en formato yyyy
      * @return Lista de meses (01-12)
      */
-    @Query("SELECT DISTINCT strftime('%m', fecha) FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY strftime('%m', fecha)")
-    List<String> obtenerMesesConRegistros(String inicio, String fin);
+    @Query("SELECT DISTINCT strftime('%m', r.fecha) FROM registros r INNER JOIN parcelas p ON r.parcela_id = p.id WHERE p.usuario_id = :userId AND r.fecha BETWEEN :inicio AND :fin ORDER BY strftime('%m', r.fecha)")
+    List<String> obtenerMesesConRegistros(int userId, String inicio, String fin);
 
     @Query("SELECT * FROM registros WHERE remote_id = :remoteId LIMIT 1")
     Registro obtenerPorRemoteId(int remoteId);

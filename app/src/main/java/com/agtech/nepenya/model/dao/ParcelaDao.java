@@ -51,8 +51,8 @@ public interface ParcelaDao {
      *
      * @return Lista de parcelas
      */
-    @Query("SELECT * FROM parcelas ORDER BY nombre ASC")
-    List<Parcela> obtenerTodas();
+    @Query("SELECT * FROM parcelas WHERE usuario_id = :userId ORDER BY nombre ASC")
+    List<Parcela> obtenerTodas(int userId);
 
     /**
      * Obtiene parcelas por usuario.

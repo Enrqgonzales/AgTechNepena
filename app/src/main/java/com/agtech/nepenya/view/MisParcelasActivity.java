@@ -236,4 +236,12 @@ public class MisParcelasActivity extends AppCompatActivity implements
     public void onParcelaEliminar(Parcela parcela, int position) {
         // manejado por swipe
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (controller != null) {
+            controller.shutdown();
+        }
+    }
 }

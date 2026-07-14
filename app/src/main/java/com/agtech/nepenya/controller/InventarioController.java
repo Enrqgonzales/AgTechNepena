@@ -48,19 +48,19 @@ public class InventarioController {
     /**
      * Carga el inventario con filtro de categoria.
      */
-    public void cargarInventario(String categoria, InventarioCallback callback) {
+    public void cargarInventario(int userId, String categoria, InventarioCallback callback) {
         executorService.execute(() -> {
             try {
                 List<InventarioItem> items;
 
                 if ("TODAS".equals(categoria)) {
-                    items = inventarioRepository.obtenerTodos();
+                    items = inventarioRepository.obtenerTodos(userId);
                 } else {
-                    items = inventarioRepository.obtenerPorCategoria(categoria);
+                    items = inventarioRepository.obtenerPorCategoria(userId, categoria);
                 }
 
-                double valorTotal = inventarioRepository.obtenerValorTotal();
-                int totalItems = inventarioRepository.contarItemsConStock();
+                double valorTotal = inventarioRepository.obtenerValorTotal(userId);
+                int totalItems = inventarioRepository.contarItemsConStock(userId);
 
                 final double finalValorTotal = valorTotal;
                 final int finalTotalItems = totalItems;
@@ -222,5 +222,12 @@ public class InventarioController {
         });
         builder.setNegativeButton("Cancelar", null);
         builder.show();
+    }
+
+    /**
+     * Finaliza el executor service.
+     */
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

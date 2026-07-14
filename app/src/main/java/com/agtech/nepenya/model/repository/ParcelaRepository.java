@@ -53,13 +53,8 @@ public class ParcelaRepository {
         parcelaDao.eliminar(parcela);
     }
 
-    /**
-     * Obtiene todas las parcelas.
-     *
-     * @return Lista de parcelas
-     */
-    public List<Parcela> obtenerTodas() {
-        return parcelaDao.obtenerTodas();
+    public List<Parcela> obtenerTodas(int userId) {
+        return parcelaDao.obtenerTodas(userId);
     }
 
     /**
