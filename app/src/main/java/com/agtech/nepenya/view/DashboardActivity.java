@@ -393,6 +393,10 @@ public class DashboardActivity extends AppCompatActivity implements
                 String speakText = "";
                 Intent intent = null;
                 switch (command) {
+                    case "REGISTRO":
+                        speakText = "Abriendo registro";
+                        intent = new Intent(DashboardActivity.this, RegistroActivity.class);
+                        break;
                     case "GASTO":
                         speakText = "Abriendo registro de gasto";
                         intent = new Intent(DashboardActivity.this, RegistroActivity.class);
@@ -418,6 +422,10 @@ public class DashboardActivity extends AppCompatActivity implements
                     case "INVENTARIO":
                         speakText = "Abriendo inventario";
                         intent = new Intent(DashboardActivity.this, InventarioActivity.class);
+                        break;
+                    case "AJUSTES":
+                        speakText = "Abriendo ajustes";
+                        intent = new Intent(DashboardActivity.this, AccesibilidadActivity.class);
                         break;
                 }
                 if (intent != null) {

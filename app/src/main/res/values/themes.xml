@@ -92,6 +92,12 @@
         <item name="cornerRadius">28dp</item>
     </style>
 
+    <!-- Botón Activar PIN: texto blanco para contraste en Modo Claro -->
+    <!-- SOLO en values/themes.xml (no en values-night) para no afectar el Modo Oscuro -->
+    <style name="Widget.AgTech.Button.PinActivar" parent="Widget.AgTech.Button">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
     <!-- Card MD3 -->
     <style name="Widget.AgTech.Card" parent="Widget.Material3.CardView.Filled">
         <item name="cardBackgroundColor">?attr/colorSurfaceContainerLow</item>

@@ -160,18 +160,22 @@ public class VoiceCommandHelper {
     }
 
     /**
-     * Reconoce si el texto contiene alguna de las 6 palabras clave.
+     * Reconoce si el texto contiene alguna de las 8 palabras clave.
+     * Orden: "registro" se evalúa antes de "gasto"/"ingreso" para evitar
+     * que frases como "registrar gasto" sean captadas por la keyword incorrecta.
      */
     public static String reconocerComando(String recognizedText) {
         if (recognizedText == null) return null;
         String normalizado = normalizar(recognizedText.toLowerCase());
 
+        if (normalizado.contains("registro")) return "REGISTRO";
         if (normalizado.contains("gasto")) return "GASTO";
         if (normalizado.contains("ingreso")) return "INGRESO";
         if (normalizado.contains("parcela")) return "PARCELAS";
         if (normalizado.contains("historial")) return "HISTORIAL";
         if (normalizado.contains("reporte")) return "REPORTES";
         if (normalizado.contains("inventario")) return "INVENTARIO";
+        if (normalizado.contains("ajuste")) return "AJUSTES";
 
         return null;
     }

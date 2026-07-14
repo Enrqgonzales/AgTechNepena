@@ -241,7 +241,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/activar_pin"
-                        android:textColor="?android:attr/textColorPrimary"
+                        style="@style/Widget.AgTech.Button.PinActivar"
                         android:paddingVertical="12dp" />
 
                     <LinearLayout
