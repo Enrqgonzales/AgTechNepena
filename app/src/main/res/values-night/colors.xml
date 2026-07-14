@@ -75,4 +75,6 @@
     <color name="tab_unselected">@color/md3_on_surface_variant</color>
     <color name="bottom_nav_selected">@color/md3_primary</color>
     <color name="bottom_nav_unselected">@color/md3_on_surface_variant</color>
+    <color name="accent_yellow">#FDD835</color>
+    <color name="sync_yellow">@color/accent_yellow</color>
 </resources>

@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Inventario"
+                android:text="@string/inventario"
                 android:textSize="?attr/textSizeTitle"
                 android:textStyle="bold"
                 android:textColor="?android:attr/textColorPrimary" />
@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gestiona tus insumos y stock"
+                android:text="@string/gestiona_insumos"
                 android:textSize="?attr/textSizeBody"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginTop="4dp" />
@@ -47,7 +47,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Categoría:"
+                android:text="@string/categoria"
                 android:textSize="?attr/textSizeBody"
                 android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginEnd="8dp" />
@@ -87,7 +87,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Valor Total"
+                        android:text="@string/valor_total"
                         android:textSize="?attr/textSizeLabel"
                         android:textColor="?android:attr/textColorPrimary" />
 
@@ -95,7 +95,7 @@
                         android:id="@+id/tv_total_valor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="S/ 0.00"
+                        android:text="@string/formato_soles_cero"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/accent_green"
@@ -121,7 +121,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Items"
+                        android:text="@string/items_conteo"
                         android:textSize="?attr/textSizeLabel"
                         android:textColor="?android:attr/textColorPrimary" />
 
@@ -129,7 +129,7 @@
                         android:id="@+id/tv_total_items"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 items"
+                        android:text="@string/formato_items_cero"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="?android:attr/textColorPrimary"
@@ -157,7 +157,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="No hay items en el inventario&#10;Agrega insumos desde Registro"
+                android:text="@string/sin_items_inventario"
                 android:textSize="?attr/textSizeBody"
                 android:textColor="?android:attr/textColorPrimary"
                 android:gravity="center"

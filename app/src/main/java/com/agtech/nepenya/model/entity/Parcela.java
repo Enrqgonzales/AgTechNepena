@@ -3,8 +3,10 @@ package com.agtech.nepenya.model.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
 
 /**
  * Entidad que representa una parcela agricola.
@@ -49,11 +51,19 @@ public class Parcela {
     @ColumnInfo(name = "remote_id")
     private Integer remoteId;
 
+    @ColumnInfo(name = "uuid")
+    private String uuid;
+
+    @ColumnInfo(name = "estado", defaultValue = "DISPONIBLE")
+    private String estado;
+
     /**
      * Constructor vacio requerido por Room.
      */
     public Parcela() {
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
+        this.estado = "DISPONIBLE";
     }
 
     /**
@@ -65,6 +75,7 @@ public class Parcela {
      * @param hectareas Extension en hectareas
      * @param ubicacion Ubicacion geografica o referencia
      */
+    @Ignore
     public Parcela(int usuarioId, String nombre, String cultivo, double hectareas, String ubicacion) {
         this.usuarioId = usuarioId;
         this.nombre = nombre;
@@ -72,6 +83,8 @@ public class Parcela {
         this.hectareas = hectareas;
         this.ubicacion = ubicacion;
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
+        this.estado = "DISPONIBLE";
     }
 
     // Getters y Setters
@@ -138,6 +151,22 @@ public class Parcela {
 
     public void setRemoteId(Integer remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     @Override

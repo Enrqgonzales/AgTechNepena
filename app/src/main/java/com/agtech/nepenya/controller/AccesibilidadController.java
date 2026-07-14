@@ -125,9 +125,11 @@ public class AccesibilidadController {
      * @param level Nivel de brillo 0.0-1.0
      */
     private void aplicarBrillo(float level) {
-        WindowManager.LayoutParams layoutParams = activity.getWindow().getAttributes();
-        layoutParams.screenBrightness = level;
-        activity.getWindow().setAttributes(layoutParams);
+        activity.runOnUiThread(() -> {
+            WindowManager.LayoutParams layoutParams = activity.getWindow().getAttributes();
+            layoutParams.screenBrightness = level;
+            activity.getWindow().setAttributes(layoutParams);
+        });
     }
 
     /**

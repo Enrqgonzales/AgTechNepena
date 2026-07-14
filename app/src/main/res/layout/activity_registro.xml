@@ -127,7 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cantidad"
+                    android:text="@string/cantidad_label"
                     android:textSize="?attr/textSizeLabel"
                     android:textAllCaps="true"
                     android:layout_marginBottom="4dp" />
@@ -163,7 +163,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Costo unitario (S/)"
+                    android:text="@string/costo_unitario_label"
                     android:textSize="?attr/textSizeLabel"
                     android:textAllCaps="true"
                     android:layout_marginBottom="4dp" />
@@ -184,7 +184,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Monto total"
+                    android:text="@string/monto_total_label"
                     android:textSize="?attr/textSizeLabel"
                     android:textAllCaps="true"
                     android:layout_marginBottom="4dp" />
@@ -193,7 +193,7 @@
                     android:id="@+id/tv_monto_calculado"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="S/ 0.00"
+                    android:text="@string/formato_soles_cero"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="@color/accent_green"
@@ -204,7 +204,7 @@
                 android:id="@+id/tv_monto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="S/ 0.00"
+                android:text="@string/formato_soles_cero"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:gravity="center"
@@ -263,7 +263,7 @@
                     android:layout_height="48dp"
                     android:src="@drawable/ic_mic"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/asistente_voz"
+                    android:contentDescription="@string/desc_microfono"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 

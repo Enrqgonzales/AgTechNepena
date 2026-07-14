@@ -26,9 +26,15 @@ public class Usuario {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "uuid", unique = true)
+    private String uuid;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (uuid == null) {
+            uuid = java.util.UUID.randomUUID().toString();
+        }
     }
 
     // Getters y Setters
@@ -59,5 +65,13 @@ public class Usuario {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

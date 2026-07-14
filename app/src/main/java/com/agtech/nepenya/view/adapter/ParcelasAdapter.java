@@ -49,6 +49,26 @@ public class ParcelasAdapter extends RecyclerView.Adapter<ParcelasAdapter.Parcel
         holder.tvNombre.setText(parcela.getNombre());
         holder.tvCultivo.setText(parcela.getCultivo());
         holder.tvHectareas.setText(String.format(Locale.getDefault(), "%.2f ha", parcela.getHectareas()));
+        
+        String estado = parcela.getEstado() != null ? parcela.getEstado() : "DISPONIBLE";
+        holder.tvEstado.setText(estado);
+        
+        android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
+        gd.setCornerRadius(16f);
+        
+        if ("VENDIDA".equals(estado)) {
+            int colorRed = holder.itemView.getContext().getColor(R.color.error_red);
+            holder.tvEstado.setTextColor(colorRed);
+            gd.setColor(colorRed & 0x1FFFFFFF);
+            gd.setStroke(2, colorRed);
+        } else {
+            int colorGreen = holder.itemView.getContext().getColor(R.color.accent_green);
+            holder.tvEstado.setTextColor(colorGreen);
+            gd.setColor(colorGreen & 0x1FFFFFFF);
+            gd.setStroke(2, colorGreen);
+        }
+        holder.tvEstado.setBackground(gd);
+
         holder.itemView.setOnClickListener(v -> listener.onParcelaClick(parcela));
     }
 
@@ -78,12 +98,14 @@ public class ParcelasAdapter extends RecyclerView.Adapter<ParcelasAdapter.Parcel
         TextView tvNombre;
         TextView tvCultivo;
         TextView tvHectareas;
+        TextView tvEstado;
 
         ParcelaViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombre = itemView.findViewById(R.id.tv_nombre_parcela);
             tvCultivo = itemView.findViewById(R.id.tv_cultivo_parcela);
             tvHectareas = itemView.findViewById(R.id.tv_hectareas_parcela);
+            tvEstado = itemView.findViewById(R.id.tv_estado_parcela);
         }
     }
 }

@@ -31,12 +31,13 @@ public class PrefsManager {
     public static final String KEY_CURRENCY_RATES = "currency_rates";
     public static final String KEY_CURRENCY_INDEX = "currency_index";
     public static final String KEY_SERVER_IP = "server_ip";
+    public static final String KEY_ADMIN_PIN = "admin_pin";
 
     // Defaults
     private static final int DEFAULT_FONT_SIZE = 16; // Centro del rango 12-32
     private static final float DEFAULT_BRIGHTNESS = 0.5f;
     private static final String DEFAULT_THEME_MODE = "DIA";
-    private static final boolean DEFAULT_VOICE_ENABLED = false;
+    private static final boolean DEFAULT_VOICE_ENABLED = true;
 
     private final SharedPreferences prefs;
 
@@ -225,6 +226,43 @@ public class PrefsManager {
             return 1.0;
         } catch (org.json.JSONException e) {
             return 1.0;
+        }
+    }
+
+    // Admin PIN Management
+
+    public String getAdminPin() {
+        return prefs.getString(KEY_ADMIN_PIN, null);
+    }
+
+    public void setAdminPin(String pin) {
+        if (pin == null) {
+            prefs.edit().remove(KEY_ADMIN_PIN).apply();
+        } else {
+            String hashed = hashSHA256(pin);
+            prefs.edit().putString(KEY_ADMIN_PIN, hashed).apply();
+        }
+    }
+
+    public boolean verificarAdminPin(String pin) {
+        String guardado = getAdminPin();
+        if (guardado == null) return false;
+        return guardado.equals(hashSHA256(pin));
+    }
+
+    private String hashSHA256(String input) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            return "";
         }
     }
 

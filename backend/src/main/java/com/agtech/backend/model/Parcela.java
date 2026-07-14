@@ -34,9 +34,21 @@ public class Parcela {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "uuid", unique = true)
+    private String uuid;
+
+    @Column(name = "estado", nullable = false)
+    private String estado = "DISPONIBLE";
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (uuid == null) {
+            uuid = java.util.UUID.randomUUID().toString();
+        }
+        if (estado == null) {
+            estado = "DISPONIBLE";
+        }
     }
 
     // Getters y Setters
@@ -91,5 +103,21 @@ public class Parcela {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }

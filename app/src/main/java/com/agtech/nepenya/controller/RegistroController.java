@@ -240,7 +240,7 @@ public class RegistroController {
      * @return Fecha en formato yyyy-MM-dd
      */
     public String obtenerFechaActual() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         return sdf.format(Calendar.getInstance().getTime());
     }
 

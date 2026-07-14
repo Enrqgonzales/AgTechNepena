@@ -199,7 +199,37 @@ public class MisParcelasActivity extends AppCompatActivity implements
 
     @Override
     public void onParcelaClick(Parcela parcela) {
-        Toast.makeText(this, parcela.getNombre() + " - " + parcela.getCultivo(), Toast.LENGTH_SHORT).show();
+        String[] opciones = {"DISPONIBLE", "VENDIDA"};
+        int seleccionado = "VENDIDA".equals(parcela.getEstado()) ? 1 : 0;
+
+        new AlertDialog.Builder(this)
+                .setTitle("Cambiar estado de " + parcela.getNombre())
+                .setSingleChoiceItems(opciones, seleccionado, (dialog, which) -> {
+                    String nuevoEstado = opciones[which];
+                    if (!nuevoEstado.equals(parcela.getEstado())) {
+                        parcela.setEstado(nuevoEstado);
+                        parcela.setSyncStatus("PENDING");
+
+                        java.util.concurrent.ExecutorService exec = java.util.concurrent.Executors.newSingleThreadExecutor();
+                        exec.execute(() -> {
+                            com.agtech.nepenya.model.database.AppDatabase.getInstance(this)
+                                    .parcelaDao().actualizar(parcela);
+
+                            // Programar sincronización en segundo plano de inmediato
+                            androidx.work.WorkManager.getInstance(this)
+                                    .enqueue(new androidx.work.OneTimeWorkRequest.Builder(com.agtech.nepenya.sync.SyncWorker.class).build());
+
+                            runOnUiThread(() -> {
+                                Toast.makeText(this, "Estado de parcela actualizado a " + nuevoEstado, Toast.LENGTH_SHORT).show();
+                                cargarParcelas();
+                            });
+                            exec.shutdown();
+                        });
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     @Override

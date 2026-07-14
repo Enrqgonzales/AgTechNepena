@@ -15,4 +15,5 @@ import java.util.List;
 @Repository
 public interface ParcelaRepository extends JpaRepository<Parcela, Long> {
     List<Parcela> findByUsuarioId(Long usuarioId);
+    java.util.Optional<Parcela> findByUuid(String uuid);
 }

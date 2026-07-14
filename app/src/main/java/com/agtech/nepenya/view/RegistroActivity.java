@@ -95,6 +95,18 @@ public class RegistroActivity extends AppCompatActivity implements
         initViews();
         initListeners();
 
+        // Cargar/preseleccionar tipo de registro si viene como extra en el Intent
+        if (getIntent() != null && getIntent().hasExtra("TIPO")) {
+            String tipoExtra = getIntent().getStringExtra("TIPO");
+            if ("GASTO".equals(tipoExtra)) {
+                radioGroupTipo.check(R.id.radio_gasto);
+                selectedTipo = "GASTO";
+            } else if ("INGRESO".equals(tipoExtra)) {
+                radioGroupTipo.check(R.id.radio_ingreso);
+                selectedTipo = "INGRESO";
+            }
+        }
+
         // Cargar parcelas
         controller.cargarParcelas(this);
 
@@ -286,8 +298,8 @@ public class RegistroActivity extends AppCompatActivity implements
 
     private void calcularMonto() {
         try {
-            double cantidad = Double.parseDouble(etCantidad.getText().toString());
-            double costoUnitario = Double.parseDouble(etCostoUnitario.getText().toString());
+            double cantidad = Double.parseDouble(etCantidad.getText().toString().replace(",", "."));
+            double costoUnitario = Double.parseDouble(etCostoUnitario.getText().toString().replace(",", "."));
             montoActual = cantidad * costoUnitario;
             tvMontoCalculado.setText(String.format(Locale.getDefault(), "S/ %.2f", montoActual));
         } catch (NumberFormatException e) {
@@ -298,7 +310,7 @@ public class RegistroActivity extends AppCompatActivity implements
 
     public double getCantidad() {
         try {
-            return Double.parseDouble(etCantidad.getText().toString());
+            return Double.parseDouble(etCantidad.getText().toString().replace(",", "."));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -310,7 +322,7 @@ public class RegistroActivity extends AppCompatActivity implements
 
     public double getCostoUnitario() {
         try {
-            return Double.parseDouble(etCostoUnitario.getText().toString());
+            return Double.parseDouble(etCostoUnitario.getText().toString().replace(",", "."));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -365,7 +377,7 @@ public class RegistroActivity extends AppCompatActivity implements
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog dialog = new DatePickerDialog(this, (view, y, m, d) -> {
-            selectedFecha = String.format(Locale.getDefault(), "%04d-%02d-%02d", y, m + 1, d);
+            selectedFecha = String.format(Locale.US, "%04d-%02d-%02d", y, m + 1, d);
             actualizarTextoFecha();
         }, year, month, day);
 

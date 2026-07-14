@@ -149,7 +149,7 @@ public class CurrencyUtils {
         }
         try {
             // Remover símbolos de moneda y espacios
-            String cleaned = amountStr.replaceAll("[S/$€£¥,\\s]", "").replace(",", ".");
+            String cleaned = amountStr.replaceAll("[S/\\$€£¥\\s]", "").replace(",", ".");
             return Double.parseDouble(cleaned);
         } catch (NumberFormatException e) {
             return 0;

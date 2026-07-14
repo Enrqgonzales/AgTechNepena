@@ -3,8 +3,10 @@ package com.agtech.nepenya.model.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
 
 /**
  * Entidad que representa un item en el inventario.
@@ -50,15 +52,20 @@ public class InventarioItem {
     @ColumnInfo(name = "parcela_id")
     private int parcelaId;
 
+    @ColumnInfo(name = "uuid")
+    private String uuid;
+
     /**
      * Constructor vacio requerido por Room.
      */
     public InventarioItem() {
+        this.uuid = UUID.randomUUID().toString();
     }
 
     /**
      * Constructor con parametros esenciales.
      */
+    @Ignore
     public InventarioItem(String nombre, String categoria, double cantidad, String unidad,
             double costoUnitario, String fechaIngreso) {
         this.nombre = nombre;
@@ -67,6 +74,7 @@ public class InventarioItem {
         this.unidad = unidad;
         this.costoUnitario = costoUnitario;
         this.fechaIngreso = fechaIngreso;
+        this.uuid = UUID.randomUUID().toString();
     }
 
     // Getters y Setters
@@ -157,6 +165,14 @@ public class InventarioItem {
 
     public void setParcelaId(int parcelaId) {
         this.parcelaId = parcelaId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     /**

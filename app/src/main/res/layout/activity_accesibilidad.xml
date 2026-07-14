@@ -88,7 +88,7 @@
                         android:id="@+id/tv_preview_fuente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="El tamaño de esta letra cambia en tiempo real"
+                        android:text="@string/ejemplo_tamano_letra"
                         android:textColor="?android:attr/textColorPrimary"
                         android:gravity="center"
                         android:layout_marginTop="16dp"
@@ -201,6 +201,73 @@
                         android:text="@string/asistente_voz"
                         android:textSize="16sp"
                         android:textColor="?android:attr/textColorPrimary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Security Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/seguridad"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/desc_seguridad_pin"
+                        android:textSize="13sp"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:layout_marginBottom="12dp" />
+
+                    <Button
+                        android:id="@+id/btn_activar_pin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/activar_pin"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:paddingVertical="12dp" />
+
+                    <LinearLayout
+                        android:id="@+id/layout_pin_activo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <Button
+                            android:id="@+id/btn_cambiar_pin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cambiar_pin"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:paddingVertical="12dp" />
+
+                        <Button
+                            android:id="@+id/btn_desactivar_pin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/desactivar_pin"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:paddingVertical="12dp" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

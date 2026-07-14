@@ -123,13 +123,66 @@ public class DatabaseMigrations {
     };
 
     /**
+     * Migración de versión 4 a 5:
+     * Agrega columnas uuid a todas las tablas para idempotencia.
+     * Agrega columnas sync_status y remote_id a inventario_movimientos para sincronización.
+     */
+    public static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            // 1. Agregar columnas uuid
+            database.execSQL("ALTER TABLE usuarios ADD COLUMN uuid TEXT");
+            database.execSQL("ALTER TABLE parcelas ADD COLUMN uuid TEXT");
+            database.execSQL("ALTER TABLE registros ADD COLUMN uuid TEXT");
+            database.execSQL("ALTER TABLE inventario ADD COLUMN uuid TEXT");
+            database.execSQL("ALTER TABLE inventario_movimientos ADD COLUMN uuid TEXT");
+
+            // 2. Agregar columnas de sincronización a movimientos
+            database.execSQL("ALTER TABLE inventario_movimientos ADD COLUMN sync_status TEXT DEFAULT 'PENDING'");
+            database.execSQL("ALTER TABLE inventario_movimientos ADD COLUMN remote_id INTEGER");
+
+            // 3. Rellenar UUIDs para datos existentes
+            database.execSQL("UPDATE usuarios SET uuid = lower(hex(randomblob(16))) WHERE uuid IS NULL");
+            database.execSQL("UPDATE parcelas SET uuid = lower(hex(randomblob(16))) WHERE uuid IS NULL");
+            database.execSQL("UPDATE registros SET uuid = lower(hex(randomblob(16))) WHERE uuid IS NULL");
+            database.execSQL("UPDATE inventario SET uuid = lower(hex(randomblob(16))) WHERE uuid IS NULL");
+            database.execSQL("UPDATE inventario_movimientos SET uuid = lower(hex(randomblob(16))) WHERE uuid IS NULL");
+        }
+    };
+
+    /**
+     * Migración de versión 5 a 6:
+     * Agrega la columna estado a la tabla parcelas
+     */
+    public static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE parcelas ADD COLUMN estado TEXT NOT NULL DEFAULT 'DISPONIBLE'");
+        }
+    };
+
+    /**
+     * Migración de versión 6 a 7:
+     * Agrega la columna firebase_uid a la tabla usuarios
+     */
+    public static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE usuarios ADD COLUMN firebase_uid TEXT");
+        }
+    };
+
+    /**
      * Obtiene todas las migraciones definidas.
      */
     public static Migration[] getAllMigrations() {
         return new Migration[] {
                 MIGRATION_1_2,
                 MIGRATION_2_3,
-                MIGRATION_3_4
+                MIGRATION_3_4,
+                MIGRATION_4_5,
+                MIGRATION_5_6,
+                MIGRATION_6_7
         };
     }
 }

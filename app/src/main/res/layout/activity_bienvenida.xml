@@ -17,6 +17,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@drawable/ic_leaf"
+            android:contentDescription="@string/desc_logo"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="24dp"
             app:tint="?attr/colorPrimary" />
@@ -24,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bienvenido a\nAgTech Nepeña"
+            android:text="@string/bienvenida_titulo"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="@color/primary_text"
@@ -34,17 +35,32 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cuéntanos sobre ti para personalizar tu experiencia"
+            android:text="@string/bienvenida_subtitulo"
             android:textSize="14sp"
             android:textColor="@color/secondary_text"
             android:gravity="center"
-            android:layout_marginBottom="40dp" />
+            android:layout_marginBottom="24dp" />
+
+        <!-- Botón de Google Sign-In -->
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_google_signin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_o_registrate"
+            android:textSize="12sp"
+            android:textColor="@color/secondary_text"
+            android:layout_marginBottom="16dp" />
 
         <!-- Nombre -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre completo"
+            android:text="@string/label_nombre"
             android:textSize="14sp"
             android:textColor="@color/secondary_text"
             android:layout_marginBottom="6dp" />
@@ -59,7 +75,7 @@
                 android:id="@+id/et_nombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ej: Juan Pérez"
+                android:hint="@string/hint_nombre_ejemplo"
                 android:inputType="textPersonName"
                 android:autofillHints="name" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -68,7 +84,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Teléfono"
+            android:text="@string/label_telefono"
             android:textSize="14sp"
             android:textColor="@color/secondary_text"
             android:layout_marginBottom="6dp" />
@@ -83,7 +99,7 @@
                 android:id="@+id/et_telefono"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Ej: 999 888 777"
+                android:hint="@string/hint_telefono_ejemplo"
                 android:inputType="phone"
                 android:autofillHints="phoneNumber" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -92,7 +108,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Distrito donde trabaja"
+            android:text="@string/label_distrito"
             android:textSize="14sp"
             android:textColor="@color/secondary_text"
             android:layout_marginBottom="6dp" />
@@ -109,7 +125,7 @@
             android:id="@+id/btn_comenzar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="COMENZAR"
+            android:text="@string/btn_comenzar"
             android:textSize="16sp"
             android:textStyle="bold"
             android:backgroundTint="@color/md3_primary"

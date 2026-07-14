@@ -87,6 +87,9 @@ public interface ParcelaDao {
     @Query("SELECT COUNT(*) FROM parcelas WHERE sync_status = 'PENDING'")
     int contarPendientes();
 
+    @Query("SELECT COUNT(*) FROM parcelas WHERE sync_status = 'PENDING'")
+    androidx.lifecycle.LiveData<Integer> contarPendientesLiveData();
+
     /**
      * Actualiza el estado de sincronizacion.
      *

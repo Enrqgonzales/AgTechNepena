@@ -94,6 +94,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_weather"
+                android:contentDescription="@string/desc_clima"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
@@ -157,6 +158,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_exchange"
+                android:contentDescription="@string/desc_tipo_cambio"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
@@ -217,6 +219,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_coin"
+                    android:contentDescription="@null"
                     android:background="@drawable/bg_icon_circle"
                     android:padding="8dp" />
 
@@ -233,6 +236,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
                     app:tint="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
 
@@ -258,6 +262,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_leaf"
+                    android:contentDescription="@null"
                     android:background="@drawable/bg_icon_circle"
                     android:padding="8dp" />
 
@@ -274,6 +279,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
                     app:tint="?attr/colorOnSurface" />
             </LinearLayout>
 
@@ -299,6 +305,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_chart"
+                    android:contentDescription="@null"
                     android:background="@drawable/bg_icon_circle"
                     android:padding="8dp" />
 
@@ -315,6 +322,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
                     app:tint="?attr/colorOnSurface" />
             </LinearLayout>
 
@@ -340,6 +348,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_settings"
+                    android:contentDescription="@null"
                     android:background="@drawable/bg_icon_circle"
                     android:padding="8dp" />
 
@@ -356,6 +365,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_chevron_right"
+                    android:contentDescription="@null"
                     app:tint="?attr/colorOnSurface" />
             </LinearLayout>
         </LinearLayout>
@@ -388,6 +398,7 @@
         android:layout_marginBottom="88dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_mic"
+        android:contentDescription="@string/desc_microfono"
         app:backgroundTint="?attr/colorPrimaryContainer"
         app:tint="?attr/colorOnPrimaryContainer"
         app:elevation="6dp" />

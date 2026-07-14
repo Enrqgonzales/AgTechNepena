@@ -61,6 +61,7 @@ public class HistorialActivity extends AppCompatActivity implements
     private int filtroParcelaId = 0;
     private String filtroAnio = "TODOS";
     private String filtroMes = "TODOS";
+    private boolean isReadOnly = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class HistorialActivity extends AppCompatActivity implements
         AccessibilityPrefs.applyAll(this);
         setContentView(R.layout.activity_historial);
 
+        isReadOnly = getIntent().getBooleanExtra("isReadOnly", false);
         initController();
         initViews();
         initListeners();
@@ -283,7 +285,9 @@ public class HistorialActivity extends AppCompatActivity implements
             }
         };
 
-        new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
+        if (!isReadOnly) {
+            new ItemTouchHelper(swipeCallback).attachToRecyclerView(recyclerView);
+        }
     }
 
     private void cargarAnios() {

@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.agtech.nepenya.model.dao.InventarioMovimientoDao;
 import com.agtech.nepenya.model.database.AppDatabase;
 import com.agtech.nepenya.model.entity.InventarioItem;
+import com.agtech.nepenya.model.entity.InventarioMovimiento;
 import com.agtech.nepenya.model.entity.Parcela;
 import com.agtech.nepenya.model.entity.Registro;
 import com.agtech.nepenya.model.entity.Usuario;
@@ -27,6 +29,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +56,7 @@ public class SyncWorker extends Worker {
     private final ParcelaRepository parcelaRepository;
     private final RegistroRepository registroRepository;
     private final InventarioRepository inventarioRepository;
+    private final InventarioMovimientoDao inventarioMovimientoDao;
 
     /**
      * Obtiene la URL del servidor de forma dinámica.
@@ -78,15 +82,15 @@ public class SyncWorker extends Worker {
                 || android.os.Build.MODEL.contains("Android SDK");
     }
 
-    public SyncWorker(@NonNull Context context, @NonNull WorkerParameters params) {
-        super(context, params);
+    public SyncWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
         this.context = context;
-
         AppDatabase db = AppDatabase.getInstance(context);
         this.usuarioRepository = new UsuarioRepository(db.usuarioDao());
         this.parcelaRepository = new ParcelaRepository(db.parcelaDao());
         this.registroRepository = new RegistroRepository(db.registroDao());
         this.inventarioRepository = new InventarioRepository(db.inventarioDao());
+        this.inventarioMovimientoDao = db.inventarioMovimientoDao();
     }
 
     @NonNull
@@ -112,6 +116,9 @@ public class SyncWorker extends Worker {
             // Sincronizar inventario
             success &= syncInventario();
 
+            // Sincronizar movimientos
+            success &= syncMovimientos();
+
             if (success) {
                 new PrefsManager(context).setLastSync(System.currentTimeMillis());
                 return Result.success();
@@ -135,6 +142,7 @@ public class SyncWorker extends Worker {
             for (Usuario u : pendientes) {
                 JSONObject json = new JSONObject();
                 json.put("idLocal", u.getId());
+                json.put("uuid", u.getUuid());
                 json.put("nombre", u.getNombre());
                 json.put("telefono", u.getTelefono());
                 jsonArray.put(json);
@@ -166,24 +174,36 @@ public class SyncWorker extends Worker {
 
         try {
             JSONArray jsonArray = new JSONArray();
+            List<Parcela> aSincronizar = new ArrayList<>();
             for (Parcela p : pendientes) {
+                Usuario u = usuarioRepository.obtenerPorId(p.getUsuarioId());
+                if (u == null || u.getRemoteId() == null) {
+                    continue; // Saltar parcelas de usuarios no sincronizados
+                }
                 JSONObject json = new JSONObject();
                 json.put("idLocal", p.getId());
-                json.put("usuarioId", p.getUsuarioId());
+                json.put("uuid", p.getUuid());
+                json.put("usuarioId", u.getRemoteId());
                 json.put("nombre", p.getNombre());
                 json.put("cultivo", p.getCultivo());
                 json.put("hectareas", p.getHectareas());
                 json.put("ubicacion", p.getUbicacion());
+                json.put("estado", p.getEstado());
                 jsonArray.put(json);
+                aSincronizar.add(p);
+            }
+
+            if (aSincronizar.isEmpty()) {
+                return true;
             }
 
             String response = postJson(getBaseUrl() + "/parcelas", jsonArray.toString());
             if (response != null) {
                 // Parsear respuesta para obtener remoteId asignado por el servidor
                 JSONArray respuestaArray = new JSONArray(response);
-                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                for (int i = 0; i < respuestaArray.length() && i < aSincronizar.size(); i++) {
                     JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
-                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int localId = itemRespuesta.optInt("idLocal", aSincronizar.get(i).getId());
                     int remoteId = itemRespuesta.optInt("remoteId", localId);
                     parcelaRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
@@ -203,25 +223,36 @@ public class SyncWorker extends Worker {
 
         try {
             JSONArray jsonArray = new JSONArray();
+            List<Registro> aSincronizar = new ArrayList<>();
             for (Registro r : pendientes) {
+                Parcela p = parcelaRepository.obtenerPorId(r.getParcelaId());
+                if (p == null || p.getRemoteId() == null) {
+                    continue; // Saltar registros de parcelas no sincronizadas
+                }
                 JSONObject json = new JSONObject();
                 json.put("idLocal", r.getId());
-                json.put("parcelaId", r.getParcelaId());
+                json.put("uuid", r.getUuid());
+                json.put("parcelaId", p.getRemoteId());
                 json.put("tipo", r.getTipo());
                 json.put("categoria", r.getCategoria());
                 json.put("monto", r.getMonto());
                 json.put("descripcion", r.getDescripcion());
                 json.put("fecha", r.getFecha());
                 jsonArray.put(json);
+                aSincronizar.add(r);
+            }
+
+            if (aSincronizar.isEmpty()) {
+                return true;
             }
 
             String response = postJson(getBaseUrl() + "/registros", jsonArray.toString());
             if (response != null) {
                 // Parsear respuesta para obtener remoteId asignado por el servidor
                 JSONArray respuestaArray = new JSONArray(response);
-                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                for (int i = 0; i < respuestaArray.length() && i < aSincronizar.size(); i++) {
                     JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
-                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int localId = itemRespuesta.optInt("idLocal", aSincronizar.get(i).getId());
                     int remoteId = itemRespuesta.optInt("remoteId", localId);
                     registroRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
@@ -241,9 +272,16 @@ public class SyncWorker extends Worker {
 
         try {
             JSONArray jsonArray = new JSONArray();
+            List<InventarioItem> aSincronizar = new ArrayList<>();
             for (InventarioItem item : pendientes) {
+                Parcela p = parcelaRepository.obtenerPorId(item.getParcelaId());
+                if (p == null || p.getRemoteId() == null) {
+                    continue; // Saltar insumos de parcelas no sincronizadas
+                }
                 JSONObject json = new JSONObject();
                 json.put("idLocal", item.getId());
+                json.put("uuid", item.getUuid());
+                json.put("parcelaId", p.getRemoteId());
                 json.put("nombre", item.getNombre());
                 json.put("categoria", item.getCategoria());
                 json.put("cantidad", item.getCantidad());
@@ -252,17 +290,83 @@ public class SyncWorker extends Worker {
                 json.put("fechaIngreso", item.getFechaIngreso());
                 json.put("descripcion", item.getDescripcion());
                 jsonArray.put(json);
+                aSincronizar.add(item);
+            }
+
+            if (aSincronizar.isEmpty()) {
+                return true;
             }
 
             String response = postJson(getBaseUrl() + "/inventario", jsonArray.toString());
             if (response != null) {
                 // Parsear respuesta para obtener remoteId asignado por el servidor
                 JSONArray respuestaArray = new JSONArray(response);
-                for (int i = 0; i < respuestaArray.length() && i < pendientes.size(); i++) {
+                for (int i = 0; i < respuestaArray.length() && i < aSincronizar.size(); i++) {
                     JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
-                    int localId = itemRespuesta.optInt("idLocal", pendientes.get(i).getId());
+                    int localId = itemRespuesta.optInt("idLocal", aSincronizar.get(i).getId());
                     int remoteId = itemRespuesta.optInt("remoteId", localId);
                     inventarioRepository.actualizarSyncStatus(localId, "SYNCED", remoteId);
+                }
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean syncMovimientos() {
+        List<InventarioMovimiento> pendientes = inventarioMovimientoDao.obtenerPendientesSync();
+        if (pendientes.isEmpty()) {
+            return true;
+        }
+
+        try {
+            JSONArray jsonArray = new JSONArray();
+            List<InventarioMovimiento> aSincronizar = new ArrayList<>();
+            for (InventarioMovimiento mov : pendientes) {
+                InventarioItem item = inventarioRepository.obtenerItem(mov.getItemId());
+                if (item == null || item.getRemoteId() == 0) {
+                    continue; // Saltar si el item de inventario no está sincronizado
+                }
+                
+                Integer remoteRegistroId = null;
+                if (mov.getRegistroId() != null) {
+                    Registro reg = registroRepository.obtenerPorId(mov.getRegistroId());
+                    if (reg != null && reg.getRemoteId() != null) {
+                        remoteRegistroId = reg.getRemoteId();
+                    } else {
+                        continue; // Saltar si el registro asociado existe localmente pero aún no está sincronizado
+                    }
+                }
+
+                JSONObject json = new JSONObject();
+                json.put("idLocal", mov.getId());
+                json.put("uuid", mov.getUuid());
+                json.put("itemId", item.getRemoteId());
+                json.put("tipo", mov.getTipo());
+                json.put("cantidad", mov.getCantidad());
+                json.put("unidad", mov.getUnidad());
+                json.put("costoTotal", mov.getCostoTotal());
+                json.put("fecha", mov.getFecha());
+                json.put("descripcion", mov.getDescripcion());
+                json.put("registroId", remoteRegistroId);
+                jsonArray.put(json);
+                aSincronizar.add(mov);
+            }
+
+            if (aSincronizar.isEmpty()) {
+                return true;
+            }
+
+            String response = postJson(getBaseUrl() + "/movimientos", jsonArray.toString());
+            if (response != null) {
+                JSONArray respuestaArray = new JSONArray(response);
+                for (int i = 0; i < respuestaArray.length() && i < aSincronizar.size(); i++) {
+                    JSONObject itemRespuesta = respuestaArray.getJSONObject(i);
+                    int localId = itemRespuesta.optInt("idLocal", aSincronizar.get(i).getId());
+                    int remoteId = itemRespuesta.optInt("remoteId", localId);
+                    inventarioMovimientoDao.actualizarSyncStatus(localId, "SYNCED", remoteId);
                 }
                 return true;
             }
@@ -279,6 +383,7 @@ public class SyncWorker extends Worker {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("X-API-Key", "agtech_secret_key_2026");
             conn.setDoOutput(true);
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);

@@ -63,6 +63,15 @@ public interface UsuarioDao {
     Usuario obtenerPorId(int id);
 
     /**
+     * Obtiene un usuario por su Firebase UID.
+     *
+     * @param firebaseUid UID de Firebase
+     * @return Usuario encontrado o null
+     */
+    @Query("SELECT * FROM usuarios WHERE firebase_uid = :firebaseUid LIMIT 1")
+    Usuario obtenerPorFirebaseUid(String firebaseUid);
+
+    /**
      * Obtiene usuarios pendientes de sincronizacion.
      *
      * @return Lista de usuarios con syncStatus = 'PENDING'
@@ -77,6 +86,9 @@ public interface UsuarioDao {
      */
     @Query("SELECT COUNT(*) FROM usuarios WHERE sync_status = 'PENDING'")
     int contarPendientes();
+
+    @Query("SELECT COUNT(*) FROM usuarios WHERE sync_status = 'PENDING'")
+    androidx.lifecycle.LiveData<Integer> contarPendientesLiveData();
 
     /**
      * Actualiza el estado de sincronizacion.

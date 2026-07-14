@@ -24,6 +24,7 @@ public class InventarioRepository {
     // CRUD Items
 
     public long guardarItem(InventarioItem item) {
+        item.setSyncStatus("PENDING");
         if (item.getId() == 0) {
             return inventarioDao.insertarItem(item);
         } else {
@@ -118,6 +119,7 @@ public class InventarioRepository {
             String fecha, String descripcion, Integer registroId) {
         InventarioItem item = obtenerItem(itemId);
         if (item != null && item.consumir(cantidad)) {
+            item.setSyncStatus("PENDING");
             inventarioDao.actualizarItem(item);
 
             InventarioMovimiento mov = new InventarioMovimiento(

@@ -17,7 +17,7 @@
             android:id="@+id/tv_titulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Movimientos"
+            android:text="@string/movimientos_titulo"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/primary_text" />
@@ -25,7 +25,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Historial de entradas y salidas"
+            android:text="@string/historial_entradas_salidas"
             android:textSize="14sp"
             android:textColor="@color/secondary_text"
             android:layout_marginTop="4dp" />
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="No hay movimientos registrados\npara este item"
+            android:text="@string/sin_movimientos"
             android:textSize="16sp"
             android:textColor="@color/secondary_text"
             android:gravity="center"

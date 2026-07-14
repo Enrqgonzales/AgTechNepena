@@ -1,49 +1,49 @@
 package com.agtech.backend.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 /**
- * Entidad JPA para InventarioItem.
+ * Entidad JPA para InventarioMovimiento (Entradas/Salidas de insumos).
  *
  * @author AgTech Nepeña Team
  * @version 1.0
  */
 @Entity
-@Table(name = "inventario")
-public class InventarioItem {
+@Table(name = "inventario_movimientos")
+public class InventarioMovimiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne
+    @JoinColumn(name = "item_id", nullable = false)
+    private InventarioItem inventarioItem;
 
-    private String categoria;
+    @Column(nullable = false)
+    private String tipo; // ENTRADA o SALIDA
 
     private Double cantidad;
 
     private String unidad;
 
-    @Column(name = "costo_unitario")
-    private Double costoUnitario;
+    @Column(name = "costo_total")
+    private Double costoTotal;
 
-    @Column(name = "fecha_ingreso")
-    private String fechaIngreso;
+    private String fecha;
 
     private String descripcion;
 
     @ManyToOne
-    @JoinColumn(name = "parcela_id")
-    private Parcela parcela;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @JoinColumn(name = "registro_id")
+    private Registro registro; // Relación opcional con el gasto asociado
 
     @Column(name = "uuid", unique = true)
     private String uuid;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
@@ -63,20 +63,20 @@ public class InventarioItem {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public InventarioItem getInventarioItem() {
+        return inventarioItem;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setInventarioItem(InventarioItem inventarioItem) {
+        this.inventarioItem = inventarioItem;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public Double getCantidad() {
@@ -95,20 +95,20 @@ public class InventarioItem {
         this.unidad = unidad;
     }
 
-    public Double getCostoUnitario() {
-        return costoUnitario;
+    public Double getCostoTotal() {
+        return costoTotal;
     }
 
-    public void setCostoUnitario(Double costoUnitario) {
-        this.costoUnitario = costoUnitario;
+    public void setCostoTotal(Double costoTotal) {
+        this.costoTotal = costoTotal;
     }
 
-    public String getFechaIngreso() {
-        return fechaIngreso;
+    public String getFecha() {
+        return fecha;
     }
 
-    public void setFechaIngreso(String fechaIngreso) {
-        this.fechaIngreso = fechaIngreso;
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
     }
 
     public String getDescripcion() {
@@ -119,16 +119,12 @@ public class InventarioItem {
         this.descripcion = descripcion;
     }
 
-    public Parcela getParcela() {
-        return parcela;
+    public Registro getRegistro() {
+        return registro;
     }
 
-    public void setParcela(Parcela parcela) {
-        this.parcela = parcela;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
     }
 
     public String getUuid() {
@@ -137,5 +133,9 @@ public class InventarioItem {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 }

@@ -2,7 +2,9 @@ package com.agtech.nepenya.model.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
 
 /**
  * Entidad que representa un usuario del sistema.
@@ -29,11 +31,18 @@ public class Usuario {
     @ColumnInfo(name = "remote_id")
     private Integer remoteId;
 
+    @ColumnInfo(name = "uuid")
+    private String uuid;
+
+    @ColumnInfo(name = "firebase_uid")
+    private String firebaseUid;
+
     /**
      * Constructor vacio requerido por Room.
      */
     public Usuario() {
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
     }
 
     /**
@@ -42,10 +51,12 @@ public class Usuario {
      * @param nombre    Nombre completo del usuario
      * @param telefono  Numero de telefono
      */
+    @Ignore
     public Usuario(String nombre, String telefono) {
         this.nombre = nombre;
         this.telefono = telefono;
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
     }
 
     // Getters y Setters
@@ -88,6 +99,22 @@ public class Usuario {
 
     public void setRemoteId(Integer remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 
     @Override

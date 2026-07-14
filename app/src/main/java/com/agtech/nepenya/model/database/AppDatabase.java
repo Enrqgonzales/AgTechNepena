@@ -7,6 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.agtech.nepenya.model.dao.InventarioDao;
+import com.agtech.nepenya.model.dao.InventarioMovimientoDao;
 import com.agtech.nepenya.model.dao.ParcelaDao;
 import com.agtech.nepenya.model.dao.RegistroDao;
 import com.agtech.nepenya.model.dao.UsuarioDao;
@@ -24,7 +25,7 @@ import com.agtech.nepenya.model.entity.Usuario;
  * @version 1.0
  */
 @Database(entities = { Usuario.class, Parcela.class, Registro.class, InventarioItem.class,
-        InventarioMovimiento.class }, version = 4, exportSchema = false)
+        InventarioMovimiento.class }, version = 7, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DATABASE_NAME = "agtech_nepenya_db";
@@ -71,4 +72,9 @@ public abstract class AppDatabase extends RoomDatabase {
      * @return DAO para operaciones de Inventario
      */
     public abstract InventarioDao inventarioDao();
+
+    /**
+     * @return DAO para operaciones de Movimientos de Inventario
+     */
+    public abstract InventarioMovimientoDao inventarioMovimientoDao();
 }

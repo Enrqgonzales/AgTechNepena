@@ -17,13 +17,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.agtech.nepenya.R;
+import com.agtech.nepenya.AgTechApp;
 import com.agtech.nepenya.accessibility.AccessibilityPrefs;
-import com.agtech.nepenya.accessibility.VoiceCommandManager;
+import com.agtech.nepenya.accessibility.VoiceCommandHelper;
 import com.agtech.nepenya.controller.DashboardController;
 import com.agtech.nepenya.model.database.AppDatabase;
 import com.agtech.nepenya.model.repository.ParcelaRepository;
 import com.agtech.nepenya.model.repository.RegistroRepository;
 import com.agtech.nepenya.model.repository.UsuarioRepository;
+import com.agtech.nepenya.utils.PinDialogHelper;
 import com.agtech.nepenya.utils.PrefsManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -33,6 +35,16 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -59,9 +71,20 @@ public class DashboardActivity extends AppCompatActivity implements
     private DashboardController controller;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private VoiceCommandManager voiceCommandManager;
+    private VoiceCommandHelper voiceCommandHelper;
     private PrefsManager prefsManager;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    // Fields for sync observation
+    private ConnectivityManager.NetworkCallback networkCallback;
+    private final MutableLiveData<Boolean> isOnlineLiveData = new MutableLiveData<>();
+    private final MediatorLiveData<Integer> totalPendientesLiveData = new MediatorLiveData<>();
+    private final int[] syncCounts = new int[5]; // usuarios, parcelas, registros, inventario, movimientos
+    private boolean isSyncingPeriodic = false;
+    private boolean isSyncingImmediate = false;
+    private AlphaAnimation blinkingAnimation;
+    private boolean isPinDialogShowing = false;
+    private boolean isDashboardInicializado = false;
 
     // UI Elements
     private TextView tvSaludo;
@@ -92,26 +115,77 @@ public class DashboardActivity extends AppCompatActivity implements
             return;
         }
 
+        // Siempre inflamos el layout e inicializamos las vistas
         setContentView(R.layout.activity_dashboard);
-
         initController();
         initViews();
         initListeners();
-        initLocation();
-        initVoiceCommand();
 
-        String baseCurrency = prefsManager.getCurrencyBase();
-        controller.fetchTipoCambio(baseCurrency, this);
-        controller.checkSyncStatus(this);
-        mostrarCacheInicial();
+        boolean needsUnlock = prefsManager.getAdminPin() != null && AgTechApp.shouldRequireAppUnlock();
+        if (needsUnlock) {
+            // Ocultamos el contenido inmediatamente para evitar parpadeos
+            findViewById(android.R.id.content).setVisibility(View.INVISIBLE);
+        } else {
+            // Ya está desbloqueado o no tiene PIN
+            AgTechApp.markAppUnlocked();
+            comenzarServiciosYDatos();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (prefsManager != null) {
-            controller.checkSyncStatus(this);
-            actualizarSaludo();
+            boolean needsUnlock = prefsManager.getAdminPin() != null && AgTechApp.shouldRequireAppUnlock();
+            if (needsUnlock) {
+                findViewById(android.R.id.content).setVisibility(View.INVISIBLE);
+                if (!isPinDialogShowing) {
+                    isPinDialogShowing = true;
+                    PinDialogHelper.mostrarVerificarPin(
+                            this,
+                            prefsManager,
+                            "PIN de la app",
+                            "Ingrese su PIN de 4 dígitos para continuar:",
+                            () -> {
+                                isPinDialogShowing = false;
+                                AgTechApp.markAppUnlocked();
+                                findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+                                comenzarServiciosYDatos();
+                                actualizarSaludo();
+                                actualizarVoiceFab();
+                            },
+                            false
+                    );
+                }
+            } else {
+                findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+                comenzarServiciosYDatos();
+                actualizarSaludo();
+                actualizarVoiceFab();
+            }
+        }
+    }
+
+    private void comenzarServiciosYDatos() {
+        if (isDashboardInicializado) return;
+        isDashboardInicializado = true;
+
+        initLocation();
+        initVoiceCommand();
+
+        String baseCurrency = prefsManager.getCurrencyBase();
+        controller.fetchTipoCambio(baseCurrency, this);
+        initSyncObserver();
+        mostrarCacheInicial();
+    }
+
+    private void actualizarVoiceFab() {
+        if (fabVoice != null) {
+            if (prefsManager.isVoiceEnabled()) {
+                fabVoice.setVisibility(View.VISIBLE);
+            } else {
+                fabVoice.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -187,8 +261,8 @@ public class DashboardActivity extends AppCompatActivity implements
         cardInventario.setOnClickListener(v -> startActivity(new Intent(this, InventarioActivity.class)));
 
         fabVoice.setOnClickListener(v -> {
-            if (voiceCommandManager != null) {
-                voiceCommandManager.startListening(this, this::procesarComandoVoz);
+            if (voiceCommandHelper != null) {
+                voiceCommandHelper.startListening();
             }
         });
 
@@ -300,24 +374,65 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
     private void initVoiceCommand() {
-        voiceCommandManager = new VoiceCommandManager();
-    }
+        voiceCommandHelper = new VoiceCommandHelper(this, new VoiceCommandHelper.CommandCallback() {
+            @Override
+            public void onCommandRecognized(String command, String cleanText) {
+                String speakText = "";
+                Intent intent = null;
+                switch (command) {
+                    case "GASTO":
+                        speakText = "Abriendo registro de gasto";
+                        intent = new Intent(DashboardActivity.this, RegistroActivity.class);
+                        intent.putExtra("TIPO", "GASTO");
+                        break;
+                    case "INGRESO":
+                        speakText = "Abriendo registro de ingreso";
+                        intent = new Intent(DashboardActivity.this, RegistroActivity.class);
+                        intent.putExtra("TIPO", "INGRESO");
+                        break;
+                    case "PARCELAS":
+                        speakText = "Abriendo parcelas";
+                        intent = new Intent(DashboardActivity.this, MisParcelasActivity.class);
+                        break;
+                    case "HISTORIAL":
+                        speakText = "Abriendo historial";
+                        intent = new Intent(DashboardActivity.this, HistorialActivity.class);
+                        break;
+                    case "REPORTES":
+                        speakText = "Abriendo reportes";
+                        intent = new Intent(DashboardActivity.this, ReportesActivity.class);
+                        break;
+                    case "INVENTARIO":
+                        speakText = "Abriendo inventario";
+                        intent = new Intent(DashboardActivity.this, InventarioActivity.class);
+                        break;
+                }
+                if (intent != null) {
+                    voiceCommandHelper.speak(speakText);
+                    final Intent finalIntent = intent;
+                    new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                        startActivity(finalIntent);
+                    }, 1200);
+                }
+            }
 
-    private void procesarComandoVoz(String comando) {
-        comando = comando.toLowerCase();
-        if (comando.contains("registrar") || comando.contains("gasto") || comando.contains("ingreso")) {
-            startActivity(new Intent(this, RegistroActivity.class));
-        } else if (comando.contains("historial")) {
-            startActivity(new Intent(this, HistorialActivity.class));
-        } else if (comando.contains("reporte")) {
-            startActivity(new Intent(this, ReportesActivity.class));
-        } else if (comando.contains("parcela")) {
-            startActivity(new Intent(this, MisParcelasActivity.class));
-        } else if (comando.contains("ajuste")) {
-            startActivity(new Intent(this, AccesibilidadActivity.class));
-        } else if (comando.contains("inventario") || comando.contains("almacen")) {
-            startActivity(new Intent(this, InventarioActivity.class));
-        }
+            @Override
+            public void onCommandNotRecognized(String originalText) {
+                voiceCommandHelper.speak("No entendí, intenta de nuevo");
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                if ("NO_PERMISSION".equals(errorMsg)) {
+                    ActivityCompat.requestPermissions(DashboardActivity.this,
+                            new String[]{Manifest.permission.RECORD_AUDIO}, 2001);
+                } else if ("RECOGNIZER_UNAVAILABLE".equals(errorMsg)) {
+                    Toast.makeText(DashboardActivity.this, "El reconocimiento de voz no está disponible", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Error de voz: " + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -341,14 +456,13 @@ public class DashboardActivity extends AppCompatActivity implements
                     tvLocalidad.setVisibility(View.VISIBLE);
                 }
             }
-        } else if (requestCode == 2001) { // VoiceCommandManager PERMISSION_REQUEST_CODE
+        } else if (requestCode == 2001) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, reiniciar escucha si se presionó el FAB
-                if (voiceCommandManager != null) {
-                    voiceCommandManager.startListening(this, this::procesarComandoVoz);
+                if (voiceCommandHelper != null) {
+                    voiceCommandHelper.startListening();
                 }
             } else {
-                Toast.makeText(this, "Permiso de audio denegado. Comandos de voz no disponibles.",
+                Toast.makeText(this, "Permiso de audio denegado. El asistente de voz no puede funcionar.",
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -423,19 +537,142 @@ public class DashboardActivity extends AppCompatActivity implements
 
     @Override
     public void onSyncStatus(String estado) {
-        if ("ONLINE".equals(estado)) {
-            dotSyncStatus.setBackgroundResource(R.drawable.dot_green);
-            tvSyncStatus.setText(getString(R.string.sincronizado));
-            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green));
-        } else if ("SYNCING".equals(estado)) {
-            dotSyncStatus.setBackgroundResource(R.drawable.dot_green);
-            tvSyncStatus.setText("SINCRONIZANDO...");
-            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green));
-        } else {
+        // Obsoleto: Usamos initSyncObserver() con LiveData reactivo en su lugar
+    }
+
+    private void initSyncObserver() {
+        AppDatabase db = AppDatabase.getInstance(this);
+
+        // 1. Monitor network changes
+        isOnlineLiveData.setValue(com.agtech.nepenya.utils.NetworkUtils.isConnected(this));
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            networkCallback = new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    isOnlineLiveData.postValue(true);
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                    isOnlineLiveData.postValue(false);
+                }
+            };
+            try {
+                connectivityManager.registerDefaultNetworkCallback(networkCallback);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 2. Observe pending counts from Room DAOs
+        totalPendientesLiveData.addSource(db.usuarioDao().contarPendientesLiveData(), val -> {
+            syncCounts[0] = val != null ? val : 0;
+            actualizarTotalPendientes();
+        });
+        totalPendientesLiveData.addSource(db.parcelaDao().contarPendientesLiveData(), val -> {
+            syncCounts[1] = val != null ? val : 0;
+            actualizarTotalPendientes();
+        });
+        totalPendientesLiveData.addSource(db.registroDao().contarPendientesLiveData(), val -> {
+            syncCounts[2] = val != null ? val : 0;
+            actualizarTotalPendientes();
+        });
+        totalPendientesLiveData.addSource(db.inventarioDao().contarPendientesLiveData(), val -> {
+            syncCounts[3] = val != null ? val : 0;
+            actualizarTotalPendientes();
+        });
+        totalPendientesLiveData.addSource(db.inventarioMovimientoDao().contarPendientesLiveData(), val -> {
+            syncCounts[4] = val != null ? val : 0;
+            actualizarTotalPendientes();
+        });
+
+        // 3. Observe WorkManager sync tasks
+        WorkManager.getInstance(this).getWorkInfosByTagLiveData("agtech_sync_work")
+                .observe(this, workInfos -> {
+                    isSyncingPeriodic = checkAnyWorkRunning(workInfos);
+                    combinarYActualizarEstadoSincronizacion();
+                });
+
+        WorkManager.getInstance(this).getWorkInfosByTagLiveData("agtech_sync_work_immediate")
+                .observe(this, workInfos -> {
+                    isSyncingImmediate = checkAnyWorkRunning(workInfos);
+                    combinarYActualizarEstadoSincronizacion();
+                });
+
+        // Observe online and pending changes
+        isOnlineLiveData.observe(this, online -> combinarYActualizarEstadoSincronizacion());
+        totalPendientesLiveData.observe(this, count -> combinarYActualizarEstadoSincronizacion());
+    }
+
+    private void actualizarTotalPendientes() {
+        int sum = 0;
+        for (int count : syncCounts) {
+            sum += count;
+        }
+        totalPendientesLiveData.setValue(sum);
+    }
+
+    private boolean checkAnyWorkRunning(List<WorkInfo> workInfos) {
+        if (workInfos != null) {
+            for (WorkInfo info : workInfos) {
+                if (info.getState() == WorkInfo.State.RUNNING) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void combinarYActualizarEstadoSincronizacion() {
+        boolean online = isOnlineLiveData.getValue() != null && isOnlineLiveData.getValue();
+        int pendientes = totalPendientesLiveData.getValue() != null ? totalPendientesLiveData.getValue() : 0;
+        boolean syncing = isSyncingPeriodic || isSyncingImmediate;
+
+        // Si hay conexión y hay cambios pendientes pero no se está ejecutando el worker,
+        // forzar una sincronización inmediata
+        if (online && pendientes > 0 && !syncing) {
+            com.agtech.nepenya.sync.SyncManager.syncNow(this);
+            syncing = true;
+        }
+
+        actualizarUIEstadoSync(online, pendientes, syncing);
+    }
+
+    private void actualizarUIEstadoSync(boolean online, int pendientes, boolean syncing) {
+        if (syncing) {
+            dotSyncStatus.setBackgroundResource(R.drawable.dot_yellow);
+            tvSyncStatus.setText("Sincronizando...");
+            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.sync_yellow));
+            startBlinking(tvSyncStatus);
+        } else if (!online && pendientes > 0) {
             dotSyncStatus.setBackgroundResource(R.drawable.dot_red);
             tvSyncStatus.setText(getString(R.string.sin_conexion));
             tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_red));
+            stopBlinking(tvSyncStatus);
+        } else {
+            // Sincronizado
+            dotSyncStatus.setBackgroundResource(R.drawable.dot_green);
+            tvSyncStatus.setText(getString(R.string.sincronizado));
+            tvSyncStatus.setTextColor(ContextCompat.getColor(this, R.color.accent_green));
+            stopBlinking(tvSyncStatus);
         }
+    }
+
+    private void startBlinking(View view) {
+        if (blinkingAnimation == null) {
+            blinkingAnimation = new AlphaAnimation(1.0f, 0.3f);
+            blinkingAnimation.setDuration(800);
+            blinkingAnimation.setRepeatMode(Animation.REVERSE);
+            blinkingAnimation.setRepeatCount(Animation.INFINITE);
+        }
+        if (view.getAnimation() == null) {
+            view.startAnimation(blinkingAnimation);
+        }
+    }
+
+    private void stopBlinking(View view) {
+        view.clearAnimation();
     }
 
     @Override
@@ -444,8 +681,14 @@ public class DashboardActivity extends AppCompatActivity implements
         if (fusedLocationClient != null && locationCallback != null) {
             fusedLocationClient.removeLocationUpdates(locationCallback);
         }
-        if (voiceCommandManager != null) {
-            voiceCommandManager.destroy();
+        if (voiceCommandHelper != null) {
+            voiceCommandHelper.destroy();
+        }
+        if (networkCallback != null) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager != null) {
+                connectivityManager.unregisterNetworkCallback(networkCallback);
+            }
         }
         executorService.shutdown();
     }

@@ -3,8 +3,10 @@ package com.agtech.nepenya.model.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
 
 /**
  * Entidad que representa un registro de gasto o ingreso.
@@ -52,11 +54,15 @@ public class Registro {
     @ColumnInfo(name = "remote_id")
     private Integer remoteId;
 
+    @ColumnInfo(name = "uuid")
+    private String uuid;
+
     /**
      * Constructor vacio requerido por Room.
      */
     public Registro() {
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
     }
 
     /**
@@ -69,6 +75,7 @@ public class Registro {
      * @param descripcion Descripcion detallada
      * @param fecha       Fecha en formato yyyy-MM-dd
      */
+    @Ignore
     public Registro(int parcelaId, String tipo, String categoria, double monto, String descripcion, String fecha) {
         this.parcelaId = parcelaId;
         this.tipo = tipo;
@@ -77,6 +84,7 @@ public class Registro {
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.syncStatus = "PENDING";
+        this.uuid = UUID.randomUUID().toString();
     }
 
     // Getters y Setters
@@ -151,6 +159,14 @@ public class Registro {
 
     public void setRemoteId(Integer remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     /**

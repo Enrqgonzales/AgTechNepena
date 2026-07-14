@@ -106,6 +106,9 @@ public interface RegistroDao {
     @Query("SELECT COUNT(*) FROM registros WHERE sync_status = 'PENDING'")
     int contarPendientes();
 
+    @Query("SELECT COUNT(*) FROM registros WHERE sync_status = 'PENDING'")
+    androidx.lifecycle.LiveData<Integer> contarPendientesLiveData();
+
     /**
      * Actualiza el estado de sincronizacion.
      *
@@ -122,8 +125,8 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Lista de registros del año
      */
-    @Query("SELECT * FROM registros WHERE strftime('%Y', fecha) = :anio ORDER BY fecha DESC")
-    List<Registro> obtenerPorAnio(String anio);
+    @Query("SELECT * FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY fecha DESC")
+    List<Registro> obtenerPorAnio(String inicio, String fin);
 
     /**
      * Obtiene suma de gastos por categoria en un año.
@@ -132,8 +135,8 @@ public interface RegistroDao {
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE strftime('%Y', fecha) = :anio AND tipo = 'GASTO' AND categoria = :categoria")
-    Double obtenerGastosPorCategoriaYAnio(String anio, String categoria);
+    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'GASTO' AND categoria = :categoria")
+    Double obtenerGastosPorCategoriaYAnio(String inicio, String fin, String categoria);
 
     /**
      * Obtiene suma de ingresos por categoria en un año.
@@ -142,8 +145,8 @@ public interface RegistroDao {
      * @param categoria Categoria a filtrar
      * @return Suma de montos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE strftime('%Y', fecha) = :anio AND tipo = 'INGRESO' AND categoria = :categoria")
-    Double obtenerIngresosPorCategoriaYAnio(String anio, String categoria);
+    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'INGRESO' AND categoria = :categoria")
+    Double obtenerIngresosPorCategoriaYAnio(String inicio, String fin, String categoria);
 
     /**
      * Obtiene total de gastos en un año.
@@ -151,8 +154,8 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Total de gastos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE strftime('%Y', fecha) = :anio AND tipo = 'GASTO'")
-    Double obtenerTotalGastosPorAnio(String anio);
+    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'GASTO'")
+    Double obtenerTotalGastosPorAnio(String inicio, String fin);
 
     /**
      * Obtiene total de ingresos en un año.
@@ -160,8 +163,8 @@ public interface RegistroDao {
      * @param anio Anio en formato yyyy
      * @return Total de ingresos
      */
-    @Query("SELECT SUM(monto) FROM registros WHERE strftime('%Y', fecha) = :anio AND tipo = 'INGRESO'")
-    Double obtenerTotalIngresosPorAnio(String anio);
+    @Query("SELECT SUM(monto) FROM registros WHERE fecha BETWEEN :inicio AND :fin AND tipo = 'INGRESO'")
+    Double obtenerTotalIngresosPorAnio(String inicio, String fin);
 
     /**
      * Obtiene categorias de gastos distintas.
@@ -186,8 +189,8 @@ public interface RegistroDao {
      * @param mes  Mes en formato MM
      * @return Lista de registros del mes
      */
-    @Query("SELECT * FROM registros WHERE strftime('%Y', fecha) = :anio AND strftime('%m', fecha) = :mes ORDER BY fecha DESC")
-    List<Registro> obtenerPorAnioYMes(String anio, String mes);
+    @Query("SELECT * FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY fecha DESC")
+    List<Registro> obtenerPorAnioYMes(String inicio, String fin);
 
     /**
      * Obtiene registros por fecha exacta.
@@ -222,6 +225,6 @@ public interface RegistroDao {
      * @param anio Año en formato yyyy
      * @return Lista de meses (01-12)
      */
-    @Query("SELECT DISTINCT strftime('%m', fecha) FROM registros WHERE strftime('%Y', fecha) = :anio ORDER BY strftime('%m', fecha)")
-    List<String> obtenerMesesConRegistros(String anio);
+    @Query("SELECT DISTINCT strftime('%m', fecha) FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY strftime('%m', fecha)")
+    List<String> obtenerMesesConRegistros(String inicio, String fin);
 }

@@ -3,8 +3,10 @@ package com.agtech.nepenya.model.entity;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import java.util.UUID;
 
 /**
  * Entidad que representa un movimiento de inventario (entrada o salida).
@@ -52,15 +54,27 @@ public class InventarioMovimiento {
     @ColumnInfo(name = "registro_id")
     private Integer registroId; // ID del gasto asociado (si aplica)
 
+    @ColumnInfo(name = "uuid")
+    private String uuid;
+
+    @ColumnInfo(name = "sync_status", defaultValue = "PENDING")
+    private String syncStatus;
+
+    @ColumnInfo(name = "remote_id")
+    private Integer remoteId;
+
     /**
      * Constructor vacio requerido por Room.
      */
     public InventarioMovimiento() {
+        this.uuid = UUID.randomUUID().toString();
+        this.syncStatus = "PENDING";
     }
 
     /**
      * Constructor con parametros esenciales.
      */
+    @Ignore
     public InventarioMovimiento(int itemId, String tipo, double cantidad, String unidad,
                                double costoTotal, String fecha, String descripcion) {
         this.itemId = itemId;
@@ -70,6 +84,8 @@ public class InventarioMovimiento {
         this.costoTotal = costoTotal;
         this.fecha = fecha;
         this.descripcion = descripcion;
+        this.uuid = UUID.randomUUID().toString();
+        this.syncStatus = "PENDING";
     }
 
     // Getters y Setters
@@ -144,6 +160,30 @@ public class InventarioMovimiento {
 
     public void setRegistroId(Integer registroId) {
         this.registroId = registroId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getSyncStatus() {
+        return syncStatus;
+    }
+
+    public void setSyncStatus(String syncStatus) {
+        this.syncStatus = syncStatus;
+    }
+
+    public Integer getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(Integer remoteId) {
+        this.remoteId = remoteId;
     }
 
     public boolean esEntrada() {

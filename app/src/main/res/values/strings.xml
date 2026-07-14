@@ -8,6 +8,7 @@
     <string name="saludo_noche">Buenas noches,</string>
     <string name="sincronizado">SINCRONIZADO</string>
     <string name="sin_conexion">SIN CONEXIÓN</string>
+    <string name="sincronizando">SINCRONIZANDO...</string>
     <string name="clima">Clima</string>
     <string name="tipo_cambio">Tipo de cambio</string>
     <string name="registrar_gasto_ingreso">Registrar Gasto o Ingreso</string>
@@ -81,6 +82,13 @@
     <string name="modo_noche">Noche</string>
     <string name="modo_pantalla">Modo de pantalla</string>
     <string name="asistente_voz">Asistente de voz</string>
+    <string name="ejemplo_tamano_letra">El tamaño de esta letra cambia en tiempo real</string>
+    <string name="seguridad">Seguridad</string>
+    <string name="desc_seguridad_pin">Protege el acceso a toda la app con un PIN opcional de 4 dígitos.</string>
+    <string name="activar_pin">Activar PIN de la app</string>
+    <string name="cambiar_pin">Cambiar PIN</string>
+    <string name="desactivar_pin">Desactivar PIN</string>
+    <string name="nota_pin_ajustes">Podrás activarlo más tarde desde Ajustes → Seguridad.</string>
 
     <!-- Bottom Navigation -->
     <string name="inicio">Inicio</string>
@@ -104,6 +112,27 @@
     <string name="cat_venta_cosecha">Venta Cosecha</string>
     <string name="cat_subsidio">Subsidio</string>
 
+    <!-- Inventario -->
+    <string name="gestiona_insumos">Gestiona tus insumos y stock</string>
+    <string name="valor_total">Valor Total</string>
+    <string name="items_conteo">Items</string>
+    <string name="sin_items_inventario">No hay items en el inventario\nAgrega insumos desde Registro</string>
+    <string name="movimientos_titulo">Movimientos</string>
+    <string name="historial_entradas_salidas">Historial de entradas y salidas</string>
+    <string name="sin_movimientos">No hay movimientos registrados\npara este item</string>
+    <string name="cantidad_label">Cantidad</string>
+    <string name="costo_unitario_label">Costo unitario (S/)</string>
+    <string name="monto_total_label">Monto total</string>
+    <string name="consumir">Consumir</string>
+    <string name="entrada">ENTRADA</string>
+    <string name="salida">SALIDA</string>
+    <string name="stock_disponible">Stock disponible: %s</string>
+    <string name="formato_soles">S/ %.2f</string>
+    <string name="formato_soles_cero">S/ 0.00</string>
+    <string name="formato_items">%d items</string>
+    <string name="formato_items_cero">0 items</string>
+    <string name="formato_movimientos">Movimientos: %s</string>
+
     <!-- Errores y mensajes -->
     <string name="error_cargar_datos">Error al cargar datos</string>
     <string name="error_guardar">Error al guardar</string>
@@ -125,6 +154,8 @@
     <string name="btn_comenzar">COMENZAR</string>
     <string name="error_nombre_requerido">Ingrese su nombre</string>
     <string name="error_distrito_requerido">Seleccione su distrito</string>
+    <string name="label_o_registrate">O regístrate manualmente</string>
+    <string name="btn_google_signin">Ingresar con Google</string>
 
     <!-- Dashboard dinámico -->
     <string name="cargando">Cargando…</string>
@@ -148,4 +179,22 @@
     <string name="error_hectareas">Ingrese las hectáreas</string>
     <string name="sin_parcelas_registro">No tienes parcelas creadas.\nCrea una parcela primero.</string>
     <string name="ir_a_parcelas">CREAR PARCELA</string>
+    <string name="hint_parcela_ejemplo">Ej: Parcela Norte</string>
+    <string name="hint_hectareas_ejemplo">Ej: 2.5</string>
+    <string name="hint_ubicacion_ejemplo">Ej: Sector El Arenal</string>
+    <string name="hint_nombre_ejemplo">Ej: Juan Pérez</string>
+    <string name="hint_telefono_ejemplo">Ej: 999 888 777</string>
+
+    <!-- Accesibilidad: Descripciones -->
+    <string name="desc_clima">Icono de clima actual</string>
+    <string name="desc_tipo_cambio">Icono de tipo de cambio</string>
+    <string name="desc_sync_status">Estado de sincronización</string>
+    <string name="desc_ir_atras">Regresar</string>
+    <string name="desc_microfono">Escuchar comandos de voz</string>
+    <string name="desc_agregar">Agregar nuevo elemento</string>
+    <string name="desc_editar">Editar elemento</string>
+    <string name="desc_eliminar">Eliminar elemento</string>
+    <string name="desc_logo">Logotipo de la aplicación</string>
+    <string name="desc_disminuir">Disminuir cantidad</string>
+    <string name="desc_aumentar">Aumentar cantidad</string>
 </resources>

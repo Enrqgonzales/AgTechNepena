@@ -2,6 +2,7 @@ package com.agtech.backend.controller;
 
 import com.agtech.backend.service.SyncService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,20 @@ public class SyncController {
     @Autowired
     private SyncService syncService;
 
+    @Value("${app.api-key:agtech_secret_key_2026}")
+    private String apiKey;
+
+    private boolean isNotAuthorized(String clientKey) {
+        return clientKey == null || !clientKey.equals(apiKey);
+    }
+
     @PostMapping("/usuarios")
-    public ResponseEntity<?> syncUsuarios(@RequestBody List<Map<String, Object>> usuarios) {
+    public ResponseEntity<?> syncUsuarios(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @RequestBody List<Map<String, Object>> usuarios) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
         try {
             List<Map<String, Object>> resultado = syncService.syncUsuarios(usuarios);
             return ResponseEntity.ok(resultado);
@@ -34,7 +47,12 @@ public class SyncController {
     }
 
     @PostMapping("/parcelas")
-    public ResponseEntity<?> syncParcelas(@RequestBody List<Map<String, Object>> parcelas) {
+    public ResponseEntity<?> syncParcelas(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @RequestBody List<Map<String, Object>> parcelas) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
         try {
             List<Map<String, Object>> resultado = syncService.syncParcelas(parcelas);
             return ResponseEntity.ok(resultado);
@@ -44,7 +62,12 @@ public class SyncController {
     }
 
     @PostMapping("/registros")
-    public ResponseEntity<?> syncRegistros(@RequestBody List<Map<String, Object>> registros) {
+    public ResponseEntity<?> syncRegistros(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @RequestBody List<Map<String, Object>> registros) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
         try {
             List<Map<String, Object>> resultado = syncService.syncRegistros(registros);
             return ResponseEntity.ok(resultado);
@@ -54,9 +77,29 @@ public class SyncController {
     }
 
     @PostMapping("/inventario")
-    public ResponseEntity<?> syncInventario(@RequestBody List<Map<String, Object>> items) {
+    public ResponseEntity<?> syncInventario(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @RequestBody List<Map<String, Object>> items) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
         try {
             List<Map<String, Object>> resultado = syncService.syncInventario(items);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
+    @PostMapping("/movimientos")
+    public ResponseEntity<?> syncMovimientos(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @RequestBody List<Map<String, Object>> movimientos) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
+        try {
+            List<Map<String, Object>> resultado = syncService.syncMovimientos(movimientos);
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");

@@ -16,4 +16,5 @@ import java.util.List;
 public interface RegistroRepository extends JpaRepository<Registro, Long> {
     List<Registro> findByParcelaId(Long parcelaId);
     List<Registro> findByTipo(String tipo);
+    java.util.Optional<Registro> findByUuid(String uuid);
 }

@@ -94,6 +94,9 @@ public interface InventarioDao {
     @Query("SELECT * FROM inventario WHERE sync_status = 'PENDING' OR sync_status IS NULL")
     List<InventarioItem> obtenerPendientesSync();
 
+    @Query("SELECT COUNT(*) FROM inventario WHERE sync_status = 'PENDING' OR sync_status IS NULL")
+    androidx.lifecycle.LiveData<Integer> contarPendientesLiveData();
+
     @Query("UPDATE inventario SET sync_status = :syncStatus, remote_id = :remoteId WHERE id = :id")
     void actualizarSyncStatus(int id, String syncStatus, int remoteId);
 }

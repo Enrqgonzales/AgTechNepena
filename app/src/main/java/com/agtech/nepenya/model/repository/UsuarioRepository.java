@@ -73,6 +73,16 @@ public class UsuarioRepository {
     }
 
     /**
+     * Obtiene un usuario por Firebase UID.
+     *
+     * @param firebaseUid UID de Firebase
+     * @return Usuario encontrado o null
+     */
+    public Usuario obtenerPorFirebaseUid(String firebaseUid) {
+        return usuarioDao.obtenerPorFirebaseUid(firebaseUid);
+    }
+
+    /**
      * Obtiene usuarios pendientes de sincronizacion.
      *
      * @return Lista de usuarios pendientes

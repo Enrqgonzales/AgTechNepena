@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import androidx.appcompat.widget.SwitchCompat;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.agtech.nepenya.R;
 import com.agtech.nepenya.accessibility.AccessibilityPrefs;
 import com.agtech.nepenya.controller.AccesibilidadController;
+import com.agtech.nepenya.utils.PinDialogHelper;
 import com.agtech.nepenya.utils.PrefsManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -37,6 +41,10 @@ public class AccesibilidadActivity extends AppCompatActivity implements
     private Button btnDia;
     private Button btnNoche;
     private SwitchCompat switchVoz;
+    private Button btnActivarPin;
+    private Button btnCambiarPin;
+    private Button btnDesactivarPin;
+    private LinearLayout layoutPinActivo;
 
     private int currentFontSize = 16;
     private float currentBrightness = 0.5f;
@@ -62,6 +70,12 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         controller.obtenerValoresActuales(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        actualizarOpcionesSeguridad();
+    }
+
     private void initController() {
         controller = new AccesibilidadController(this, prefsManager);
     }
@@ -73,6 +87,11 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         btnDia = findViewById(R.id.btn_dia);
         btnNoche = findViewById(R.id.btn_noche);
         switchVoz = findViewById(R.id.switch_voz);
+        btnActivarPin = findViewById(R.id.btn_activar_pin);
+        btnCambiarPin = findViewById(R.id.btn_cambiar_pin);
+        btnDesactivarPin = findViewById(R.id.btn_desactivar_pin);
+        layoutPinActivo = findViewById(R.id.layout_pin_activo);
+        actualizarOpcionesSeguridad();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottom_nav);
         bottomNav.setSelectedItemId(R.id.nav_ajustes);
@@ -175,6 +194,42 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         // Switch de voz
         switchVoz.setOnCheckedChangeListener((buttonView, isChecked) -> controller.guardarVoz(isChecked, this));
 
+        btnActivarPin.setOnClickListener(v -> PinDialogHelper.mostrarCrearPin(
+                this,
+                prefsManager,
+                "Crear PIN de la app",
+                "Ingrese un PIN numérico de 4 dígitos para proteger el acceso a la app:",
+                () -> {
+                    Toast.makeText(this, "PIN activado", Toast.LENGTH_SHORT).show();
+                    actualizarOpcionesSeguridad();
+                }
+        ));
+
+        btnCambiarPin.setOnClickListener(v -> PinDialogHelper.mostrarVerificarPin(
+                this,
+                prefsManager,
+                "PIN actual",
+                "Ingrese su PIN actual para cambiarlo:",
+                () -> PinDialogHelper.mostrarCrearPin(
+                        this,
+                        prefsManager,
+                        "Nuevo PIN de la app",
+                        "Ingrese un nuevo PIN numérico de 4 dígitos:",
+                        () -> {
+                            Toast.makeText(this, "PIN actualizado", Toast.LENGTH_SHORT).show();
+                            actualizarOpcionesSeguridad();
+                        }
+                )
+        ));
+
+        btnDesactivarPin.setOnClickListener(v -> PinDialogHelper.mostrarVerificarPin(
+                this,
+                prefsManager,
+                "Desactivar PIN",
+                "Ingrese su PIN actual para desactivar la protección:",
+                this::confirmarDesactivarPin
+        ));
+
         // Bottom navigation
         findViewById(R.id.nav_inicio).setOnClickListener(v -> {
             finish();
@@ -245,5 +300,31 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         if (controller != null) {
             controller.shutdown();
         }
+    }
+
+    // Seguridad de la app con PIN
+
+    private void actualizarOpcionesSeguridad() {
+        if (btnActivarPin == null || layoutPinActivo == null) return;
+        if (prefsManager.getAdminPin() == null) {
+            btnActivarPin.setVisibility(View.VISIBLE);
+            layoutPinActivo.setVisibility(View.GONE);
+        } else {
+            btnActivarPin.setVisibility(View.GONE);
+            layoutPinActivo.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void confirmarDesactivarPin() {
+        new AlertDialog.Builder(this)
+                .setTitle("Desactivar PIN")
+                .setMessage("La app dejará de pedir PIN al abrirse.")
+                .setPositiveButton("Desactivar", (dialog, which) -> {
+                    prefsManager.setAdminPin(null);
+                    Toast.makeText(this, "PIN desactivado", Toast.LENGTH_SHORT).show();
+                    actualizarOpcionesSeguridad();
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }
