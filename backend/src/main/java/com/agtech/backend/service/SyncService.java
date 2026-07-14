@@ -5,7 +5,6 @@ import com.agtech.backend.model.InventarioMovimiento;
 import com.agtech.backend.model.Parcela;
 import com.agtech.backend.model.Registro;
 import com.agtech.backend.model.Usuario;
-import com.agtech.backend.repository.InventarioItemRepository;
 import com.agtech.backend.repository.InventarioMovimientoRepository;
 import com.agtech.backend.repository.InventarioRepository;
 import com.agtech.backend.repository.ParcelaRepository;
