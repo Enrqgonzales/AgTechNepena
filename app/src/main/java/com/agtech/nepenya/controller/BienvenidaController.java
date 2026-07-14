@@ -141,7 +141,7 @@ public class BienvenidaController {
                     urlString = "https://agtechnepena-backend.onrender.com/api/sync/usuarios/firebase/" + firebaseUid;
                 }
                 
-                URL url = new URL(urlString);
+                URL url = java.net.URI.create(urlString).toURL();
                 
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -204,7 +204,7 @@ public class BienvenidaController {
                 urlString = "https://agtechnepena-backend.onrender.com/api/sync/descargar/" + firebaseUid;
             }
             
-            URL url = new URL(urlString);
+            URL url = java.net.URI.create(urlString).toURL();
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("X-API-Key", "agtech_secret_key_2026");
