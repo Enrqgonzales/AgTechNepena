@@ -82,6 +82,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private final int[] syncCounts = new int[5]; // usuarios, parcelas, registros, inventario, movimientos
     private boolean isSyncingPeriodic = false;
     private boolean isSyncingImmediate = false;
+    private boolean wasSyncing = false;
     private AlphaAnimation blinkingAnimation;
     private boolean isPinDialogShowing = false;
     private boolean isDashboardInicializado = false;
@@ -89,6 +90,7 @@ public class DashboardActivity extends AppCompatActivity implements
     // UI Elements
     private TextView tvSaludo;
     private TextView tvNombre;
+    private View layoutSyncStatus;
     private TextView tvSyncStatus;
     private View dotSyncStatus;
     private TextView tvClima;
@@ -200,6 +202,7 @@ public class DashboardActivity extends AppCompatActivity implements
     private void initViews() {
         tvSaludo = findViewById(R.id.tv_saludo);
         tvNombre = findViewById(R.id.tv_nombre);
+        layoutSyncStatus = findViewById(R.id.layout_sync_status);
         tvSyncStatus = findViewById(R.id.tv_sync_status);
         dotSyncStatus = findViewById(R.id.dot_sync_status);
         tvClima = findViewById(R.id.tv_clima);
@@ -252,6 +255,16 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
     private void initListeners() {
+        layoutSyncStatus.setOnClickListener(v -> {
+            boolean online = isOnlineLiveData.getValue() != null && isOnlineLiveData.getValue();
+            if (online) {
+                Toast.makeText(this, R.string.sincronizando, Toast.LENGTH_SHORT).show();
+                com.agtech.nepenya.sync.SyncManager.syncNow(this);
+            } else {
+                Toast.makeText(this, R.string.sin_conexion, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         cardRegistrar.setOnClickListener(v -> startActivity(new Intent(this, RegistroActivity.class)));
 
         cardParcelas.setOnClickListener(v -> startActivity(new Intent(this, MisParcelasActivity.class)));
@@ -628,6 +641,12 @@ public class DashboardActivity extends AppCompatActivity implements
         boolean online = isOnlineLiveData.getValue() != null && isOnlineLiveData.getValue();
         int pendientes = totalPendientesLiveData.getValue() != null ? totalPendientesLiveData.getValue() : 0;
         boolean syncing = isSyncingPeriodic || isSyncingImmediate;
+
+        // Feedback al terminar sincronización
+        if (wasSyncing && !syncing && online) {
+            Toast.makeText(this, R.string.sincronizacion_completa, Toast.LENGTH_SHORT).show();
+        }
+        wasSyncing = syncing;
 
         // Si hay conexión y hay cambios pendientes pero no se está ejecutando el worker,
         // forzar una sincronización inmediata

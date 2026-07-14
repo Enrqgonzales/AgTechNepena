@@ -197,4 +197,8 @@
     <string name="desc_logo">Logotipo de la aplicación</string>
     <string name="desc_disminuir">Disminuir cantidad</string>
     <string name="desc_aumentar">Aumentar cantidad</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="confirmar_cerrar_sesion">¿Seguro que quieres cerrar sesión?</string>
+    <string name="sincronizar_ahora">Sincronizar ahora</string>
+    <string name="sincronizacion_completa">Sincronización completa</string>
 </resources>

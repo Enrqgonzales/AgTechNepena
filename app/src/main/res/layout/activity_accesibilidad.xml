@@ -271,6 +271,21 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Logout Section -->
+            <Button
+                android:id="@+id/btn_cerrar_sesion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="32dp"
+                android:text="@string/cerrar_sesion"
+                android:textColor="@color/accent_red"
+                android:backgroundTint="?attr/colorSurface"
+                app:strokeColor="@color/accent_red"
+                app:strokeWidth="1dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:paddingVertical="12dp" />
+
         </LinearLayout>
     </ScrollView>
 

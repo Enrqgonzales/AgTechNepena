@@ -58,16 +58,32 @@ public class SyncService {
             }
 
             String uuid = (String) data.get("uuid");
-            java.util.Optional<Usuario> existing = (uuid != null) ? usuarioRepository.findByUuid(uuid) : java.util.Optional.empty();
+            String firebaseUid = (String) data.get("firebaseUid");
+
+            java.util.Optional<Usuario> existing = java.util.Optional.empty();
+            if (uuid != null) {
+                existing = usuarioRepository.findByUuid(uuid);
+            }
+            if (!existing.isPresent() && firebaseUid != null) {
+                existing = usuarioRepository.findByFirebaseUid(firebaseUid);
+            }
+
             Usuario saved;
             if (existing.isPresent()) {
                 saved = existing.get();
+                if (firebaseUid != null && saved.getFirebaseUid() == null) {
+                    saved.setFirebaseUid(firebaseUid);
+                    saved = usuarioRepository.save(saved);
+                }
             } else {
                 Usuario usuario = new Usuario();
                 usuario.setNombre((String) data.get("nombre"));
                 usuario.setTelefono((String) data.get("telefono"));
                 if (uuid != null) {
                     usuario.setUuid(uuid);
+                }
+                if (firebaseUid != null) {
+                    usuario.setFirebaseUid(firebaseUid);
                 }
                 saved = usuarioRepository.save(usuario);
             }
@@ -78,6 +94,10 @@ public class SyncService {
             resultado.add(item);
         }
         return resultado;
+    }
+
+    public java.util.Optional<Usuario> getUsuarioByFirebaseUid(String firebaseUid) {
+        return usuarioRepository.findByFirebaseUid(firebaseUid);
     }
 
     @Transactional

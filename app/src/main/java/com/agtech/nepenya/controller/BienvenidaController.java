@@ -124,13 +124,16 @@ public class BienvenidaController {
         executorService.execute(() -> {
             HttpURLConnection conn = null;
             try {
-                // Obtener URL base similar a SyncWorker
                 String serverIp = prefsManager.getServerIp();
-                if (serverIp == null || serverIp.isEmpty()) {
-                    // 10.0.2.2 es la IP del host desde el emulador
-                    serverIp = "10.0.2.2"; 
+                String urlString;
+                
+                if (serverIp != null && !serverIp.isEmpty()) {
+                    urlString = "http://" + serverIp + ":8080/api/sync/usuarios/firebase/" + firebaseUid;
+                } else {
+                    urlString = "https://agtechnepena-backend.onrender.com/api/sync/usuarios/firebase/" + firebaseUid;
                 }
-                URL url = new URL("http://" + serverIp + ":8080/api/sync/usuarios/firebase/" + firebaseUid);
+                
+                URL url = new URL(urlString);
                 
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");

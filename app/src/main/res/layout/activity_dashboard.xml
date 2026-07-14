@@ -48,11 +48,16 @@
 
         <!-- Sync Status -->
         <LinearLayout
+            android:id="@+id/layout_sync_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:padding="4dp">
 
             <View
                 android:id="@+id/dot_sync_status"
@@ -70,6 +75,14 @@
                 android:textColor="@color/accent_green"
                 android:textAllCaps="true"
                 android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_sync_pending"
+                android:layout_marginStart="8dp"
+                app:tint="?attr/colorOnSurfaceVariant"
+                android:contentDescription="@string/sincronizar_ahora" />
         </LinearLayout>
     </LinearLayout>
 

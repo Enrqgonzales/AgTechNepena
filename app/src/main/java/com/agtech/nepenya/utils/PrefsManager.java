@@ -32,6 +32,7 @@ public class PrefsManager {
     public static final String KEY_CURRENCY_INDEX = "currency_index";
     public static final String KEY_SERVER_IP = "server_ip";
     public static final String KEY_ADMIN_PIN = "admin_pin";
+    public static final String KEY_FIREBASE_UID = "firebase_uid";
 
     // Defaults
     private static final int DEFAULT_FONT_SIZE = 16; // Centro del rango 12-32
@@ -241,6 +242,18 @@ public class PrefsManager {
         } else {
             String hashed = hashSHA256(pin);
             prefs.edit().putString(KEY_ADMIN_PIN, hashed).apply();
+        }
+    }
+
+    public String getFirebaseUid() {
+        return prefs.getString(KEY_FIREBASE_UID, null);
+    }
+
+    public void setFirebaseUid(String uid) {
+        if (uid == null) {
+            prefs.edit().remove(KEY_FIREBASE_UID).apply();
+        } else {
+            prefs.edit().putString(KEY_FIREBASE_UID, uid).apply();
         }
     }
 

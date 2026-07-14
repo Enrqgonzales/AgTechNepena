@@ -41,8 +41,8 @@ import java.util.List;
  */
 public class SyncWorker extends Worker {
 
-    // Puerto y path del backend (la IP se resuelve dinámicamente)
-    private static final String SERVER_PORT = "8080";
+    // URL base del backend en producción (Render)
+    private static final String BASE_URL = "https://agtechnepena-backend.onrender.com";
     private static final String API_PATH = "/api/sync";
 
     // IP del emulador Android apuntando al host local
@@ -59,16 +59,20 @@ public class SyncWorker extends Worker {
     private final InventarioMovimientoDao inventarioMovimientoDao;
 
     /**
-     * Obtiene la URL del servidor de forma dinámica.
-     * Primero intenta la IP guardada en PrefsManager, luego cae al emulador.
+     * Obtiene la URL del servidor.
+     * Prioriza la URL de producción, pero permite sobrescribirla si hay una IP manual en Prefs.
      */
     private String getBaseUrl() {
         PrefsManager prefs = new PrefsManager(context);
         String serverIp = prefs.getServerIp();
-        if (serverIp == null || serverIp.isEmpty()) {
-            serverIp = isRunningOnEmulator() ? EMULATOR_IP : DEFAULT_IP;
+        
+        if (serverIp != null && !serverIp.isEmpty()) {
+            // Si el usuario configuró una IP manual (ej. para pruebas locales), la usamos
+            return "http://" + serverIp + ":8080" + API_PATH;
         }
-        return "http://" + serverIp + ":" + SERVER_PORT + API_PATH;
+        
+        // Por defecto usamos la URL de producción en Render
+        return BASE_URL + API_PATH;
     }
 
     /**
@@ -145,6 +149,18 @@ public class SyncWorker extends Worker {
                 json.put("uuid", u.getUuid());
                 json.put("nombre", u.getNombre());
                 json.put("telefono", u.getTelefono());
+                
+                String firebaseUid = u.getFirebaseUid();
+                if (firebaseUid == null || firebaseUid.isEmpty()) {
+                    com.google.firebase.auth.FirebaseAuth firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
+                    if (firebaseAuth.getCurrentUser() != null) {
+                        firebaseUid = firebaseAuth.getCurrentUser().getUid();
+                        u.setFirebaseUid(firebaseUid);
+                        usuarioRepository.actualizar(u);
+                    }
+                }
+                json.put("firebaseUid", firebaseUid);
+                
                 jsonArray.put(json);
             }
 

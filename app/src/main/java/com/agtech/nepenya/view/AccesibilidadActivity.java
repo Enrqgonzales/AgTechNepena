@@ -19,7 +19,11 @@ import com.agtech.nepenya.accessibility.AccessibilityPrefs;
 import com.agtech.nepenya.controller.AccesibilidadController;
 import com.agtech.nepenya.utils.PinDialogHelper;
 import com.agtech.nepenya.utils.PrefsManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Activity de Ajustes de Vista/Accesibilidad.
@@ -44,6 +48,7 @@ public class AccesibilidadActivity extends AppCompatActivity implements
     private Button btnActivarPin;
     private Button btnCambiarPin;
     private Button btnDesactivarPin;
+    private Button btnCerrarSesion;
     private LinearLayout layoutPinActivo;
 
     private int currentFontSize = 16;
@@ -90,6 +95,7 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         btnActivarPin = findViewById(R.id.btn_activar_pin);
         btnCambiarPin = findViewById(R.id.btn_cambiar_pin);
         btnDesactivarPin = findViewById(R.id.btn_desactivar_pin);
+        btnCerrarSesion = findViewById(R.id.btn_cerrar_sesion);
         layoutPinActivo = findViewById(R.id.layout_pin_activo);
         actualizarOpcionesSeguridad();
 
@@ -230,6 +236,8 @@ public class AccesibilidadActivity extends AppCompatActivity implements
                 this::confirmarDesactivarPin
         ));
 
+        btnCerrarSesion.setOnClickListener(v -> mostrarConfirmarCerrarSesion());
+
         // Bottom navigation
         findViewById(R.id.nav_inicio).setOnClickListener(v -> {
             finish();
@@ -326,5 +334,41 @@ public class AccesibilidadActivity extends AppCompatActivity implements
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
+    }
+
+    private void mostrarConfirmarCerrarSesion() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.cerrar_sesion)
+                .setMessage(R.string.confirmar_cerrar_sesion)
+                .setPositiveButton("Cerrar sesión", (dialog, which) -> ejecutarCerrarSesion())
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void ejecutarCerrarSesion() {
+        // Firebase Auth Sign Out
+        FirebaseAuth.getInstance().signOut();
+
+        // Google Sign Out
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+        googleSignInClient.signOut().addOnCompleteListener(task -> {
+            // Limpiar datos de sesión (NO borrar Room)
+            prefsManager.setUserId(-1);
+            prefsManager.setUserName("");
+            prefsManager.setFirebaseUid(null);
+            prefsManager.setAdminPin(null);
+            prefsManager.setDistrito("");
+            prefsManager.setLastSync(0);
+
+            // Redirigir a Bienvenida
+            Intent intent = new Intent(this, BienvenidaActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
     }
 }

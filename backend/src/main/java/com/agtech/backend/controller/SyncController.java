@@ -46,6 +46,18 @@ public class SyncController {
         }
     }
 
+    @GetMapping("/usuarios/firebase/{firebaseUid}")
+    public ResponseEntity<?> getUsuarioByFirebaseUid(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @PathVariable String firebaseUid) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
+        return syncService.getUsuarioByFirebaseUid(firebaseUid)
+                .map(usuario -> ResponseEntity.ok(usuario))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping("/parcelas")
     public ResponseEntity<?> syncParcelas(
             @RequestHeader(value = "X-API-Key", required = false) String clientKey,

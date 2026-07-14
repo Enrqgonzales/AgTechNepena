@@ -29,6 +29,9 @@ public class Usuario {
     @Column(name = "uuid", unique = true)
     private String uuid;
 
+    @Column(name = "firebase_uid", unique = true)
+    private String firebaseUid;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -73,5 +76,13 @@ public class Usuario {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
     }
 }
