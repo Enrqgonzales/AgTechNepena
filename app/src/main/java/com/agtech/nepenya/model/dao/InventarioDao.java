@@ -3,6 +3,7 @@ package com.agtech.nepenya.model.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -22,7 +23,7 @@ public interface InventarioDao {
 
     // CRUD Items
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertarItem(InventarioItem item);
 
     @Update
@@ -60,7 +61,7 @@ public interface InventarioDao {
 
     // Movimientos
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertarMovimiento(InventarioMovimiento movimiento);
 
     @Query("SELECT * FROM inventario_movimientos WHERE item_id = :itemId ORDER BY fecha DESC")
@@ -99,4 +100,7 @@ public interface InventarioDao {
 
     @Query("UPDATE inventario SET sync_status = :syncStatus, remote_id = :remoteId WHERE id = :id")
     void actualizarSyncStatus(int id, String syncStatus, int remoteId);
+
+    @Query("SELECT * FROM inventario WHERE remote_id = :remoteId LIMIT 1")
+    InventarioItem obtenerPorRemoteId(int remoteId);
 }

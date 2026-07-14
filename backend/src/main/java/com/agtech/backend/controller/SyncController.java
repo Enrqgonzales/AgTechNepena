@@ -58,6 +58,21 @@ public class SyncController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/descargar/{firebaseUid}")
+    public ResponseEntity<?> descargarDatos(
+            @RequestHeader(value = "X-API-Key", required = false) String clientKey,
+            @PathVariable String firebaseUid) {
+        if (isNotAuthorized(clientKey)) {
+            return ResponseEntity.status(401).body("{\"error\":\"No autorizado\"}");
+        }
+        try {
+            Map<String, Object> datos = syncService.getDatosSincronizacion(firebaseUid);
+            return ResponseEntity.ok(datos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("{\"error\":\"" + e.getMessage() + "\"}");
+        }
+    }
+
     @PostMapping("/parcelas")
     public ResponseEntity<?> syncParcelas(
             @RequestHeader(value = "X-API-Key", required = false) String clientKey,

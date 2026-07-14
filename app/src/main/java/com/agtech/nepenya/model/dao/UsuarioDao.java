@@ -3,6 +3,7 @@ package com.agtech.nepenya.model.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -26,7 +27,7 @@ public interface UsuarioDao {
      * @param usuario Usuario a insertar
      * @return ID generado
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertar(Usuario usuario);
 
     /**

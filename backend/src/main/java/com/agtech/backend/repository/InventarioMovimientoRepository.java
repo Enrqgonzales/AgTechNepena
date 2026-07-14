@@ -13,4 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface InventarioMovimientoRepository extends JpaRepository<InventarioMovimiento, Long> {
     java.util.Optional<InventarioMovimiento> findByUuid(String uuid);
+    java.util.List<InventarioMovimiento> findByInventarioItemParcelaUsuarioFirebaseUid(String firebaseUid);
 }

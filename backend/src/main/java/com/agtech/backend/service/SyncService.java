@@ -100,6 +100,85 @@ public class SyncService {
         return usuarioRepository.findByFirebaseUid(firebaseUid);
     }
 
+    public Map<String, Object> getDatosSincronizacion(String firebaseUid) {
+        Map<String, Object> response = new HashMap<>();
+        
+        List<Parcela> parcelas = parcelaRepository.findByUsuarioFirebaseUid(firebaseUid);
+        List<Registro> registros = registroRepository.findByParcelaUsuarioFirebaseUid(firebaseUid);
+        List<InventarioItem> inventario = inventarioRepository.findByParcelaUsuarioFirebaseUid(firebaseUid);
+        List<InventarioMovimiento> movimientos = inventarioMovimientoRepository.findByInventarioItemParcelaUsuarioFirebaseUid(firebaseUid);
+        
+        List<Map<String, Object>> listParcelas = new ArrayList<>();
+        for (Parcela p : parcelas) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remoteId", p.getId());
+            map.put("nombre", p.getNombre());
+            map.put("cultivo", p.getCultivo());
+            map.put("hectareas", p.getHectareas());
+            map.put("ubicacion", p.getUbicacion());
+            map.put("estado", p.getEstado());
+            map.put("uuid", p.getUuid());
+            listParcelas.add(map);
+        }
+        
+        List<Map<String, Object>> listRegistros = new ArrayList<>();
+        for (Registro r : registros) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remoteId", r.getId());
+            map.put("parcelaRemoteId", r.getParcela().getId());
+            map.put("tipo", r.getTipo());
+            map.put("categoria", r.getCategoria());
+            map.put("monto", r.getMonto());
+            map.put("descripcion", r.getDescripcion());
+            map.put("fecha", r.getFecha() != null ? r.getFecha().toString() : "");
+            map.put("uuid", r.getUuid());
+            listRegistros.add(map);
+        }
+        
+        List<Map<String, Object>> listInventario = new ArrayList<>();
+        for (InventarioItem item : inventario) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remoteId", item.getId());
+            map.put("parcelaRemoteId", item.getParcela().getId());
+            map.put("nombre", item.getNombre());
+            map.put("categoria", item.getCategoria());
+            map.put("cantidad", item.getCantidad());
+            map.put("unidad", item.getUnidad());
+            map.put("costoUnitario", item.getCostoUnitario());
+            map.put("fechaIngreso", item.getFechaIngreso());
+            map.put("descripcion", item.getDescripcion());
+            map.put("uuid", item.getUuid());
+            listInventario.add(map);
+        }
+        
+        List<Map<String, Object>> listMovimientos = new ArrayList<>();
+        for (InventarioMovimiento m : movimientos) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("remoteId", m.getId());
+            map.put("itemRemoteId", m.getInventarioItem().getId());
+            map.put("tipo", m.getTipo());
+            map.put("cantidad", m.getCantidad());
+            map.put("unidad", m.getUnidad());
+            map.put("costoTotal", m.getCostoTotal());
+            map.put("fecha", m.getFecha());
+            map.put("descripcion", m.getDescripcion());
+            map.put("uuid", m.getUuid());
+            if (m.getRegistro() != null) {
+                map.put("registroRemoteId", m.getRegistro().getId());
+            } else {
+                map.put("registroRemoteId", null);
+            }
+            listMovimientos.add(map);
+        }
+        
+        response.put("parcelas", listParcelas);
+        response.put("registros", listRegistros);
+        response.put("inventario", listInventario);
+        response.put("movimientos", listMovimientos);
+        
+        return response;
+    }
+
     @Transactional
     public List<Map<String, Object>> syncParcelas(List<Map<String, Object>> parcelas) {
         List<Map<String, Object>> resultado = new ArrayList<>();

@@ -3,6 +3,7 @@ package com.agtech.nepenya.model.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -26,7 +27,7 @@ public interface RegistroDao {
      * @param registro Registro a insertar
      * @return ID generado
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertar(Registro registro);
 
     /**
@@ -227,4 +228,7 @@ public interface RegistroDao {
      */
     @Query("SELECT DISTINCT strftime('%m', fecha) FROM registros WHERE fecha BETWEEN :inicio AND :fin ORDER BY strftime('%m', fecha)")
     List<String> obtenerMesesConRegistros(String inicio, String fin);
+
+    @Query("SELECT * FROM registros WHERE remote_id = :remoteId LIMIT 1")
+    Registro obtenerPorRemoteId(int remoteId);
 }

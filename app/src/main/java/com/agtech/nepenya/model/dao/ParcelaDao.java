@@ -3,6 +3,7 @@ package com.agtech.nepenya.model.dao;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -26,7 +27,7 @@ public interface ParcelaDao {
      * @param parcela Parcela a insertar
      * @return ID generado
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertar(Parcela parcela);
 
     /**
@@ -108,4 +109,7 @@ public interface ParcelaDao {
      */
     @Query("SELECT nombre FROM parcelas WHERE id = :id LIMIT 1")
     String obtenerNombrePorId(int id);
+
+    @Query("SELECT * FROM parcelas WHERE remote_id = :remoteId LIMIT 1")
+    Parcela obtenerPorRemoteId(int remoteId);
 }

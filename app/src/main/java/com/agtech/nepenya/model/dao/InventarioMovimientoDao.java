@@ -36,4 +36,7 @@ public interface InventarioMovimientoDao {
 
     @Query("UPDATE inventario_movimientos SET sync_status = :syncStatus, remote_id = :remoteId WHERE id = :id")
     void actualizarSyncStatus(int id, String syncStatus, Integer remoteId);
+
+    @Query("SELECT * FROM inventario_movimientos WHERE remote_id = :remoteId LIMIT 1")
+    InventarioMovimiento obtenerPorRemoteId(int remoteId);
 }
