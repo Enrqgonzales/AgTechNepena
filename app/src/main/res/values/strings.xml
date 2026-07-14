@@ -90,10 +90,30 @@
     <string name="desactivar_pin">Desactivar PIN</string>
     <string name="nota_pin_ajustes">Podrás activarlo más tarde desde Ajustes → Seguridad.</string>
 
+    <!-- Seguridad -->
+    <string name="crear_pin_titulo">Crear PIN de la app</string>
+    <string name="crear_pin_mensaje">Ingrese un PIN numérico de 4 dígitos para proteger el acceso a la app:</string>
+    <string name="pin_activado">PIN activado</string>
+    <string name="pin_actual_titulo">PIN actual</string>
+    <string name="pin_actual_mensaje">Ingrese su PIN actual para cambiarlo:</string>
+    <string name="nuevo_pin_titulo">Nuevo PIN de la app</string>
+    <string name="nuevo_pin_mensaje">Ingrese un nuevo PIN numérico de 4 dígitos:</string>
+    <string name="pin_actualizado">PIN actualizado</string>
+    <string name="desactivar_pin_titulo">Desactivar PIN</string>
+    <string name="desactivar_pin_mensaje">Ingrese su PIN actual para desactivar la protección:</string>
+    <string name="desactivar_pin_confirmacion">La app dejará de pedir PIN al abrirse.</string>
+    <string name="pin_desactivado">PIN desactivado</string>
+    <string name="cerrar_sesion_btn">Cerrar sesión</string>
+
+    <!-- Google Auth (Fallback if google-services.json is missing) -->
+    <string name="default_web_client_id" translatable="false">YOUR_CLIENT_ID_HERE</string>
+
     <!-- Bottom Navigation -->
     <string name="inicio">Inicio</string>
     <string name="registro">Registro</string>
     <string name="ajustes">Ajustes</string>
+    <string name="historial_nav">Historial</string>
+    <string name="reportes_nav">Reportes</string>
 
     <!-- Categorías de Gasto -->
     <string name="cat_fertilizantes">Fertilizantes</string>

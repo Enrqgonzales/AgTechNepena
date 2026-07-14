@@ -1,135 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-    android:fillViewport="true">
+    android:background="#F5F3F0"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:gravity="center">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_leaf"
+        android:contentDescription="@string/desc_logo"
+        android:layout_marginBottom="24dp"
+        app:tint="#2E7D32" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bienvenida_titulo"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#1A1C19"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bienvenida_subtitulo"
+        android:textSize="16sp"
+        android:textColor="#424940"
+        android:gravity="center"
+        android:layout_marginBottom="48dp" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/btn_google_signin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="32dp"
-        android:gravity="center_horizontal">
+        android:layout_marginHorizontal="16dp" />
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_leaf"
-            android:contentDescription="@string/desc_logo"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="24dp"
-            app:tint="?attr/colorPrimary" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/bienvenida_titulo"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/bienvenida_subtitulo"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Botón de Google Sign-In -->
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/btn_google_signin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_o_registrate"
-            android:textSize="12sp"
-            android:textColor="@color/secondary_text"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Nombre -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_nombre"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text"
-            android:layout_marginBottom="6dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="20dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_nombre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_nombre_ejemplo"
-                android:inputType="textPersonName"
-                android:autofillHints="name" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Teléfono -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_telefono"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text"
-            android:layout_marginBottom="6dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_marginBottom="20dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_telefono"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_telefono_ejemplo"
-                android:inputType="phone"
-                android:autofillHints="phoneNumber" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Distrito -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/label_distrito"
-            android:textSize="14sp"
-            android:textColor="@color/secondary_text"
-            android:layout_marginBottom="6dp" />
-
-        <Spinner
-            android:id="@+id/spinner_distrito"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_spinner_outlined"
-            android:paddingHorizontal="16dp"
-            android:layout_marginBottom="40dp" />
-
-        <Button
-            android:id="@+id/btn_comenzar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="@string/btn_comenzar"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:backgroundTint="@color/md3_primary"
-            android:textColor="@color/md3_on_primary" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

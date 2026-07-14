@@ -34,6 +34,13 @@
             android:exported="false"
             android:theme="@style/Theme.AgTechNepenya" />
 
+        <!-- Completar Perfil Activity -->
+        <activity
+            android:name=".view.CompletarPerfilActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.AgTechNepenya" />
+
         <!-- Dashboard Activity - Principal -->
         <activity
             android:name=".view.DashboardActivity"

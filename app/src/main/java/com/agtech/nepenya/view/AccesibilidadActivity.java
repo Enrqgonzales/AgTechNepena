@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
+import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
  * @author AgTech Nepeña Team
  * @version 1.0
  */
+@SuppressWarnings("SpellCheckingInspection")
 public class AccesibilidadActivity extends AppCompatActivity implements
         AccesibilidadController.AccesibilidadCallback,
         AccesibilidadController.ValoresCallback {
@@ -203,10 +205,10 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         btnActivarPin.setOnClickListener(v -> PinDialogHelper.mostrarCrearPin(
                 this,
                 prefsManager,
-                "Crear PIN de la app",
-                "Ingrese un PIN numérico de 4 dígitos para proteger el acceso a la app:",
+                getString(R.string.crear_pin_titulo),
+                getString(R.string.crear_pin_mensaje),
                 () -> {
-                    Toast.makeText(this, "PIN activado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.pin_activado, Toast.LENGTH_SHORT).show();
                     actualizarOpcionesSeguridad();
                 }
         ));
@@ -214,15 +216,15 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         btnCambiarPin.setOnClickListener(v -> PinDialogHelper.mostrarVerificarPin(
                 this,
                 prefsManager,
-                "PIN actual",
-                "Ingrese su PIN actual para cambiarlo:",
+                getString(R.string.pin_actual_titulo),
+                getString(R.string.pin_actual_mensaje),
                 () -> PinDialogHelper.mostrarCrearPin(
                         this,
                         prefsManager,
-                        "Nuevo PIN de la app",
-                        "Ingrese un nuevo PIN numérico de 4 dígitos:",
+                        getString(R.string.nuevo_pin_titulo),
+                        getString(R.string.nuevo_pin_mensaje),
                         () -> {
-                            Toast.makeText(this, "PIN actualizado", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, R.string.pin_actualizado, Toast.LENGTH_SHORT).show();
                             actualizarOpcionesSeguridad();
                         }
                 )
@@ -231,8 +233,8 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         btnDesactivarPin.setOnClickListener(v -> PinDialogHelper.mostrarVerificarPin(
                 this,
                 prefsManager,
-                "Desactivar PIN",
-                "Ingrese su PIN actual para desactivar la protección:",
+                getString(R.string.desactivar_pin_titulo),
+                getString(R.string.desactivar_pin_mensaje),
                 this::confirmarDesactivarPin
         ));
 
@@ -325,14 +327,14 @@ public class AccesibilidadActivity extends AppCompatActivity implements
 
     private void confirmarDesactivarPin() {
         new AlertDialog.Builder(this)
-                .setTitle("Desactivar PIN")
-                .setMessage("La app dejará de pedir PIN al abrirse.")
-                .setPositiveButton("Desactivar", (dialog, which) -> {
+                .setTitle(R.string.desactivar_pin_titulo)
+                .setMessage(R.string.desactivar_pin_confirmacion)
+                .setPositiveButton(R.string.desactivar_pin, (dialog, which) -> {
                     prefsManager.setAdminPin(null);
-                    Toast.makeText(this, "PIN desactivado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.pin_desactivado, Toast.LENGTH_SHORT).show();
                     actualizarOpcionesSeguridad();
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 
@@ -340,8 +342,8 @@ public class AccesibilidadActivity extends AppCompatActivity implements
         new AlertDialog.Builder(this)
                 .setTitle(R.string.cerrar_sesion)
                 .setMessage(R.string.confirmar_cerrar_sesion)
-                .setPositiveButton("Cerrar sesión", (dialog, which) -> ejecutarCerrarSesion())
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(R.string.cerrar_sesion_btn, (dialog, which) -> ejecutarCerrarSesion())
+                .setNegativeButton(R.string.cancelar, null)
                 .show();
     }
 
@@ -358,7 +360,7 @@ public class AccesibilidadActivity extends AppCompatActivity implements
             GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
             googleSignInClient.signOut().addOnCompleteListener(task -> limpiarYRedirigir());
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("AccesibilidadActivity", "Error al cerrar sesión en Google", e);
             limpiarYRedirigir();
         }
     }
